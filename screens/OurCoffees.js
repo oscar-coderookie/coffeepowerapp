@@ -8,28 +8,20 @@ import {
     TouchableOpacity
 } from "react-native";
 import imageBck from '../assets/images/nuestros-cafes.png'
+import { useNavigation } from "@react-navigation/native";
 
-const subcategories = [
-    { name: "Los Más Vendidos", legend: '"No se agotan por casualidad. ¡Descubre por qué todos los eligen!"' },
-    { name: 'Coffee Power Selection', legend: '"Nuestra élite secreta. Café para los que buscan lo más potente."' },
-    { name: 'Esencia de Colombia', legend: '"Sabor auténtico desde el corazón cafetero del mundo."' },
-    { name: 'Los favoritos del Chef', legend: '"Si el chef los prefiere... será por algo. Pura excelencia en taza."' },
-    { name: 'Ecológicos', legend: '"Cuidamos el planeta, sin renunciar al placer. Elige consciente, saborea mejor."' },
-    { name: 'Recetas Exclusivas del Día', legend: '"Ediciones limitadas. Sabor único que no se repite. ¿Te atreves hoy?"' },
-    { name: 'Descafeinados de Élite', legend: '"Sin cafeína, con todo el carácter. Descubre lo que nadie te contó."' },
-    { name: 'Viajar por el Mundo', legend: '"Explora el mundo sin moverte de tu taza. Cada país, una historia. Cada sorbo, un destino."' },
-    { name: 'Tesoros Escondidos', legend: '"Cafés que nadie conoce... aún. Solo para exploradores de verdad."' }
-]
+import { coffeeCategories } from "../data/CoffeesData";
 
 const OurCoffees = () => {
+    const navigation = useNavigation();
     return (
         <ImageBackground source={imageBck} style={styles.background}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <Text style={styles.title} >Nuestros Cafés</Text>
 
                 <View style={styles.mosaic}>
-                    {subcategories.map((item, index) => (
-                        <TouchableOpacity style={styles.card} key={index}>
+                    {coffeeCategories.map((item, index) => (
+                        <TouchableOpacity style={styles.card} key={index} onPress={() => navigation.navigate("Category", { category: item })}>
                             <Text style={styles.cardTitle}>{item.name}</Text>
                             <Text style={styles.legend}>{item.legend}</Text>
                         </TouchableOpacity>
@@ -56,11 +48,11 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         fontFamily: 'Jost_600SemiBold',
         color: "#fff",
-        textTransform:'uppercase',
+        textTransform: 'uppercase',
         textAlign: "center",
         marginBottom: 40,
-        textShadowColor: "rgba(0,0,0,0.7)",
-        textShadowOffset: { width: 2, height: 2 },
+        textShadowColor: "rgba(0, 0, 0, 0.54)",
+        textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 6,
     },
     mosaic: {
@@ -71,20 +63,20 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0, 0, 0, 0.45)", // un poco de transparencia para leer bien el texto
         borderRadius: 12,
         padding: 16,
-          backdropFilter: "blur(8px)",
+        backdropFilter: "blur(8px)",
     },
     cardTitle: {
         fontSize: 20,
         textAlign: 'center',
         fontWeight: "500",
         fontFamily: 'Jost_600SemiBold',
-        textTransform:'capitalize',
+        textTransform: 'capitalize',
         color: "#fff",
         marginBottom: 8,
     },
     legend: {
         fontSize: 16,
-        fontFamily:'Jost_400Regular',
+        fontFamily: 'Jost_400Regular',
         textAlign: 'center',
         color: "#ccc",
     }

@@ -7,7 +7,7 @@ const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#000" }, headerTintColor: "#fff", fontFamily:'Jost_400Regular', }}>
+    <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#000" }, headerTintColor: "#fff" }}>
       <Stack.Screen
         name="Tabs"
         component={Tabs}
@@ -18,8 +18,8 @@ const RootNavigator = () => {
           return {
             headerTitle: "",
             headerLeft: () =>
-              currentRoute !== "Inicio" ? (
-                <TouchableOpacity>
+              currentRoute !== "HomeScreen" ? (
+                <TouchableOpacity >
                   <Image source={homeIcon} style={{ width: 102.5, height: 37.5 }} />
                 </TouchableOpacity>
               ) : null,

@@ -10,6 +10,7 @@ import AboutUsScreen from '../screens/AboutUsScreen';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import OurCoffees from '../screens/OurCoffees';
 import AccesoriesPro from '../screens/AccesoriesPro';
+import CoffeesStack from './CoffeesStack';
 
 
 const Tab = createBottomTabNavigator();
@@ -37,7 +38,7 @@ const Tabs = () => {
 
             <Tab.Screen
                 name="Nuestros Cafés"
-                component={OurCoffees}
+                component={CoffeesStack}
                 options={{
                     tabBarIcon: () => (
                         <Image
