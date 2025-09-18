@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Image, Dimensions } from 'react-native';
-import { Video } from 'expo-av';
+import { Video } from 'expo-video';
 import fondo from '../assets/home-movil.mp4';
 import logo from '../assets/logo-nuevo.png'
 

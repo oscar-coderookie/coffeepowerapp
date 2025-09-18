@@ -2,7 +2,8 @@ import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity } from
 import bckImage from '../assets/images/contacto-movil.png';
 import btnEmail from '../assets/icons/email.png';
 import btnInsta from '../assets/icons/insta.png';
-import btnUbi from '../assets/icons/ubi.png'
+import btnUbi from '../assets/icons/ubi.png';
+import WhatsappBtn from '../assets/icons/whatsapp.png';
 
 const EmailButton = () => {
     return (
@@ -28,6 +29,14 @@ const UbicationButton = () => {
         </TouchableOpacity>
     )
 }
+const WppButton = () => {
+    return (
+        <TouchableOpacity style={styles.button}>
+            <Image source={WhatsappBtn} style={styles.icon} />
+            <Text style={styles.text}>+34 620 13 21 31</Text>
+        </TouchableOpacity>
+    )
+};
 
 const ContactScreen = () => {
     return (
@@ -37,8 +46,10 @@ const ContactScreen = () => {
             resizeMode="cover"
         >
             <View style={styles.overlay}>
+                <Text style={styles.text}>Encuéntranos por cualquiera de estos medios:</Text>
                 <EmailButton />
                 <InstagramButton />
+                <WppButton />
                 <UbicationButton />
             </View>
         </ImageBackground>
@@ -58,11 +69,14 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
+        backgroundColor: '#0c0c0c3a'
     },
     text: {
         color: '#ffffffff',
         fontSize: 20,
-        width: '80%'
+        width: '70%',
+        fontFamily: 'Jost_600SemiBold',
+        textAlign: 'center'
 
     },
     icon: {

@@ -7,7 +7,6 @@
     "icon": "./assets/logo-nuevo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-  
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -26,6 +25,9 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }
+    },
+    "plugins": [
+      "expo-video"
+    ]
   }
 }
