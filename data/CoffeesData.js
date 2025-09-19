@@ -1,3 +1,4 @@
+//imagenes de empaques de cafe:
 import serenidadIcon from '../assets/coffees/serenidad.png';
 import supremoIcon from '../assets/coffees/supremo.png';
 import amuccIcon from '../assets/coffees/AMUCC.png';
@@ -19,6 +20,28 @@ import peru from '../assets/coffees/peru.png';
 import hawai from '../assets/coffees/hawaii.png';
 import puertoRico from '../assets/coffees/puerto-rico.png';
 import costaRica from '../assets/coffees/costa-rica.png';
+//*imágenes de cada sección para cada café:
+import serenidadBck from '../assets/backgrounds/serenidad2-movil.jpg';
+import supremoBck from '../assets/backgrounds/supremo-pc.jpg';
+import amuccBck from '../assets/backgrounds/amucc-movil.jpg';
+import relaxBck from '../assets/backgrounds/relax2-movi.jpg';
+import victoriaBck from '../assets/backgrounds/esencia-victoria.jpg';
+import bendecidoBck from '../assets/backgrounds/el-bendecido.png';
+import origenBck from '../assets/backgrounds/el-origen.png';
+import nocheBck from '../assets/backgrounds/noche-movil.jpg';
+import geishaBck from '../assets/backgrounds/geisha-mobile.jpg';
+import bourbonBck from '../assets/backgrounds/bourbon-movil.jpg';
+import keniaBck from '../assets/backgrounds/kenia-movil.jpg';
+import caracolilloBck from '../assets/backgrounds/caracolillo.png';
+import totalRelaxBck from '../assets/backgrounds/relax-movil.jpg';
+import brasilBck from '../assets/backgrounds/brasil.jpg';
+import goldenSunsetBck from '../assets/backgrounds/golden-sunset.jpg'
+import panamaBck from '../assets/backgrounds/panama.jpg';
+import nicaraguaBck from '../assets/backgrounds/nicaragua.png';
+import peruBck from '../assets/backgrounds/peru.png';
+import hawaiBck from '../assets/backgrounds/hawai.png';
+import puertoRicoBck from '../assets/backgrounds/puertorico.jpg';
+import costaRicaBck from '../assets/backgrounds/costarica.png';
 
 const coffeesCatalogue = [
     {
@@ -27,6 +50,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/panama',
         description: '“La joya de las alturas. Un perfume en taza... y el café más elegante del mundo.”',
         tags: ["viajar", "tesoros"],
+        background: panamaBck
     },
     {
         name: "🇳🇮 nicaragua: oro Volcánico",
@@ -34,6 +58,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/nicaragua',
         description: '“Un tesoro en calma, Café con alma suave, raíces profundas y final dorado.”',
         tags: ["viajar"],
+        background: nicaraguaBck
 
     },
     {
@@ -42,6 +67,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/peru',
         description: '“El alma de los Andes en una taza”',
         tags: ["viajar"],
+        background: peruBck
     },
     {
         name: "hawái:kona élite",
@@ -49,6 +75,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/hawai',
         description: '“Lujo volcánico entre olas y flores. Un viaje sensorial al paraíso”',
         tags: ["viajar"],
+        background: hawaiBck
     },
     {
         name: "🇵🇷 puerto rico: reserva del caribe",
@@ -56,6 +83,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/puertorico',
         description: '“Café con corazón isleño. Un clásico caribeño ”',
         tags: ["viajar"],
+        background:puertoRicoBck
     },
     {
         name: "🇨🇷 costa rica: valle central",
@@ -63,6 +91,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/costarica',
         description: '“Donde la pureza se transforma en sabor”',
         tags: ["viajar"],
+        background:costaRicaBck
 
     },
 
@@ -72,6 +101,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/brasil',
         description: '"Sabor que conquista el mundo"',
         tags: ["viajar"],
+        background:brasilBck
 
     },
     {
@@ -80,6 +110,7 @@ const coffeesCatalogue = [
         image: goldenSunset,
         url: "/nuestroscafes/goldensunset",
         tags: ["tesoros", "exclusive", "descafeinado"],
+        background:goldenSunsetBck
     },
     {
         name: "Coffee Power Total Relax",
@@ -87,6 +118,7 @@ const coffeesCatalogue = [
         image: totalRelax,
         url: "/nuestroscafes/totalrelax",
         tags: ["power-selection", "exclusive", "descafeinado", "tesoros"],
+        background:totalRelaxBck
 
     },
     {
@@ -95,6 +127,7 @@ const coffeesCatalogue = [
         image: serenidadIcon,
         url: "/nuestroscafes/serenidad",
         tags: ["descafeinado", "mas-vendido", "colombia", "ecologico"],
+        background:serenidadBck
     },
     {
         name: "🇨🇴 Coffee Power Supremo",
@@ -102,6 +135,7 @@ const coffeesCatalogue = [
         image: supremoIcon,
         url: "/nuestroscafes/supremo",
         tags: ["mas-vendido", "colombia"],
+        background:supremoBck
     },
     {
         name: "🇨🇴 Coffee Power AMUCC",
@@ -109,13 +143,15 @@ const coffeesCatalogue = [
         image: amuccIcon,
         url: "/nuestroscafes/amucc",
         tags: ["ecologico", "colombia", "power-selection"],
+        background:amuccBck
     },
     {
         name: "🇲🇽 Coffee Power Relax",
         image: relaxIcon,
         url: '/nuestroscafes/relax',
         description: '"Swiss Water Descafeinado México"',
-        tags: ["descafeinado", "mas-vendido", "favoritos-chef","power-selection"],
+        tags: ["descafeinado", "mas-vendido", "favoritos-chef", "power-selection"],
+        background:relaxBck
 
     },
     {
@@ -124,6 +160,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/esenciavictoria',
         description: '"🌺 Un tributo al amor, a lo dulce… y a lo verdaderamente inolvidable."',
         tags: ["mas-vendido", "favoritos-chef", "colombia", "exclusive"],
+        background:victoriaBck
 
     },
     {
@@ -132,6 +169,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/elbendecido',
         description: '"🇩🇴 La vibra de una tierra sagrada, el sabor de un pueblo lleno de AMOR."',
         tags: ["mas-vendido", "viajar"],
+        background:bendecidoBck
 
     },
     {
@@ -140,6 +178,7 @@ const coffeesCatalogue = [
         url: '/nuestroscafes/elorigen',
         description: '"🌍 Donde todo comenzó. Donde aún se siente la magia."',
         tags: ["mas-vendido", "favoritos-chef", "viajar"],
+        background:origenBck
 
     },
     {
@@ -147,14 +186,16 @@ const coffeesCatalogue = [
         description: '"Descafeinado 100% natural Swiss Water"',
         image: nightIcon,
         url: '/nuestroscafes/noche',
-        tags: []
+        tags: [`descafeinado`],
+        background:nocheBck
     },
     {
         name: "🇰🇪 SL28 Kenia Premium ",
         description: '"El fuego brillante de África"',
         image: keniaIcon,
         url: "/nuestroscafes/kenia",
-        tags: ["favoritos-chef"]
+        tags: ["favoritos-chef"],
+        background:keniaBck
     },
     {
         name: "🇨🇴 Coffee Power Geisha",
@@ -162,6 +203,7 @@ const coffeesCatalogue = [
         image: geishaIcon,
         url: "/nuestroscafes/geisha",
         tags: ["mas-vendido", "favoritos-chef", "power-selection", "colombia"],
+        background:geishaBck
 
     },
     {
@@ -170,6 +212,7 @@ const coffeesCatalogue = [
         image: bourbonIcon,
         url: "/nuestroscafes/bourbon",
         tags: ["mas-vendido", "favoritos-chef", "power-selection", "tesoros", "colombia", "ecologico"],
+        background:bourbonBck
 
     },
     {
@@ -178,6 +221,7 @@ const coffeesCatalogue = [
         image: caracolilloIcon,
         url: "/nuestroscafes/caracolillo",
         tags: ["mas-vendido", "viajar"],
+        background:caracolilloBck
     },
 
 ];
@@ -185,7 +229,7 @@ const coffeesCatalogue = [
 const coffeeCategories = [
     {
         key: "mas-vendido",
-        name: "⭐ Más Vendidos",
+        name: "Los Más Vendidos",
         legend: '"No se agotan por casualidad. ¡Descubre por que todos los eligen!"',
     },
     {
@@ -216,7 +260,7 @@ const coffeeCategories = [
     {
         key: "colombia",
         name: "🇨🇴 Esencia de Colombia",
-        legend:  '"Sabor auténtico desde el corazón cafetero del mundo."',
+        legend: '"Sabor auténtico desde el corazón cafetero del mundo."',
     },
     {
         key: "favoritos-chef",

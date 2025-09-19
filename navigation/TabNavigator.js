@@ -23,7 +23,7 @@ const Tabs = () => {
                 headerShown: false,
                 tabBarStyle: {
                     position: 'absolute',
-                    backgroundColor: 'rgba(0,0,0,0.6)', // 👈 semi-transparente
+                    backgroundColor: 'rgba(0, 0, 0, 1)', // 👈 semi-transparente
                     height: 90,
                     borderTopWidth: 0,
                     elevation: 0,
