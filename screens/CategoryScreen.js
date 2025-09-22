@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   card: { flex: 1, alignItems: 'center', flexDirection:'row', justifyContent:'space-between' },
   image: { width: 80, height: 122, resizeMode: "cover", marginBottom: 10,marginTop:20 },
   cardTitle: { 
-    fontSize: 20, fontWeight: "bold", color: "#ffffffff", textAlign: 'center', fontFamily: 'Jost_600SemiBold', textTransform:'capitalize' },
+    fontSize: 18, fontWeight: "bold", color: "#ffffffff", textAlign: 'center', fontFamily: 'Jost_600SemiBold', textTransform:'capitalize' },
   cardDesc: { fontSize: 14, color: "#ffffffff", textAlign: 'center', fontFamily: 'Jost_400Regular', margin: 10,  },
   flatList:{
     marginBottom:80
