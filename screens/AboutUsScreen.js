@@ -1,6 +1,10 @@
 import { View, Text, StyleSheet, Image, ScrollView, Dimensions, ImageBackground } from "react-native";
 
 import aboutUsImgMovil from "../assets/images/aboutus-movil.jpg";
+import ContactScreen from "./ContactScreen";
+import HomeScreen from "./HomeScreen";
+import VideoBanner from "./HomeScreen";
+import VideoPlayer from "../components/VideoPlayer";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -8,6 +12,7 @@ const AboutUsScreen = () => {
     return (
 
         <ScrollView contentContainerStyle={styles.block}>
+            <VideoPlayer/>
             <View style={styles.container}>
                 <ImageBackground resizeMode="cover" source={aboutUsImgMovil} style={styles.image}>
                     <Text style={styles.section}>
@@ -47,7 +52,7 @@ const AboutUsScreen = () => {
                     pronto descubrirás.
                 </Text>
             </View>
-
+           <ContactScreen/>
 
 
         </ScrollView>

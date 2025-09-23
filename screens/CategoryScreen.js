@@ -25,22 +25,23 @@ export default function CategoryScreen({ route }) {
       style={styles.bg}
     >
       <View style={styles.overlay}>
-        <Text style={styles.title}>{category.name}</Text>
         <Text style={styles.legend}>{category.legend}</Text>
-
         <FlatList
           data={coffees}
           style={styles.flatList}
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => (
-            <TouchableOpacity 
-            style={styles.card}
-            onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}>
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}>
               <View style={styles.cardInfo}>
                 <Text style={styles.cardTitle}>{item.name}</Text>
                 <Text style={styles.cardDesc}>{item.description}</Text>
               </View>
-              <Image source={item.image} style={styles.image} />
+              <View style={styles.imageContainer}>
+                <Image source={item.image} style={styles.image} />
+              </View>
+
             </TouchableOpacity>
           )}
         />
@@ -54,20 +55,37 @@ const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", padding: 20 },
   title: { fontSize: 28, fontWeight: "bold", color: "#fff", marginBottom: 10, textAlign: 'center', fontFamily: 'Jost_600SemiBold' },
   legend: { fontSize: 16, color: "#ccc", textAlign: "center", marginBottom: 20, fontFamily: 'Jost_400Regular' },
-  card: { flex: 1, alignItems: 'center', flexDirection:'row', justifyContent:'space-between' },
-  image: { width: 80, height: 122, resizeMode: "cover", marginBottom: 10,marginTop:20 },
-  cardTitle: { 
-    fontSize: 18, fontWeight: "bold", color: "#ffffffff", textAlign: 'center', fontFamily: 'Jost_600SemiBold', textTransform:'capitalize' },
-  cardDesc: { fontSize: 14, color: "#ffffffff", textAlign: 'center', fontFamily: 'Jost_400Regular', margin: 10,  },
-  flatList:{
-    marginBottom:80
+  card: { flex: 1, alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  imageContainer: {
+    width: 108,        // más grande que antes
+    height: 108,       // debe ser igual para que sea un círculo
+    borderRadius: 54,  // la mitad del tamaño
+    overflow: "hidden", // 🔑 recorta la imagen dentro del círculo
+    backgroundColor: "#333", // opcional, por si quieres un borde de color
+    margin: 10,
+    alignItems: "center",
+    justifyContent: "center"
   },
-  cardInfo:{
-    width: '80%',
+  image: {
+    width:'142%',
+    resizeMode: "contain",
+    transform: [{ translateX: -7 }, {translateY: 20 }]
+  },
+  cardTitle: {
+    fontSize: 14, fontWeight: "bold", color: "#ffffffff", textAlign: 'center', fontFamily: 'Jost_600SemiBold', textTransform: 'capitalize'
+  },
+  cardDesc: { fontSize: 12, color: "#ffffffff", textAlign: 'center', fontFamily: 'Jost_400Regular', marginBottom: 4, marginTop: 4  },
+  flatList: {
+    margin: 0,
+    height: '100%',
+    textAlign:'justify'
+  },
+  cardInfo: {
+    width: '66%',
     backgroundColor: '#5f5f5f71',
-    padding: 10,
-    alignItems:'center',
-    borderTopLeftRadius:10,
-    borderBottomLeftRadius: 10
+    padding: 8,
+    alignItems: 'center',
+    justifyContent:'center',
+    borderRadius: 10
   }
 });

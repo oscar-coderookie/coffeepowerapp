@@ -43,7 +43,7 @@ const ContactScreen = () => {
         <ImageBackground
             style={styles.container}
             source={bckImage}
-            resizeMode="cover"
+         
         >
             <View style={styles.overlay}>
                 <Text style={styles.text}>Encuéntranos por cualquiera de estos medios:</Text>
@@ -60,9 +60,10 @@ export default ContactScreen;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        width: "100%",
-        height: "100%",
+        width:'100%',
+        resizeMode:'contain',
+        paddingBottom:200,
+        paddingTop: 100
     },
     overlay: {
         flex: 1,

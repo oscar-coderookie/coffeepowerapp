@@ -12,7 +12,6 @@ export default function CoffeeDetailScreen({ route }) {
         resizeMode="cover"
         style={styles.background}>
         <View style={styles.infoContainer}>
-          <Text style={styles.name}>{coffee.name}</Text>
           <Text style={styles.subtitle}>Perfil Sensorial:</Text>
           {coffee.profile && coffee.profile.length > 0 ? (
             coffee.profile.map((item, index) => (

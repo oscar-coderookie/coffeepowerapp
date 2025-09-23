@@ -14,6 +14,7 @@ import {
   Jost_100Thin_Italic,
   useFonts
 } from '@expo-google-fonts/jost'
+import DrawerNavigator from './navigation/DrawerNavigator';
 
 const MyTheme = {
   ...DefaultTheme,
@@ -44,7 +45,8 @@ export default function App() {
 
   return (
     <NavigationContainer theme={MyTheme} >
-      <RootNavigator  />
+    
+      <DrawerNavigator/>
     </NavigationContainer>
   );
 }

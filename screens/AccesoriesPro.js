@@ -13,7 +13,10 @@ const AccesoriesPro = () => {
     return (
         <ImageBackground source={BckImage} style={styles.block}>
             <Text style={styles.text}>
-            Próximamente....
+                Accesorios Pro
+            </Text>
+            <Text style={styles.legend}>
+                Próximamente....
             </Text>
         </ImageBackground>
     )
@@ -25,13 +28,20 @@ const styles = StyleSheet.create({
     block: {
         flex: 1,
         resizeMode: 'cover',
-        justifyContent:'center'
+        justifyContent: 'center'
     },
     text: {
         color: 'white',
         fontSize: 38,
         lineHeight: 84,
         fontFamily: 'Jost_600SemiBold',
+        textAlign: 'center',
+        backgroundColor: '#00000071',
+    },
+    legend: {
+         color: 'white',
+        fontSize: 28,
+        fontFamily: 'Jost_400Regular',
         textAlign: 'center',
         backgroundColor: '#00000071',
     }
