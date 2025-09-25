@@ -39,17 +39,11 @@ export default function CoffeesStack() {
         component={CoffeeDetailScreen}
         options={{
           headerShown: false,
+          presentation:"modal"
         }}
       />
 
       {/* Otra pantalla */}
-      <Stack.Screen
-        name="Shop"
-        component={AccesoriesPro}
-        options={{
-          headerShown: false,
-        }}
-      />
     </Stack.Navigator>
   );
 }

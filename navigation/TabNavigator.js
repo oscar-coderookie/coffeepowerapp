@@ -1,13 +1,10 @@
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import icon1 from '../assets/icons/menu-1.png';
-import icon2 from '../assets/icons/menu-2.png';
-import icon3 from '../assets/icons/menu-3.png';
-import icon4 from '../assets/icons/menu-4.png';
-import AboutUsScreen from '../screens/AboutUsScreen';
-import { Image, StyleSheet} from 'react-native';
-import AccesoriesPro from '../screens/AccesoriesPro';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Image, StyleSheet } from 'react-native';
 import CoffeesStack from './CoffeesStack';
+import {  MaterialCommunityIcons } from '@expo/vector-icons';
+import CarShop from '../screens/ShopCart';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,56 +12,31 @@ const Tabs = () => {
     return (
         <Tab.Navigator
 
-            screenOptions={{
+
+            screenOptions={({ route }) => ({
+                tabBarInactiveBackgroundColor: '#000000ff',
+                   tabBarActiveTintColor: '#a88e19ff',
                 headerShown: false,
-                tabBarStyle: {
-                    backgroundColor: 'rgba(5, 5, 5, 1)', // 👈 semi-transparente
-                    height: 80,
-                    borderTopWidth: 0,
-                    elevation: 0,
-                },
-                tabBarActiveTintColor: "#9c9256ff",
-                tabBarInactiveTintColor: "#fff",
-                tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_400Regular' },
-                tabBarIconStyle: { marginTop: 6 },
-                headerStyle: { backgroundColor: "#111111ff" },
-                headerTintColor: "#fff", // color de la flecha y texto
-                headerTitleStyle: { fontFamily: "Jost_600SemiBold" }
-            }}
+                tabBarInactiveTintColor: '#ffffffff',
+                tabBarStyle:{borderTopWidth: 0, height: 90},
+                               tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
+
+                tabBarActiveBackgroundColor:'#000000ff',
+                tabBarIcon: ({ color, focused, size }) => {
+                    let iconName;
+                    if (route.name === 'Catálogo') {
+                        iconName = focused ? 'coffee' : 'coffee-outline';
+                    } else if (route.name === 'Carrito') {
+                        iconName = focused ? 'shopping' : 'shopping-outline'
+                    }
+                    return <MaterialCommunityIcons name={iconName} color={color} size={size} />
+                }
+            })}
 
         >
-            
-    
-            <Tab.Screen
-                name="Nuestros Cafés"
-                component={CoffeesStack}
-                options={{
-                    tabBarIcon: () => (
-                        <Image
-                            source={icon1}
-                            style={{
-                                width: 40,
-                                height: 40,
+            <Tab.Screen name="Catálogo" component={CoffeesStack} />
+            <Tab.Screen name="Carrito" component={CarShop} />
 
-                            }}
-
-                        />
-                    )
-                }} />
-            <Tab.Screen name="Tienda" component={AccesoriesPro} options={{
-                tabBarIcon: () => (
-                    <Image
-                        source={icon2}
-                        style={{
-                            width: 40,
-                            height: 40,
-
-                        }}
-
-                    />
-                )
-            }} />
-     
         </Tab.Navigator>
     )
 };

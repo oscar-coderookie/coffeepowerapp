@@ -126,6 +126,8 @@ export default PrivateMeeting;
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    flex: 1,
+    justifyContent:'center',
     paddingBottom: 40,
     backgroundColor:'#ffffffff'
   },

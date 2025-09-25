@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.oscarsc90.coffeepowerapp"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -28,6 +29,11 @@
     },
     "plugins": [
       "expo-video"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4a661abb-b28f-4cc0-81c9-ec640ab1f14d"
+      }
+    }
   }
 }

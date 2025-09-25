@@ -15,12 +15,14 @@ import {
 } from '@expo-google-fonts/jost'
 import DrawerNavigator from './navigation/DrawerNavigator';
 import ErrorBoundary from './error/ErrorBoundary';
+import { CartProvider } from './context/CartContext';
 
 const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
     background: "black",
+    color: '#ffffffff',
   },
 };
 
@@ -44,10 +46,15 @@ export default function App() {
   }
 
   return (
+
     <ErrorBoundary>
-       <NavigationContainer theme={MyTheme} ><DrawerNavigator/></NavigationContainer>
+      <CartProvider>
+        <NavigationContainer theme={MyTheme} >
+          <DrawerNavigator />
+        </NavigationContainer>
+      </CartProvider>
     </ErrorBoundary>
-   
+
   );
 }
 

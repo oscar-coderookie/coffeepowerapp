@@ -1,10 +1,11 @@
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import icon1 from '../assets/icons/menu-1.png';
-import icon2 from '../assets/icons/menu-2.png';
-import { Image, StyleSheet} from 'react-native';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Image, StyleSheet } from 'react-native';
 import PrivateMeeting from '../screens/PrivateMeeting'
 import CatasVip from '../screens/CatasVip';
+
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 
@@ -12,56 +13,32 @@ const EventsTabs = () => {
     return (
         <Tab.Navigator
 
-            screenOptions={{
+            screenOptions={({ route }) => ({
+                tabBarInactiveBackgroundColor: '#000000ff',
+                   tabBarActiveTintColor: '#a88e19ff',
                 headerShown: false,
-                tabBarStyle: {
-                    backgroundColor: 'rgba(5, 5, 5, 1)', // 👈 semi-transparente
-                    height: 80,
-                    borderTopWidth: 0,
-                    elevation: 0,
-                },
-                tabBarActiveTintColor: "#9c9256ff",
-                tabBarInactiveTintColor: "#fff",
-                tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_400Regular' },
-                tabBarIconStyle: { marginTop: 6 },
-                headerStyle: { backgroundColor: "#111111ff" },
-                headerTintColor: "#fff", // color de la flecha y texto
-                headerTitleStyle: { fontFamily: "Jost_600SemiBold" }
-            }}
+                tabBarInactiveTintColor: '#ffffffff',
+                tabBarStyle: { borderTopWidth: 0, height: 90 },
+                tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
+
+                tabBarActiveBackgroundColor: '#000000ff',
+                tabBarIcon: ({ color, focused, size }) => {
+                    let iconName;
+                    if (route.name === 'Reunion Privada') {
+                        iconName = focused ? 'account-group' : 'account-group-outline';
+                    } else if (route.name === 'Catas VIP') {
+                        iconName = focused ? 'card-account-details-star' : 'card-account-details-star-outline'
+                    }
+                    return <MaterialCommunityIcons name={iconName} color={color} size={size} />
+                }
+            })}
 
         >
-            
-    
-            <Tab.Screen
-                name="Reunion Privada"
-                component={PrivateMeeting}
-                options={{
-                    tabBarIcon: () => (
-                        <Image
-                            source={icon1}
-                            style={{
-                                width: 40,
-                                height: 40,
 
-                            }}
 
-                        />
-                    )
-                }} />
-            <Tab.Screen name="Catas VIP" component={CatasVip} options={{
-                tabBarIcon: () => (
-                    <Image
-                        source={icon2}
-                        style={{
-                            width: 40,
-                            height: 40,
+            <Tab.Screen name="Reunion Privada" component={PrivateMeeting} />
+            <Tab.Screen name="Catas VIP" component={CatasVip} />
 
-                        }}
-
-                    />
-                )
-            }} />
-     
         </Tab.Navigator>
     )
 };
