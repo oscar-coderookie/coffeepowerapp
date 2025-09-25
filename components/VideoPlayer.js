@@ -16,7 +16,7 @@ export default function VideoPlayer() {
 
     return (
         <View style={styles.contentContainer}>
-            <VideoView resizeMo nativeControls={false} style={styles.video} player={player} allowsPictureInPicture />
+            <VideoView nativeControls={false} style={styles.video} player={player} allowsPictureInPicture />
         </View>
     );
 }

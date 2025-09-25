@@ -1,39 +1,54 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import OurCoffees from '../screens/OurCoffees';
-import CategoryScreen from '../screens/CategoryScreen'; // la pantalla detalle genérica
+import CategoryScreen from '../screens/CategoryScreen';
 import CoffeeDetailScreen from '../screens/CoffeeDetailScreen';
+import AccesoriesPro from '../screens/AccesoriesPro';
+import CustomHeader from '../components/CustomHeader';
 import MarqueeTitle from '../components/AnimatedTitle';
 
 const Stack = createNativeStackNavigator();
 
 export default function CoffeesStack() {
   return (
-    <Stack.Navigator screenOptions={{
-      headerStyle: { backgroundColor: "#111", height: 100 },
-      headerTintColor: "#fff", // color de la flecha y texto
-      headerTitleStyle: { fontFamily: "Jost_600SemiBold", fontSize: 18 },
-      headerBackTitle: 'Atrás',
-      headerBackTitleStyle: { fontFamily: "Jost_600SemiBold", textTransform: 'uppercase' },
-    }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false, // ocultamos el header nativo del stack
+      }}
+    >
+      {/* Pantalla principal */}
+      <Stack.Screen
+        name="Productos"
+        component={OurCoffees}
+        options={{
+          headerShown: false,
+        }}
+      />
 
-      <Stack.Screen name="SELECCIONES" component={OurCoffees} />
+      {/* Categoría dinámica */}
       <Stack.Screen
         name="Category"
         component={CategoryScreen}
-        options={({ route }) => ({
-          title: route.params?.category?.name.toUpperCase(),
-        })}
+        options={{
+          headerShown: false,
+        }}
       />
 
-
+      {/* Detalle del café con título animado */}
       <Stack.Screen
         name="CoffeeDetail"
         component={CoffeeDetailScreen}
-        options={({ route }) => ({
-          headerTitle: () => (
-            <MarqueeTitle gap={20} title={route.params?.coffee?.name.toUpperCase()} />
-          ),
-        })}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      {/* Otra pantalla */}
+      <Stack.Screen
+        name="Shop"
+        component={AccesoriesPro}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );

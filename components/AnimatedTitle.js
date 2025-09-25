@@ -49,17 +49,20 @@ const MarqueeTitle = ({ title, gap = 40 }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: 24,        // 🔑 fijo y pequeño, no ocupa todo el header
     overflow: "hidden",
+    width: '90%',
+    justifyContent: "center",
   },
   row: {
     flexDirection: "row",
+    alignItems: "center",
   },
   text: {
     fontSize: 18,
     fontWeight: "bold",
     color: "white",
-    textAlign:'center'
+    textAlign: "center",
   },
 });
 

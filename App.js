@@ -1,6 +1,5 @@
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
-import RootNavigator from './navigation/RootNavigator';
 import {
   Jost_100Thin,
   Jost_200ExtraLight,
@@ -15,6 +14,7 @@ import {
   useFonts
 } from '@expo-google-fonts/jost'
 import DrawerNavigator from './navigation/DrawerNavigator';
+import ErrorBoundary from './error/ErrorBoundary';
 
 const MyTheme = {
   ...DefaultTheme,
@@ -44,10 +44,10 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer theme={MyTheme} >
-    
-      <DrawerNavigator/>
-    </NavigationContainer>
+    <ErrorBoundary>
+       <NavigationContainer theme={MyTheme} ><DrawerNavigator/></NavigationContainer>
+    </ErrorBoundary>
+   
   );
 }
 

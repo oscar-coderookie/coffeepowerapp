@@ -1,9 +1,5 @@
 import { View, Text, StyleSheet, Image, ScrollView, Dimensions, ImageBackground } from "react-native";
-
 import aboutUsImgMovil from "../assets/images/aboutus-movil.jpg";
-import ContactScreen from "./ContactScreen";
-import HomeScreen from "./HomeScreen";
-import VideoBanner from "./HomeScreen";
 import VideoPlayer from "../components/VideoPlayer";
 
 const screenHeight = Dimensions.get("window").height;
@@ -52,9 +48,6 @@ const AboutUsScreen = () => {
                     pronto descubrirás.
                 </Text>
             </View>
-           <ContactScreen/>
-
-
         </ScrollView>
 
     );

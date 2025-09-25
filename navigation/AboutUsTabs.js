@@ -2,16 +2,13 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import icon1 from '../assets/icons/menu-1.png';
 import icon2 from '../assets/icons/menu-2.png';
-import icon3 from '../assets/icons/menu-3.png';
-import icon4 from '../assets/icons/menu-4.png';
 import AboutUsScreen from '../screens/AboutUsScreen';
 import { Image, StyleSheet} from 'react-native';
-import AccesoriesPro from '../screens/AccesoriesPro';
-import CoffeesStack from './CoffeesStack';
+import ContactScreen from '../screens/ContactScreen';
 
 const Tab = createBottomTabNavigator();
 
-const Tabs = () => {
+const AboutUsTabs = () => {
     return (
         <Tab.Navigator
 
@@ -36,8 +33,8 @@ const Tabs = () => {
             
     
             <Tab.Screen
-                name="Nuestros Cafés"
-                component={CoffeesStack}
+                name="Bio"
+                component={AboutUsScreen}
                 options={{
                     tabBarIcon: () => (
                         <Image
@@ -51,7 +48,7 @@ const Tabs = () => {
                         />
                     )
                 }} />
-            <Tab.Screen name="Tienda" component={AccesoriesPro} options={{
+            <Tab.Screen name="Contacto" component={ContactScreen} options={{
                 tabBarIcon: () => (
                     <Image
                         source={icon2}
@@ -69,7 +66,7 @@ const Tabs = () => {
     )
 };
 
-export default Tabs;
+export default AboutUsTabs;
 
 const styles = StyleSheet.create({
     sections: {
@@ -79,5 +76,3 @@ const styles = StyleSheet.create({
 
     }
 });
-
-
