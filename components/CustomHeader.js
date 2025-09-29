@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export default function Header({ title, children }) {
+export default function CustomHeader({ title, children }) {
   const navigation = useNavigation();
 
   return (
@@ -40,7 +40,8 @@ const styles = StyleSheet.create({
   title: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
+    textTransform:'uppercase',
     textAlign: "center",
+    fontFamily:'Jost_700Bold'
   },
 });

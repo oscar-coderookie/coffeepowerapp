@@ -9,9 +9,8 @@ import {
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
 import emailjs from "@emailjs/browser";
-import PhoneInput from "react-native-phone-number-input";
+
 
 const PrivateMeeting = () => {
   const navigation = useNavigation();
@@ -59,7 +58,7 @@ const PrivateMeeting = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Reunión privada:</Text>
+      {/* <Text style={styles.title}>Reunión privada:</Text>
       <Text style={styles.text}>
         Introduce tus datos en el siguiente formulario para poder atender tu
         solicitud por favor:
@@ -116,7 +115,7 @@ const PrivateMeeting = () => {
 
       <TouchableOpacity style={styles.button} onPress={enviarFormulario}>
         <Text style={styles.buttonText}>Enviar</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 };

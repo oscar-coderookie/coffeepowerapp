@@ -16,7 +16,7 @@ const AboutUsTabs = () => {
                 tabBarActiveTintColor: '#a88e19ff',
                 headerShown: false,
                 tabBarInactiveTintColor: '#ffffffff',
-                tabBarStyle:{borderTopWidth: 0, height: 90},
+                tabBarStyle:{borderTopWidth: 0, height: 90, backgroundColor: '#000000ff'},
                                tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
 
                 tabBarActiveBackgroundColor:'#000000ff',

@@ -1,10 +1,9 @@
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import CoffeesStack from './CoffeesStack';
 import {  MaterialCommunityIcons } from '@expo/vector-icons';
-import CarShop from '../screens/ShopCart';
+import CartStack from './CartStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,7 +17,7 @@ const Tabs = () => {
                    tabBarActiveTintColor: '#a88e19ff',
                 headerShown: false,
                 tabBarInactiveTintColor: '#ffffffff',
-                tabBarStyle:{borderTopWidth: 0, height: 90},
+                tabBarStyle:{borderTopWidth: 0, height: 90, backgroundColor: '#000000ff'},
                                tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
 
                 tabBarActiveBackgroundColor:'#000000ff',
@@ -35,7 +34,7 @@ const Tabs = () => {
 
         >
             <Tab.Screen name="Catálogo" component={CoffeesStack} />
-            <Tab.Screen name="Carrito" component={CarShop} />
+            <Tab.Screen name="Carrito" component={CartStack} />
 
         </Tab.Navigator>
     )
