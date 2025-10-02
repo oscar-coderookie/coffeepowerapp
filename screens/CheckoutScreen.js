@@ -2,16 +2,16 @@
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 import CustomHeader from "../components/CustomHeader";
-import CountryPicker from "react-native-country-picker-modal";
+import { useTheme } from "@react-navigation/native";
 
 export default function CheckoutScreen({ navigation }) {
+  const { colors } = useTheme();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [details, setDetails] = useState("");
   const [email, setEmail] = useState("");
-  const [countryCode, setCountryCode] = useState("CO");
-  const [country, setCountry] = useState(null);
+
 
   const handlePayout = () => {
     navigation.navigate('Payout')
@@ -31,65 +31,108 @@ export default function CheckoutScreen({ navigation }) {
         onBack={() => navigation.goBack()}
       />
       <View style={styles.form}>
-        <Text style={styles.text}>Introduce los datos para tu pedido:</Text>
+        <Text style={{
+          fontSize: 16,
+          marginBottom: 20,
+          color: colors.text,
+          fontFamily: 'Jost_400Regular',
+        }}>Introduce los datos para tu pedido:</Text>
         <TextInput
-          style={styles.input}
+          style={{
+            backgroundColor: colors.input,
+            padding: 15,
+            borderRadius: 10,
+            color: colors.text,
+            fontSize: 16,
+            borderWidth: 1,
+            borderColor: colors.input,
+            marginTop: 10,
+            marginBottom: 10,
+                 fontFamily: 'Jost_400Regular'
+          }}
           placeholder="Nombre completo"
           value={name}
-          placeholderTextColor="#aaa"
+          placeholderTextColor={colors.text}
           onChangeText={setName}
         />
 
         <TextInput
-          style={styles.input}
+          style={{
+            backgroundColor: colors.input,
+            padding: 15,
+            borderRadius: 10,
+            color: colors.text,
+            fontSize: 16,
+            borderWidth: 1,
+            borderColor: colors.input,
+            marginTop: 10,
+            marginBottom: 10,
+                 fontFamily: 'Jost_400Regular'
+          }}
           placeholder="Dirección de entrega"
           value={address}
-          placeholderTextColor="#aaa"
+          placeholderTextColor={colors.text}
           onChangeText={setAddress}
         />
 
         <TextInput
-          style={styles.input}
+          style={{
+            backgroundColor: colors.input,
+            padding: 15,
+            borderRadius: 10,
+            color: colors.text,
+            fontSize: 16,
+            borderWidth: 1,
+            borderColor: colors.input,
+            marginTop: 10,
+            marginBottom: 10,
+                 fontFamily: 'Jost_400Regular'
+          }}
           placeholder="Detalles adicionales (Apto, piso, referencias...)"
-          placeholderTextColor="#aaa"
+          placeholderTextColor={colors.text}
           value={details}
           onChangeText={setDetails}
         />
 
         <TextInput
-          style={styles.input}
+          style={{
+            backgroundColor: colors.input,
+            padding: 15,
+            borderRadius: 10,
+            color: colors.text,
+            fontSize: 16,
+            borderWidth: 1,
+            borderColor: colors.input,
+            marginTop: 10,
+            marginBottom: 10,
+                 fontFamily: 'Jost_400Regular'
+          }}
           placeholder="Teléfono"
-          placeholderTextColor="#aaa"
+          placeholderTextColor={colors.text}
           keyboardType="phone-pad"
           value={phone}
           onChangeText={setPhone}
         />
 
         <TextInput
-          style={styles.input}
-          placeholderTextColor="#aaa"
+          style={{
+            backgroundColor: colors.input,
+            padding: 15,
+            borderRadius: 10,
+            color: colors.text,
+            fontSize: 16,
+            borderWidth: 1,
+            borderColor: colors.input,
+            marginTop: 10,
+            marginBottom: 10,
+                 fontFamily: 'Jost_400Regular'
+          }}
+          placeholderTextColor={colors.text}
           placeholder="Email"
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
         />
-
-        {/* <CountryPicker
-        withFlag
-        withFilter
-        withCallingCode
-        withCountryNameButton
-        countryCode={countryCode}
-        onSelect={(country) => {
-          setCountryCode(country.cca2);
-          setCountry(country);
-        }}
-      />
-      {country && (
-        <Text style={styles.selected}>
-          {country.name} ({country.callingCode[0]})
-        </Text>
-      )} */}
 
       </View>
       <TouchableOpacity
@@ -106,25 +149,8 @@ export default function CheckoutScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent:'space-between',
-    marginBottom:20,
-  },
-  text: {
-    fontSize: 16,
+    justifyContent: 'space-between',
     marginBottom: 20,
-    color: "#fff",
-    fontFamily: 'Jost_400Regular',
-  },
-  input: {
-    backgroundColor: "#1a1a1a",
-    padding: 15,
-    borderRadius: 10,
-    color: "#fff",
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#333",
-    marginTop: 10,
-    marginBottom: 10
   },
   button: {
     justifyContent: 'center',
@@ -145,5 +171,6 @@ const styles = StyleSheet.create({
   form: {
     paddingTop: 40,
     padding: 20,
+
   }
 });

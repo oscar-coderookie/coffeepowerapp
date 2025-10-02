@@ -4,22 +4,24 @@ import {  MaterialCommunityIcons } from '@expo/vector-icons';
 import AboutUsScreen from '../screens/AboutUsScreen';
 import { Image, StyleSheet } from 'react-native';
 import ContactScreen from '../screens/ContactScreen';
+import { useTheme } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 const AboutUsTabs = () => {
+    const { colors } = useTheme();
     return (
         <Tab.Navigator
 
         screenOptions={({ route }) => ({
-                tabBarInactiveBackgroundColor: '#000000ff',
+                tabBarInactiveBackgroundColor: colors.background,
                 tabBarActiveTintColor: '#a88e19ff',
                 headerShown: false,
-                tabBarInactiveTintColor: '#ffffffff',
-                tabBarStyle:{borderTopWidth: 0, height: 90, backgroundColor: '#000000ff'},
+                tabBarInactiveTintColor:colors.text,
+                tabBarStyle:{borderTopWidth: 0, height: 90, backgroundColor: colors.background},
                                tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
 
-                tabBarActiveBackgroundColor:'#000000ff',
+                tabBarActiveBackgroundColor:colors.background,
                 tabBarIcon: ({ color, focused, size }) => {
                     let iconName;
                     if (route.name === 'Reseña') {

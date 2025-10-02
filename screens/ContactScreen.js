@@ -42,11 +42,12 @@ const ContactScreen = () => {
     return (
         <ImageBackground
             style={styles.container}
-            source={bckImage} 
+            source={bckImage}
+            imageStyle={{ width: '100%' }}
             resizeMode="contain"
         >
             <View style={styles.overlay}>
-                <Text style={styles.text}>Encuéntranos por cualquiera de estos medios:</Text>
+                <Text style={styles.legend}>Encuéntranos por cualquiera de estos medios:</Text>
                 <EmailButton />
                 <InstagramButton />
                 <WppButton />
@@ -60,7 +61,11 @@ export default ContactScreen;
 
 const styles = StyleSheet.create({
     container: {
-        height:'100%',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: "100%",
+        height: "100%",
     },
     overlay: {
         flex: 1,
@@ -72,7 +77,7 @@ const styles = StyleSheet.create({
     text: {
         color: '#ffffffff',
         fontSize: 20,
-        width: '70%',
+        width: '80%',
         fontFamily: 'Jost_600SemiBold',
         textAlign: 'center'
 
@@ -84,5 +89,11 @@ const styles = StyleSheet.create({
     button: {
         flexDirection: 'row',
         alignItems: 'center'
+    },
+    legend: {
+        color: '#fff',
+        fontFamily: 'Jost_400Regular',
+        fontSize: 16,
+        marginBottom: 10
     }
 })

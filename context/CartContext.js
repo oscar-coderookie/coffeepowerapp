@@ -1,10 +1,42 @@
 // context/CartContext.js
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+
+  // 🔹 Cargar carrito al iniciar la app
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        const storedCart = await AsyncStorage.getItem("cart");
+        if (storedCart) {
+          setCartItems(JSON.parse(storedCart));
+        }
+      } catch (error) {
+        console.error("Error al cargar el carrito:", error);
+      }
+    };
+
+    loadCart();
+  }, []);
+
+  // 🔹 Guardar carrito cada vez que cambie
+  useEffect(() => {
+    const saveCart = async () => {
+      try {
+        await AsyncStorage.setItem("cart", JSON.stringify(cartItems));
+      } catch (error) {
+        console.error("Error al guardar el carrito:", error);
+      }
+    };
+
+    if (cartItems.length >= 0) {
+      saveCart();
+    }
+  }, [cartItems]);
 
   const addToCart = (coffee) => {
     if (!coffee || !coffee.id) return;
@@ -31,7 +63,6 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => setCartItems([]);
 
-  // 👇 añadimos estas dos funciones
   const increaseQuantity = (id) => {
     setCartItems((prevCart) =>
       prevCart.map((item) =>

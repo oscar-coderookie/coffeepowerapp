@@ -1,4 +1,4 @@
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import {
   Jost_100Thin,
@@ -12,22 +12,23 @@ import {
   Jost_900Black,
   Jost_100Thin_Italic,
   useFonts
-} from '@expo-google-fonts/jost'
+} from '@expo-google-fonts/jost';
 import DrawerNavigator from './navigation/DrawerNavigator';
 import ErrorBoundary from './error/ErrorBoundary';
 import { CartProvider } from './context/CartContext';
+import { ThemeProvider, useThemeContext } from './context/ThemeContext';
 
-const MyTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: "black",
-    color: '#ffffffff',
-  },
-};
+function MainApp() {
+  const { theme } = useThemeContext();
+
+  return (
+    <NavigationContainer theme={theme}>
+      <DrawerNavigator />
+    </NavigationContainer>
+  );
+}
 
 export default function App() {
-
   let [fontsLoaded] = useFonts({
     Jost_100Thin,
     Jost_200ExtraLight,
@@ -46,25 +47,16 @@ export default function App() {
   }
 
   return (
-
     <ErrorBoundary>
       <CartProvider>
-        <NavigationContainer theme={MyTheme} >
-          <DrawerNavigator />
-        </NavigationContainer>
+        <ThemeProvider>
+          <MainApp />
+        </ThemeProvider>
       </CartProvider>
     </ErrorBoundary>
-
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject, // ocupa todo el espacio sobre el fondo
-  },
+  container: { flex: 1 },
 });
-
-

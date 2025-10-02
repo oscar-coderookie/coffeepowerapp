@@ -2,13 +2,14 @@ import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { AddEraseBtn } from "../components/AddEraseBtn";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 
 export default function ShopCart() {
+  const { colors } = useTheme();
   const { cartItems, removeFromCart } = useContext(CartContext);
   const navigation = useNavigation(); // 👈 instancia de navegación
 
-   const handleCheckout = () => {
+  const handleCheckout = () => {
     if (!cartItems || cartItems.length === 0) {
       Alert.alert("Carrito vacío", "Agrega productos antes de continuar 🚀");
       return;
@@ -39,7 +40,17 @@ export default function ShopCart() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Resumen de tu Compra:</Text>
+      <Text style={{
+        color: colors.text,
+        backgroundColor: colors.background,
+        textTransform: 'uppercase',
+        fontFamily: 'Jost_600SemiBold',
+        fontSize: 24,
+        textAlign: 'center',
+        marginBottom: 20,
+        paddingTop: 20,
+        paddingBottom: 20,
+      }}>Resumen de tu Compra:</Text>
       {cartItems.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Tu carrito está vacío ☕</Text>
@@ -56,11 +67,26 @@ export default function ShopCart() {
       {cartItems.length > 0 && (
 
         <TouchableOpacity
-          style={styles.nextBtn}
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: colors.text,
+            padding: 20,
+            borderRadius: 10,
+            marginBottom: 20,
+            margin: 10
+          }}
           onPress={handleCheckout}
         >
-          <Text style={styles.label}>☕ iniciar pedido ☕</Text>
-        
+          <Text style={{
+            color: colors.background,
+            textTransform: 'uppercase',
+            fontFamily: 'Jost_600SemiBold',
+            fontSize: 18,
+            textAlign: 'center',
+
+          }}>☕ iniciar pedido ☕</Text>
+
         </TouchableOpacity>
       )}
     </View>
@@ -119,17 +145,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
   },
-  title: {
-    color: '#ffff',
-    backgroundColor: '#1a1a1aff',
-    textTransform: 'uppercase',
-    fontFamily: 'Jost_600SemiBold',
-    fontSize: 24,
-    textAlign: 'center',
-    marginBottom: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
   nextBtn: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -138,15 +153,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     margin: 10
-  },
-  label: {
-    color: '#fff',
-    color: '#ffff',
-    textTransform: 'uppercase',
-    fontFamily: 'Jost_600SemiBold',
-    fontSize: 18,
-    textAlign: 'center',
-
   },
   infoContainer: {
     justifyContent: 'center',

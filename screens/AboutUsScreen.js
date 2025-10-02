@@ -1,14 +1,18 @@
 import { View, Text, StyleSheet, Image, ScrollView, Dimensions, ImageBackground } from "react-native";
 import aboutUsImgMovil from "../assets/images/aboutus-movil.jpg";
 import VideoPlayer from "../components/VideoPlayer";
+import { useTheme } from "@react-navigation/native";
 
 const screenHeight = Dimensions.get("window").height;
 
 const AboutUsScreen = () => {
+    const { colors } = useTheme();
     return (
 
-        <ScrollView contentContainerStyle={styles.block}>
-            <VideoPlayer/>
+        <ScrollView contentContainerStyle={{
+            backgroundColor: '#000000ff'
+        }}>
+            <VideoPlayer />
             <View style={styles.container}>
                 <ImageBackground resizeMode="cover" source={aboutUsImgMovil} style={styles.image}>
                     <Text style={styles.section}>
@@ -56,9 +60,6 @@ const AboutUsScreen = () => {
 export default AboutUsScreen;
 
 const styles = StyleSheet.create({
-    block: {
-        backgroundColor: '#000000'
-    },
     title: {
         fontSize: 24,
         fontWeight: "bold",
@@ -71,7 +72,6 @@ const styles = StyleSheet.create({
 
     },
     bio: {
-        flex: 1,
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
