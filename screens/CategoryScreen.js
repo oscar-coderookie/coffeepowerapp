@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Dimensions } from "react-native";
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  FlatList, 
+  Image, 
+  TouchableOpacity, 
+  Dimensions 
+} from "react-native";
 import { getCoffeesByTag } from '../data/CoffeesData';
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
@@ -10,7 +18,7 @@ export default function CategoryScreen({ route }) {
   const { category } = route.params;
   const navigation = useNavigation();
 
-  // Aquí usamos category.key para filtrar los cafés
+  // 🔹 Filtramos cafés según la categoría
   const coffees = getCoffeesByTag(category.key);
 
   return (
@@ -26,19 +34,23 @@ export default function CategoryScreen({ route }) {
       end={{ x: 0.5, y: 0 }}
       style={styles.bg}
     >
-      {/* 🔥 Header dinámico */}
+      {/* 🔹 Header dinámico */}
       <CustomHeader 
         title={category.name} 
+        showBack={true}
         onBack={() => navigation.goBack()} 
       />
 
       <View style={styles.overlay}>
-        <Text style={styles.legend}>{category.legend}</Text>
+        {category.legend && (
+          <Text style={styles.legend}>{category.legend}</Text>
+        )}
 
         <FlatList
           data={coffees}
-          style={styles.flatList}
           keyExtractor={(item) => item.name.toUpperCase()}
+          style={styles.flatList}
+          contentContainerStyle={{ paddingBottom: 100 }}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.card}
@@ -48,8 +60,13 @@ export default function CategoryScreen({ route }) {
                 <Text style={styles.cardTitle}>{item.name}</Text>
                 <Text style={styles.cardDesc}>{item.description}</Text>
               </View>
+
               <View style={styles.imageContainer}>
-                <Image source={item.image} style={styles.image} />
+                <Image
+                  resizeMode="contain"
+                  source={{ uri: item.image }}
+                  style={styles.image}
+                />
               </View>
             </TouchableOpacity>
           )}
@@ -69,55 +86,50 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: 'Jost_400Regular'
   },
+  flatList: {
+    flexGrow: 1,
+  },
   card: {
-    flex: 1,
-    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10
+    alignItems: 'center',
+    marginBottom: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    padding: 10,
+  },
+  cardInfo: {
+    width: '65%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  cardTitle: {
+    fontSize: 16,
+    color: "#fff",
+    fontFamily: 'Jost_600SemiBold',
+    textTransform: 'capitalize',
+    textAlign: 'center'
+  },
+  cardDesc: {
+    fontSize: 12,
+    color: "#ccc",
+    textAlign: 'center',
+    fontFamily: 'Jost_400Regular',
+    marginTop: 4
   },
   imageContainer: {
     width: 108,
     height: 108,
     borderRadius: 54,
     overflow: "hidden",
-    backgroundColor: "#333",
-    margin: 10,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginLeft: 8
   },
   image: {
-    width: '142%',
-    resizeMode: "contain",
-    transform: [{ translateX: -7 }, { translateY: 20 }]
+    width: "200%",
+    height: "200%",
+    transform:[{translateX: -4}, {translateY: 10}]
   },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: 'center',
-    fontFamily: 'Jost_600SemiBold',
-    textTransform: 'capitalize'
-  },
-  cardDesc: {
-    fontSize: 12,
-    color: "#fff",
-    textAlign: 'center',
-    fontFamily: 'Jost_400Regular',
-    marginBottom: 4,
-    marginTop: 4
-  },
-  flatList: {
-    margin: 0,
-    height: '100%',
-    textAlign: 'justify'
-  },
-  cardInfo: {
-    width: '66%',
-    backgroundColor: '#5f5f5f71',
-    padding: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10
-  }
 });

@@ -1,57 +1,12 @@
-//imagenes de empaques de cafe:
-import serenidadIcon from '../assets/coffees/serenidad.png';
-import supremoIcon from '../assets/coffees/supremo.png';
-import amuccIcon from '../assets/coffees/AMUCC.png';
-import relaxIcon from '../assets/coffees/relax.png';
-import victoriaIcon from '../assets/coffees/esencia-de-victoria.png';
-import bendecidoIcon from '../assets/coffees/el-bendecido.png';
-import origenIcon from '../assets/coffees/el-origen.png';
-import nightIcon from '../assets/coffees/night-edition.png';
-import geishaIcon from '../assets/coffees/geisha.png';
-import bourbonIcon from '../assets/coffees/bourbon-supremo.png';
-import keniaIcon from '../assets/coffees/kenia-premium.png';
-import caracolilloIcon from '../assets/coffees/caracolillo.png';
-import totalRelax from '../assets/coffees/total-relax.png';
-import brasil from '../assets/coffees/brasil.png';
-import goldenSunset from '../assets/coffees/golden-sunset.png'
-import panama from '../assets/coffees/panama.png';
-import nicaragua from '../assets/coffees/nicaragua.png';
-import peru from '../assets/coffees/peru.png';
-import hawai from '../assets/coffees/hawaii.png';
-import puertoRico from '../assets/coffees/puerto-rico.png';
-import costaRica from '../assets/coffees/costa-rica.png';
-//*imágenes de cada sección para cada café:
-import serenidadBck from '../assets/backgrounds/serenidad1-movil.jpg';
-import supremoBck from '../assets/backgrounds/supremo-pc.jpg';
-import amuccBck from '../assets/backgrounds/amucc-movil.jpg';
-import relaxBck from '../assets/backgrounds/relax2-movi.jpg';
-import victoriaBck from '../assets/backgrounds/esencia-victoria.jpg';
-import bendecidoBck from '../assets/backgrounds/el-bendecido.png';
-import origenBck from '../assets/backgrounds/el-origen.png';
-import nocheBck from '../assets/backgrounds/noche-movil.jpg';
-import geishaBck from '../assets/backgrounds/geisha-mobile.jpg';
-import bourbonBck from '../assets/backgrounds/bourbon-movil.jpg';
-import keniaBck from '../assets/backgrounds/kenia-movil.jpg';
-import caracolilloBck from '../assets/backgrounds/caracolillo.png';
-import totalRelaxBck from '../assets/backgrounds/relax-movil.jpg';
-import brasilBck from '../assets/backgrounds/brasil.jpg';
-import goldenSunsetBck from '../assets/backgrounds/golden-sunset.jpg'
-import panamaBck from '../assets/backgrounds/panama.jpg';
-import nicaraguaBck from '../assets/backgrounds/nicaragua.png';
-import peruBck from '../assets/backgrounds/peru.png';
-import hawaiBck from '../assets/backgrounds/hawai.png';
-import puertoRicoBck from '../assets/backgrounds/puertorico.jpg';
-import costaRicaBck from '../assets/backgrounds/costarica.png';
-
 const coffeesCatalogue = [
     {
         name: "🇵🇦 Panama: Geisha Esmeralda",
         id: 1,
         quantity:1,
-        image: panama,
+        image:  "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fpanama.png?alt=media&token=7f250e29-bd3f-469f-a599-f22a605e7c06",
         description: '“La joya de las alturas. Un perfume en taza... y el café más elegante del mundo.”',
         tags: ["viajar", "tesoros"],
-        background: panamaBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fpanama.jpg?alt=media&token=bb9e7001-cad2-4939-926a-0fa860aa20f8",
         profile: [
             '🌱100% Arábica, variedad Geisha cultivada entre 1.600 y 2.000 msnm en la finca Esmeralda, Boquete - Panamá.',
             'Suelos volcánicos, sombra natural y microclimas constantes en las faldas del Volcán Barú.',
@@ -72,13 +27,13 @@ const coffeesCatalogue = [
     },
     {
         name: "🇳🇮 nicaragua: oro Volcánico",
-        image: nicaragua,
+        image:  "",
         id: 2,
         quantity:1,
         url: '/nuestroscafes/nicaragua',
         description: '“Un tesoro en calma, Café con alma suave, raíces profundas y final dorado.”',
         tags: ["viajar"],
-        background: nicaraguaBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fnicaragua.png?alt=media&token=d46ff73d-bc10-45f1-a036-cced19021812",
         profile: [
             '🌱100% Arábica, mezcla de Caturra y Maragogipe cultivadas entre 1.200 y 1.500 msnm en Nueva Segovia y Matagalpa.',
             'Suelos volcánicos jóvenes, ricos en nutrientes, rodeados de sombra natural y biodiversidad.',
@@ -99,13 +54,13 @@ const coffeesCatalogue = [
     },
     {
         name: "🇵🇪 Perú: andino orgánico ",
-        image: peru,
+        image: "https://storage.googleapis.com/coffee-power-app.appspot.com/coffees/peru.png?GoogleAccessId=firebase-adminsdk-bgoh6%40aroma-king-web.iam.gserviceaccount.com&Expires=1790972866&Signature=0Le0T8B853u3EKPveRr5%2BDuGXwp06MsLNA1E7%2BEjtIGugl7S83LCcC8sY4nR7NUMVtgt2tAnyqnrbJT%2BuEDThDcvMltRXZp7dJ6RQIXZyNYZ4TdWgXf%2BBmHWl2L10JyVRQFjHmhuPh19gN1mOEYTH82UOPD3vLBaeqTeS2ZWGwJcau4bdjv5fD%2BPG3tww4cK2AGmSJRMBEO62SPEa%2BTtCBLGkLc6BV19i6eFqE5OzgTVYFQOBMM89JV7oVXbGPxEreXrm8hb6kCCW2YTP%2B8bQvO%2BbJ61CXzrsUdTSsc4JlwxHxjiBeF2iRy7iH3NyDtF59XoW8MKSeFlJRdrh3MDHg%3D%3D",
         id: 3,
         quantity:1,
         url: '/nuestroscafes/peru',
         description: '“El alma de los Andes en una taza”',
         tags: ["viajar"],
-        background: peruBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fperu.png?alt=media&token=2601f223-3fdf-423e-8d07-a28017477319",
         profile: [
             '🌱 100% Arábica, variedades Bourbon y Typica cultivadas en la región de Cajamarca entre 1.600 y 2.000 msnm.',
             'Suelos ricos en materia orgánica, rodeados de bosques nubosos y biodiversidad sagrada.',
@@ -127,13 +82,13 @@ const coffeesCatalogue = [
     },
     {
         name: "hawái:kona élite",
-        image: hawai,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fhawaii.png?alt=media&token=09a58b8f-d4b2-4990-bc01-8c61f86647cf",
         id: 4,
         quantity:1,
         url: '/nuestroscafes/hawai',
         description: '“Lujo volcánico entre olas y flores. Un viaje sensorial al paraíso”',
         tags: ["viajar"],
-        background: hawaiBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fhawai.png?alt=media&token=70c1bf4d-e507-48ff-a341-03ed9769d65f",
         profile: [
             '🌱100% Arábica, variedad Typica Kona, cultivado en las laderas volcánicas del Mauna Loa entre 600 y 1.000 msnm.',
             'Suelos negros de origen volcánico, microclima tropical con niebla matinal y tardes soleadas que maduran el grano lentamente.',
@@ -154,13 +109,13 @@ const coffeesCatalogue = [
     },
     {
         name: "🇵🇷 puerto rico: reserva del caribe",
-        image: puertoRico,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fpuerto-rico.png?alt=media&token=4b53074f-009d-4885-ad1d-278e03383f57",
         id: 5,
         quantity:1,
         url: '/nuestroscafes/puertorico',
         description: '“Café con corazón isleño. Un clásico caribeño ”',
         tags: ["viajar"],
-        background: puertoRicoBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fpuertorico.jpg?alt=media&token=8e570ba1-2c80-4e0d-a130-7cea1679c3d0",
         profile: [
             '🌱100% Arábica, variedad Bourbon y Typica cultivado entre 700 y 1.200 msnm en las montañas de Adjuntas y Yauco.',
             'Suelos volcánicos y clima tropical húmedo con noches frescas que maduran lentamente el grano.',
@@ -181,13 +136,13 @@ const coffeesCatalogue = [
     },
     {
         name: "🇨🇷 costa rica: valle central",
-        image: costaRica,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fcosta-rica.png?alt=media&token=36f9d933-9aa9-494c-8f2a-e1726610eeae",
         id: 6,
         quantity:1,
         url: '/nuestroscafes/costarica',
         description: '“Donde la pureza se transforma en sabor”',
         tags: ["viajar"],
-        background: costaRicaBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fcostarica.png?alt=media&token=a9497380-2bf5-4067-8ec6-56fb6a9c2356",
         profile: [
             '🌱 100% Arábica, variedad Caturra y Catuai cultivadas entre 1.200 y 1.650 msnm en el Valle Central costarricense.',
             'Suelos volcánicos y clima balanceado con lluvias suaves y brisas frescas.',
@@ -209,13 +164,13 @@ const coffeesCatalogue = [
     },
     {
         name: "🇧🇷 Brasil: cerrado mineiro",
-        image: brasil,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fbrasil.png?alt=media&token=ebc2be34-dcd9-469a-a6c2-6c4e577ae7a4",
         id: 21,
         quantity:1,
         url: '/nuestroscafes/brasil',
         description: '"Sabor que conquista el mundo"',
         tags: ["viajar"],
-        background: brasilBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fbrasil.jpg?alt=media&token=04b35382-8c30-46c3-b17e-8749fe4db85b",
         profile: [
             '🌱100% Arábica, variedades Mundo Novo y Catuai cultivadas en la región del Cerrado Mineiro entre 900 y 1.200 msnm.',
             'Suelos fértiles, clima seco y soleado durante la cosecha, lo que permite una maduración perfecta y un secado natural en patios.',
@@ -238,12 +193,12 @@ const coffeesCatalogue = [
     {
         name: "Golden Sunset: sídamo edition",
         description: '"Cae el sol, sube tu energia. Sin prisas, sin cafeína, solo placer."',
-        image: goldenSunset,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fgolden-sunset.png?alt=media&token=b95fc3d0-94dd-4343-978d-558088bd9fc2",
         id: 7,
         quantity:1,
         url: "/nuestroscafes/goldensunset",
         tags: ["tesoros", "exclusive", "descafeinado"],
-        background: goldenSunsetBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fgolden-sunset.jpg?alt=media&token=3dee2020-81b0-4591-bea8-43ff9e522e6d",
         profile: [
             'Base suave y achocolatada con notas de doble chocolate del Swiss Water colombiano',
             'Toque frutal del Sidamo, cultivado entre plantaciones de cacao y arboles tropicales',
@@ -255,12 +210,12 @@ const coffeesCatalogue = [
     {
         name: "Coffee Power Total Relax",
         description: '"Descansa sin renunciar al placer. Cafe suave para cerrar el dia con calma y alma."',
-        image: totalRelax,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Ftotal-relax.png?alt=media&token=eaf19987-fdad-429a-8a67-119e8e192f2b",
         id: 8,
         quantity:1,
         url: "/nuestroscafes/totalrelax",
         tags: ["power-selection", "exclusive", "descafeinado", "tesoros"],
-        background: totalRelaxBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Frelax-movil.jpg?alt=media&token=888aa04d-1edf-4d8b-bf9f-97e70f0a4894",
         profile: [
             'Base 100% Swiss Water Colombiano descafeinado al 99.9%',
             'Notas achocolatadas con cuerpo sedoso y tostado suave',
@@ -273,12 +228,12 @@ const coffeesCatalogue = [
     {
         name: "🇨🇴 Coffee Power Serenidad",
         description: '“Swiss Water descafeinado Especialidad Colombia”',
-        image: serenidadIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fserenidad.png?alt=media",
         id: 9,
         quantity:1,
         url: "/nuestroscafes/serenidad",
         tags: ["descafeinado", "mas-vendido", "colombia", "ecologico"],
-        background: serenidadBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fserenidad1-movil.jpg?alt=media&token=e0bb5951-bc46-4894-b254-be177e50a002",
         profile: [
             '🌱 100% Arábica — Café de Especialidad',
             'Aroma a chocolate suave que evoca el mejor chocolate suizo del mundo, pero en café.',
@@ -300,10 +255,10 @@ const coffeesCatalogue = [
     {
         name: "🇨🇴 Coffee Power Supremo",
         description: '“La excelencia de nuestro café insignia”',
-        image: supremoIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fsupremo.png?alt=media&token=cde68894-51c4-4f06-a75a-7368a37630f3",
         url: "/nuestroscafes/supremo",
         tags: ["mas-vendido", "colombia"],
-        background: supremoBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fsupremo-pc.jpg?alt=media&token=b4dfbe23-cd33-486d-b93e-3208ad9aaf45",
         id: 10,
         quantity:1,
         profile: [
@@ -327,12 +282,12 @@ const coffeesCatalogue = [
     {
         name: "🇨🇴 Coffee Power AMUCC",
         description: '“El sabor del empoderamiento femenino en el Cauca colombiano”',
-        image: amuccIcon,
+        image:"https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2FAMUCC.png?alt=media",
         id: 11,
         quantity:1,
         url: "/nuestroscafes/amucc",
         tags: ["ecologico", "colombia", "power-selection"],
-        background: amuccBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Famucc-movil.jpg?alt=media&token=b85baa1a-54f0-4af3-8b7e-b522f0d121fb",
         profile: [
             '🌱 100% Arábica — Café de Especialidad',
             'Aroma intenso con notas de frutas dulces, cacao y panela.',
@@ -353,13 +308,13 @@ const coffeesCatalogue = [
     },
     {
         name: "🇲🇽 Coffee Power Relax",
-        image: relaxIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Frelax.png?alt=media&token=f50a6871-14eb-441b-9e0b-80c9a1a8e865",
         id: 12,
         quantity:1,
         url: '/nuestroscafes/relax',
         description: '"Swiss Water Descafeinado México"',
         tags: ["descafeinado", "mas-vendido", "favoritos-chef", "power-selection"],
-        background: relaxBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Frelax2-movi.jpg?alt=media&token=e530888b-22a4-4d0c-b02f-dc9390722e0d",
         profile: [
             '🌱 100% Arábica — Café de Especialidad',
             'Aroma suave con notas de nuez y cacao.',
@@ -380,13 +335,13 @@ const coffeesCatalogue = [
     },
     {
         name: "🇨🇴 Esencia de Victoria",
-        image: victoriaIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fesencia-de-victoria.png?alt=media&token=e49d3236-e22e-473a-86ac-072a70ee91bd",
         id: 13,
         quantity:1,
         url: '/nuestroscafes/esenciavictoria',
         description: '"🌺 Un tributo al amor, a lo dulce… y a lo verdaderamente inolvidable."',
         tags: ["mas-vendido", "favoritos-chef", "colombia", "exclusive"],
-        background: victoriaBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fesencia-victoria.jpg?alt=media&token=ea1ae57c-7283-4141-942a-c74f2f4d908f" ,
         profile: [
             '🌱 Elixir 100% Arábica.',
             '📍 Composición exclusiva de: Cafetales colombianos abrazados por árboles de mango, que transfieren al grano una esencia frutal única, alegre y exótica.',
@@ -410,11 +365,11 @@ const coffeesCatalogue = [
         name: "🇩🇴 El bendecido",
         id: 14,
         quantity:1,
-        image: bendecidoIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fel-bendecido.png?alt=media&token=6e1d3d61-7bbe-48b3-8dd8-db9c3701f01a",
         url: '/nuestroscafes/elbendecido',
         description: '"🇩🇴 La vibra de una tierra sagrada, el sabor de un pueblo lleno de AMOR."',
         tags: ["mas-vendido", "viajar"],
-        background: bendecidoBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fel-bendecido.png?alt=media&token=70d3886f-bb3b-4b91-861b-15f578a9ba7b" ,
         profile: [
             '🌱 Café de Especialidad 100% Arábica',
             '📍 Origen único: República Dominicana – Finca Premium de altura',
@@ -439,11 +394,11 @@ const coffeesCatalogue = [
         name: "🇪🇹 El Origen",
         id: 15,
         quantity:1,
-        image: origenIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fel-origen.png?alt=media&token=79427b02-4232-4af0-8e28-3d2b398a0ad8",
         url: '/nuestroscafes/elorigen',
         description: '"🌍 Donde todo comenzó. Donde aún se siente la magia."',
         tags: ["mas-vendido", "favoritos-chef", "viajar"],
-        background: origenBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fel-origen.png?alt=media&token=5170f390-2222-44cb-a7e2-99165aa6a893",
         profile: [
             '🌱 Café de Especialidad 100% Arábica – Altura Extrema',
             '📍 Origen: 🇪🇹 Tierras Altas de Etiopía – Región de Sidamo',
@@ -470,23 +425,23 @@ const coffeesCatalogue = [
         id:20,
         quantity:1,
         description: '"Descafeinado 100% natural Swiss Water"',
-        image: nightIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fnight-edition.png?alt=media&token=7e0264a9-4be6-4d0a-abac-1f34b3812a26",
         profile:[],
         tasteNotes: [],
         emotionalDescription:[],
         url: '/nuestroscafes/noche',
         tags: [`descafeinado`],
-        background: nocheBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fnoche-movil.jpg?alt=media&token=9c2d9419-7fae-43b2-95f7-8642e24b2b36",
     },
     {
         name: "🇰🇪 SL28 Kenia Premium ",
         id: 16,
         quantity:1,
         description: '"El fuego brillante de África"',
-        image: keniaIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fkenia-premium.png?alt=media&token=6f07f144-59a3-4fff-8feb-11bc638d7f88",
         url: "/nuestroscafes/kenia",
         tags: ["favoritos-chef"],
-        background: keniaBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fkenia-movil.jpg?alt=media&token=17879b28-4e6b-48a4-9aa1-3ab5fad87534",
         profile: [
             '🌱 100% Arábica, varietal SL28, cultivado en altitudes entre 1.700 y 2.100 msnm en las laderas volcánicas del Monte Kenia.',
             'Proceso lavado tradicional con doble fermentación, técnica clave en su perfil brillante.',
@@ -509,10 +464,10 @@ const coffeesCatalogue = [
         id: 17,
         quantity:1,
         description: '"La joya de la corona Coffee Power Selection. El café preferido del chef de la casa; Chris Rosas"',
-        image: geishaIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fgeisha.png?alt=media&token=cdff954b-bb72-4738-97a0-edeb817a9ba4",
         url: "/nuestroscafes/geisha",
         tags: ["mas-vendido", "favoritos-chef", "power-selection", "colombia"],
-        background: geishaBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fgeisha-mobile.jpg?alt=media&token=ebe504dd-9a77-47dd-a7a5-8fe6171d5ccf",
         profile: [
             '🌱 100% Arábica — Variedad Geisha de especialidad.',
             'Cada grano ha sido seleccionado manualmente, asegurando que solo las cosechas con el equilibrio perfecto de aroma, dulzura y acidez formen parte de esta edición icónica.',
@@ -537,12 +492,12 @@ const coffeesCatalogue = [
     {
         name: "🇨🇴 Bourbon Supremo",
         description: '“El alma eterna del café”',
-        image: bourbonIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fbourbon-supremo.png?alt=media&token=acef31cc-aea2-43f7-b8f1-7aa589693254",
         id: 18,
         quantity:0,
         url: "/nuestroscafes/bourbon",
         tags: ["mas-vendido", "favoritos-chef", "power-selection", "tesoros", "colombia", "ecologico"],
-        background: bourbonBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fbourbon-movil.jpg?alt=media&token=692916ea-5d42-42c7-83d3-7c2c113df7d0",
         profile: [
             '100% Arábica, variedad Bourbon rojo cultivado entre 1.500 y 1.800 metros sobre el nivel del mar',
             'Suelos volcánicos ricos en minerales que realzan su perfil dulce y redondo.',
@@ -558,10 +513,10 @@ const coffeesCatalogue = [
         id: 19,
         quantity:1,
         description: '"El secreto mejor guardado de la naturaleza"',
-        image: caracolilloIcon,
+        image: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/coffees%2Fcaracolillo.png?alt=media&token=03813fee-b228-4726-8e4c-88c4098e9d5f",
         url: "/nuestroscafes/caracolillo",
         tags: ["mas-vendido", "viajar"],
-        background: caracolilloBck,
+        background: "https://firebasestorage.googleapis.com/v0/b/aroma-king-web.appspot.com/o/backgrounds%2Fcaracolillo.png?alt=media&token=416fff1b-ccce-4289-a882-8a505998d996",
         profile: [
             '🌱100% Arábica, grano tipo peaberry (caracolillo), una mutación natural donde solo se desarrolla una semilla redonda en lugar de dos planas.',
             'Cultivado en altitudes entre 1.400 y 1.800 msnm, seleccionado manualmente por su rareza y concentración de sabor.',

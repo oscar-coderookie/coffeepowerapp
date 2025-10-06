@@ -1,84 +1,129 @@
-// context/CartContext.js
 import React, { createContext, useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { auth, db } from "../config/firebase";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [user, setUser] = useState(null);
 
-  // 🔹 Cargar carrito al iniciar la app
+  // 🟢 Detectar usuario logueado/deslogueado
   useEffect(() => {
-    const loadCart = async () => {
-      try {
-        const storedCart = await AsyncStorage.getItem("cart");
-        if (storedCart) {
-          setCartItems(JSON.parse(storedCart));
-        }
-      } catch (error) {
-        console.error("Error al cargar el carrito:", error);
-      }
-    };
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        const userRef = doc(db, "users", firebaseUser.uid);
+        const userSnap = await getDoc(userRef);
 
-    loadCart();
+        if (userSnap.exists() && userSnap.data().cart) {
+          setCartItems(userSnap.data().cart);
+        } else {
+          await setDoc(userRef, { cart: [] }, { merge: true });
+          setCartItems([]);
+        }
+      } else {
+        setUser(null);
+        setCartItems([]);
+      }
+    });
+
+    return unsubscribe;
   }, []);
 
-  // 🔹 Guardar carrito cada vez que cambie
-  useEffect(() => {
-    const saveCart = async () => {
-      try {
-        await AsyncStorage.setItem("cart", JSON.stringify(cartItems));
-      } catch (error) {
-        console.error("Error al guardar el carrito:", error);
-      }
-    };
+  // 🔹 Guardar carrito limpio en Firestore
+  const saveCartToFirestore = async (updatedCart) => {
+    if (!user) return;
+    try {
+      const simplifiedCart = updatedCart.map((item) => ({
+        id: item.id,
+        name: item.name || "Producto",
+        image: item.image || null,
+        quantity: item.quantity || 1,
+      }));
 
-    if (cartItems.length >= 0) {
-      saveCart();
+      await updateDoc(doc(db, "users", user.uid), { cart: simplifiedCart });
+      console.log("🟢 Carrito guardado:", simplifiedCart);
+    } catch (error) {
+      console.error("❌ Error guardando carrito:", error);
     }
-  }, [cartItems]);
+  };
 
+  // 🔸 Añadir producto
   const addToCart = (coffee) => {
+    if (!user) return console.log("⚠️ Debes iniciar sesión para agregar productos.");
     if (!coffee || !coffee.id) return;
 
-    setCartItems((prevCart) => {
-      const existingIndex = prevCart.findIndex((item) => item.id === coffee.id);
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === coffee.id);
+      let updatedCart;
 
-      if (existingIndex !== -1) {
-        const updatedCart = [...prevCart];
-        updatedCart[existingIndex] = {
-          ...updatedCart[existingIndex],
-          quantity: (updatedCart[existingIndex].quantity || 0) + (coffee.quantity || 1),
-        };
-        return updatedCart;
+      if (existing) {
+        updatedCart = prev.map((item) =>
+          item.id === coffee.id
+            ? { ...item, quantity: item.quantity + (coffee.quantity || 1) }
+            : item
+        );
       } else {
-        return [...prevCart, { ...coffee, quantity: coffee.quantity || 1 }];
+        updatedCart = [
+          ...prev,
+          {
+            id: coffee.id,
+            name: coffee.name || "Producto",
+            image: coffee.image || null,
+            quantity: coffee.quantity || 1,
+          },
+        ];
       }
+
+      saveCartToFirestore(updatedCart);
+      return updatedCart;
     });
   };
 
+  // 🔸 Eliminar producto
   const removeFromCart = (id) => {
-    setCartItems((prevCart) => prevCart.filter((item) => item.id !== id));
+    if (!user) return;
+    setCartItems((prev) => {
+      const updated = prev.filter((item) => item.id !== id);
+      saveCartToFirestore(updated);
+      return updated;
+    });
   };
 
-  const clearCart = () => setCartItems([]);
-
+  // 🔸 Aumentar cantidad
   const increaseQuantity = (id) => {
-    setCartItems((prevCart) =>
-      prevCart.map((item) =>
+    if (!user) return;
+    setCartItems((prev) => {
+      const updated = prev.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+      );
+      saveCartToFirestore(updated);
+      return updated;
+    });
   };
 
+  // 🔸 Disminuir cantidad (y eliminar si llega a 0)
   const decreaseQuantity = (id) => {
-    setCartItems((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+    if (!user) return;
+    setCartItems((prev) => {
+      const updated = prev
+        .map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        )
+        .filter((item) => item.quantity > 0);
+
+      saveCartToFirestore(updated);
+      return updated;
+    });
+  };
+
+  // 🔸 Vaciar carrito
+  const clearCart = () => {
+    if (!user) return;
+    setCartItems([]);
+    saveCartToFirestore([]);
   };
 
   return (
@@ -90,6 +135,7 @@ export const CartProvider = ({ children }) => {
         clearCart,
         increaseQuantity,
         decreaseQuantity,
+        user,
       }}
     >
       {children}

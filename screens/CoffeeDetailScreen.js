@@ -4,6 +4,7 @@ import MarqueeTitle from "../components/AnimatedTitle";
 import { useContext, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { CartContext } from "../context/CartContext";
+import CustomHeader from "../components/CustomHeader";
 
 const { width, height } = Dimensions.get("window");
 
@@ -13,7 +14,7 @@ export default function CoffeeDetailScreen({ route }) {
   const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
-    addToCart({ ...coffee, quantity }); 
+    addToCart({ ...coffee, quantity });
     Alert.alert(
       "Añadido al carrito",
       `${quantity} x ${coffee.name} se agregó a tu carrito`
@@ -27,13 +28,13 @@ export default function CoffeeDetailScreen({ route }) {
   return (
     <View style={{ flex: 1 }}>
       {/* 👇 Header con MarqueeTitle */}
-      <Header>
-        <MarqueeTitle title={coffee.name} />
-      </Header>
+
+      <CustomHeader title={coffee.name} showBack={true} />
+
 
       <ScrollView contentContainerStyle={styles.container}>
         <ImageBackground
-          source={coffee.background}
+          source={{ uri: coffee.background }}
           resizeMode="cover"
           style={styles.background}
         >
@@ -66,7 +67,11 @@ export default function CoffeeDetailScreen({ route }) {
         </View>
 
         <View style={styles.imageContainer}>
-          <Image style={styles.package} source={coffee.image} />
+          <Image
+            source={{ uri: coffee.image }}
+            style={styles.package}
+            resizeMode="contain"
+          />
 
           <View style={styles.generalContainer}>
             <View style={styles.quantityContainer}>
@@ -111,9 +116,10 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     alignItems: "center",
+    paddingVertical: 30,
     backgroundColor: "#0e0e0eff",
-    justifyContent: "center",
-    paddingBottom: 40,
+    paddingTop: 100,
+    paddingBottom: 100
   },
   infoContainer: {
     justifyContent: "center",
@@ -144,10 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   package: {
-    width: "60%",
-    resizeMode: "contain",
-    marginBottom: 20,
-    transform: [{ translateX: -8 }],
+    width: width ,
+    height: 400,
+    transform: [{translateX: -10}]
   },
   cartButtonText: {
     color: "#fff",
@@ -188,6 +193,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   generalContainer: {
-    transform: [{ translateY: -180 }],
+
   }
 });

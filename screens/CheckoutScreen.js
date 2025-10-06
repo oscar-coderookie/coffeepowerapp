@@ -28,7 +28,7 @@ export default function CheckoutScreen({ navigation }) {
     <View style={styles.container}>
       <CustomHeader
         title='Datos de Envío'
-        onBack={() => navigation.goBack()}
+       showBack={true}
       />
       <View style={styles.form}>
         <Text style={{

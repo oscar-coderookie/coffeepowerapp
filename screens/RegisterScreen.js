@@ -41,6 +41,7 @@ export default function RegisterScreen({ navigation }) {
         name,
         email,
         createdAt: new Date(),
+        cart:[]
       });
 
       Alert.alert("Éxito", "Registro completado");
