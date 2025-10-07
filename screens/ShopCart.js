@@ -1,4 +1,3 @@
-// screens/ShopCart.js
 import React, { useContext } from "react";
 import {
   View,
@@ -15,18 +14,29 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 
 export default function ShopCart() {
   const { colors } = useTheme();
-  const { cartItems, removeFromCart, user } = useContext(CartContext);
+  const {
+    cartItems,
+    removeFromCart,
+    increaseQuantity,
+    decreaseQuantity,
+    user,
+  } = useContext(CartContext);
   const navigation = useNavigation();
 
   const handleCheckout = () => {
     if (!user) {
-      Alert.alert("Inicia sesión", "Debes iniciar sesión para realizar el pedido ☕");
+      Alert.alert(
+        "Inicia sesión",
+        "Debes iniciar sesión para realizar el pedido ☕"
+      );
       return;
     }
+
     if (!cartItems || cartItems.length === 0) {
       Alert.alert("Carrito vacío", "Agrega productos antes de continuar 🚀");
       return;
     }
+
     navigation.navigate("Checkout");
   };
 
@@ -34,9 +44,18 @@ export default function ShopCart() {
     <View style={styles.mainContainer}>
       <View style={styles.itemContainer}>
         {item.image ? (
-          <Image resizeMode="contain" source={{ uri: item.image }} style={styles.coffeeImage} />
+          <Image
+            resizeMode="contain"
+            source={{ uri: item.image }}
+            style={styles.coffeeImage}
+          />
         ) : (
-          <View style={[styles.coffeeImage, { justifyContent: "center", alignItems: "center" }]}>
+          <View
+            style={[
+              styles.coffeeImage,
+              { justifyContent: "center", alignItems: "center" },
+            ]}
+          >
             <Text style={{ color: "#999" }}>Sin imagen</Text>
           </View>
         )}
@@ -44,32 +63,25 @@ export default function ShopCart() {
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{item?.name}</Text>
           <Text style={styles.notes}>Saco de 300 Gramos.</Text>
-          <AddEraseBtn id={item.id} quantity={item?.quantity || 0} />
+
+          {/* Botones + / - y cantidad */}
+          <AddEraseBtn
+            id={item.id}
+            quantity={item?.quantity || 0}
+            onIncrease={() => increaseQuantity(item.id)}
+            onDecrease={() => decreaseQuantity(item.id)}
+          />
         </View>
 
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => {
-            if (!user) {
-              Alert.alert("Inicia sesión", "Debes iniciar sesión para modificar tu carrito ☕");
-              return;
-            }
-            removeFromCart(item.id);
-          }}
+          onPress={() => removeFromCart(item.id)}
         >
           <Text style={styles.deleteText}>✕</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-
-  if (!user) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>Inicia sesión para ver tu carrito ☕</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -86,12 +98,18 @@ export default function ShopCart() {
           paddingBottom: 20,
         }}
       >
-        Resumen de tu Compra:
+        {user
+          ? "Resumen de tu Compra:"
+          : "Carrito temporal (inicia sesión para guardar)"}
       </Text>
 
       {(!cartItems || cartItems.length === 0) ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Tu carrito está vacío ☕</Text>
+          <Text style={styles.emptyText}>
+            {user
+              ? "Tu carrito está vacío ☕"
+              : "Agrega productos para guardarlos temporalmente ☕"}
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -124,7 +142,7 @@ export default function ShopCart() {
               textAlign: "center",
             }}
           >
-            ☕ iniciar pedido ☕
+            ☕ Iniciar Pedido ☕
           </Text>
         </TouchableOpacity>
       )}
@@ -135,7 +153,7 @@ export default function ShopCart() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#464646ff", justifyContent: "center" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyText: { color: "#fff", fontSize: 18 },
+  emptyText: { color: "#fff", fontSize: 18, textAlign: "center" },
   mainContainer: {
     backgroundColor: "#1a1a1a",
     marginBottom: 10,

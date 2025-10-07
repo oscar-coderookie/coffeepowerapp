@@ -29,12 +29,6 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 
 // 🔹 Auth (evitar "already-initialized")
-let auth;
-try {
-  auth = getAuth(app);
-} catch (error) {
-  auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
-  });
-}
-export { auth };
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
