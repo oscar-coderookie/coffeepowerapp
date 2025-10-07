@@ -87,8 +87,8 @@ export default function ShopCart() {
     <View style={styles.container}>
       <Text
         style={{
-          color: colors.text,
-          backgroundColor: colors.background,
+          color: colors.background,
+          backgroundColor: colors.text,
           textTransform: "uppercase",
           fontFamily: "Jost_600SemiBold",
           fontSize: 24,
@@ -104,14 +104,14 @@ export default function ShopCart() {
       </Text>
 
       {(!cartItems || cartItems.length === 0) ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
+        <View style={[  styles.emptyContainer, {backgroundColor: colors.background}]}>
+          <Text style={[  styles.emptyText, {color: colors.text}]}>
             {user
               ? "Tu carrito está vacío ☕"
               : "Agrega productos para guardarlos temporalmente ☕"}
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Area personal', { screen: 'Login' })}>
-            <Text>Clic aqui para iniciar sesión:</Text>
+          <TouchableOpacity style={styles.login} onPress={() => navigation.navigate('Area personal', { screen: 'Login' })}>
+            <Text style={styles.loginText}>Clic aqui para iniciar sesión:</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -154,7 +154,7 @@ export default function ShopCart() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#464646ff", justifyContent: "center" },
+  container: { flex: 1,  justifyContent: "center" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyText: { color: "#fff", fontSize: 18, textAlign: "center",width: '80%' },
   mainContainer: {
@@ -194,4 +194,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  login:{
+   padding:30,
+  },
+  loginText:{
+    color: "#0066ffff",
+  }
 });

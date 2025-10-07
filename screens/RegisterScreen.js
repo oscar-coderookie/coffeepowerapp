@@ -41,7 +41,7 @@ export default function RegisterScreen({ navigation }) {
         name,
         email,
         createdAt: new Date(),
-        cart:[]
+        cart: []
       });
 
       Alert.alert("Éxito", "Registro completado");
@@ -58,8 +58,8 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Registro</Text>
-
+      <Text style={[styles.title, { color: colors.text }]}>Registro</Text>
+      <Text style={{ color: colors.text , marginBottom: 10,fontFamily: "Jost_400Regular"}}>Introduce tus datos para el registro:</Text>
       <TextInput
         placeholder="Nombre"
         value={name}
