@@ -6,12 +6,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
 import { CartContext } from "../context/CartContext";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const { colors } = useTheme();
-  const { logout } = useContext(CartContext);
+  const { logout, isLoading, user } = useContext(CartContext);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -23,8 +24,11 @@ export default function UserAreaScreen({ navigation }) {
       }
     };
     loadUser();
-  }, []);
+  }, [user]);
 
+  if (isLoading) {
+    return <LoadingScreen message="Cargando sesión..." />;
+  }
   const handleLogout = async () => {
     await logout();
     navigation.replace("Login");
@@ -48,7 +52,9 @@ export default function UserAreaScreen({ navigation }) {
           </View>
         </View>
       </ScrollView>
-
+      <TouchableOpacity style={[styles.button, { backgroundColor: colors.text }]} onPress={() => navigation.navigate('Nuestros Cafés', { screen: 'Cart' })}>
+        <Text style={[styles.buttonText, { color: colors.background, }]}>Ir a tu carrito</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={[styles.button, { backgroundColor: colors.text }]} onPress={handleLogout}>
         <Text style={[styles.buttonText, { color: colors.background, }]}>Cerrar Sesión</Text>
       </TouchableOpacity>
@@ -57,7 +63,7 @@ export default function UserAreaScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "flex-start" },
+  container: { flex: 1, justifyContent: "flex-start", paddingBottom: 20 },
   title: { fontSize: 18, fontWeight: "bold", marginBottom: 10, textTransform: 'uppercase', textAlign: 'center', fontFamily: "Jost_700Bold" },
   text: { fontSize: 16, marginBottom: 20, padding: 20, textAlign: 'center', fontFamily: "Jost_400Regular" },
   button: { padding: 15, borderRadius: 8, margin: 10 },

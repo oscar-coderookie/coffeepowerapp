@@ -21,7 +21,7 @@ const CartStack =()=>{
       <Stack.Screen 
         name="Checkout" 
         component={CheckoutScreen} 
-        options={{ title: "Finalizar pedido" }}
+        options={{ title: "Datos de envio" }}
       />
        <Stack.Screen 
         name="Payout" 

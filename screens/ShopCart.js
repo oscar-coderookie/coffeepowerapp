@@ -100,7 +100,7 @@ export default function ShopCart() {
       >
         {user
           ? "Resumen de tu Compra:"
-          : "Carrito temporal (inicia sesión para guardar)"}
+          : "Carrito de compra (INVITADO)"}
       </Text>
 
       {(!cartItems || cartItems.length === 0) ? (
@@ -110,6 +110,9 @@ export default function ShopCart() {
               ? "Tu carrito está vacío ☕"
               : "Agrega productos para guardarlos temporalmente ☕"}
           </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Area personal', { screen: 'Login' })}>
+            <Text>Clic aqui para iniciar sesión:</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -153,7 +156,7 @@ export default function ShopCart() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#464646ff", justifyContent: "center" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyText: { color: "#fff", fontSize: 18, textAlign: "center" },
+  emptyText: { color: "#fff", fontSize: 18, textAlign: "center",width: '80%' },
   mainContainer: {
     backgroundColor: "#1a1a1a",
     marginBottom: 10,

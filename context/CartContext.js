@@ -9,6 +9,7 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // 🟢 Detectar usuario logueado/deslogueado
   useEffect(() => {
@@ -33,6 +34,7 @@ export const CartProvider = ({ children }) => {
         const localCart = await AsyncStorage.getItem("cartItems");
         setCartItems(localCart ? JSON.parse(localCart) : []);
       }
+      setIsLoading(false);
     });
 
     return unsubscribe;
@@ -108,18 +110,19 @@ export const CartProvider = ({ children }) => {
   };
 
   // 🔸 Logout seguro
-  const logout = async () => {
-    try {
-      if (user) {
-        await signOut(auth); // 🔹 Desconectar de Firebase
-      }
-      setUser(null);
-      setCartItems([]);
-      await AsyncStorage.removeItem("cartItems"); // 🔹 Limpiar carrito local
-    } catch (error) {
-      console.error("❌ Error al cerrar sesión:", error);
+ const logout = async () => {
+  try {
+    if (user) {
+      await signOut(auth);
     }
-  };
+    setUser(null);
+    setCartItems([]);
+    await AsyncStorage.removeItem("cartItems");
+    await AsyncStorage.removeItem("userSession"); // <-- Añade esto
+  } catch (error) {
+    console.error("❌ Error al cerrar sesión:", error);
+  }
+};
 
   return (
     <CartContext.Provider
@@ -131,7 +134,8 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         user,
-        logout, // 🔹 Exportamos logout
+        logout,
+        isLoading, // 🔹 Exportamos isLoading
       }}
     >
       {children}
