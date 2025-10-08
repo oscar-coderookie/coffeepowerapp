@@ -1,17 +1,23 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { auth, db } from "../config/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../config/firebase";
+import { AuthContext } from "../context/AuthContext";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { colors } = useTheme();
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      navigation.replace("UserArea"); // ✅ navegación segura después del render
+    }
+  }, [user]);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -20,27 +26,10 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      // 🔐 Iniciar sesión con Firebase Auth
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // 🔎 Obtener datos del usuario en Firestore
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      let userName = "Usuario";
-      if (userDoc.exists()) {
-        userName = userDoc.data().name;
-        
-      }
-
-      // 💾 Guardar sesión en AsyncStorage
-      await AsyncStorage.setItem(
-        "userSession",
-        JSON.stringify({ uid: user.uid, name: userName, email: user.email })
-      );
-
-      // 🚀 Redirigir al área de usuario
-      navigation.replace("UserArea");
+      await signInWithEmailAndPassword(auth, email, password);
+      // El AuthContext detectará el usuario automáticamente
     } catch (error) {
+      console.log("Error login:", error);
       Alert.alert("Error", error.message);
     }
   };
@@ -70,7 +59,7 @@ export default function LoginScreen({ navigation }) {
           placeholder="Contraseña"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry={!showPassword} // 👈 cambia entre visible u oculto
+          secureTextEntry={!showPassword}
           style={{
             flex: 1,
             fontFamily: "Jost_400Regular",
@@ -82,10 +71,7 @@ export default function LoginScreen({ navigation }) {
           }}
           placeholderTextColor={colors.text}
         />
-        <TouchableOpacity
-          onPress={() => setShowPassword(!showPassword)}
-          style={styles.showButton}
-        >
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.showButton}>
           <Ionicons
             name={showPassword ? "eye-off" : "eye"}
             size={22}
@@ -135,7 +121,12 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_600SemiBold",
     textTransform: "uppercase",
   },
-  link: { marginTop: 15, textAlign: "center", color: "#0066cc", fontFamily: "Jost_400Regular", },
+  link: {
+    marginTop: 15,
+    textAlign: "center",
+    color: "#0066cc",
+    fontFamily: "Jost_400Regular",
+  },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",

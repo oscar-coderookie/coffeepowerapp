@@ -9,20 +9,24 @@ import {
   Alert,
 } from "react-native";
 import { CartContext } from "../context/CartContext";
+import { AuthContext } from "../context/AuthContext"; // 🔹 Nuevo import
 import { AddEraseBtn } from "../components/AddEraseBtn";
 import { useNavigation, useTheme } from "@react-navigation/native";
 
 export default function ShopCart() {
   const { colors } = useTheme();
+  const navigation = useNavigation();
+
+  // 🔹 Contextos
+  const { user } = useContext(AuthContext); // autenticación global
   const {
     cartItems,
     removeFromCart,
     increaseQuantity,
     decreaseQuantity,
-    user,
   } = useContext(CartContext);
-  const navigation = useNavigation();
 
+  // 🔹 Validación de checkout
   const handleCheckout = () => {
     if (!user) {
       Alert.alert(
@@ -40,6 +44,7 @@ export default function ShopCart() {
     navigation.navigate("Checkout");
   };
 
+  // 🔹 Render individual de cada producto
   const renderItem = ({ item }) => (
     <View style={styles.mainContainer}>
       <View style={styles.itemContainer}>
@@ -64,7 +69,6 @@ export default function ShopCart() {
           <Text style={styles.name}>{item?.name}</Text>
           <Text style={styles.notes}>Saco de 300 Gramos.</Text>
 
-          {/* Botones + / - y cantidad */}
           <AddEraseBtn
             id={item.id}
             quantity={item?.quantity || 0}
@@ -83,6 +87,7 @@ export default function ShopCart() {
     </View>
   );
 
+  // 🔹 UI
   return (
     <View style={styles.container}>
       <Text
@@ -98,21 +103,28 @@ export default function ShopCart() {
           paddingBottom: 20,
         }}
       >
-        {user
-          ? "Resumen de tu Compra:"
-          : "Carrito de compra (INVITADO)"}
+        {user ? "Resumen de tu Compra:" : "Carrito de compra (INVITADO)"}
       </Text>
 
-      {(!cartItems || cartItems.length === 0) ? (
-        <View style={[  styles.emptyContainer, {backgroundColor: colors.background}]}>
-          <Text style={[  styles.emptyText, {color: colors.text}]}>
+      {!cartItems || cartItems.length === 0 ? (
+        <View
+          style={[styles.emptyContainer, { backgroundColor: colors.background }]}
+        >
+          <Text style={[styles.emptyText, { color: colors.text }]}>
             {user
               ? "Tu carrito está vacío ☕"
               : "Agrega productos para guardarlos temporalmente ☕"}
           </Text>
-          <TouchableOpacity style={styles.login} onPress={() => navigation.navigate('Area personal', { screen: 'Login' })}>
-            <Text style={styles.loginText}>Clic aqui para iniciar sesión:</Text>
-          </TouchableOpacity>
+
+          {/* 🔹 Botón de login solo si no hay usuario */}
+          {!user && (
+            <TouchableOpacity
+              style={styles.login}
+              onPress={()=> navigation.navigate("Área personal", { screen: "Login" })} // ✅ Ya no pasamos por "Área personal"
+            >
+              <Text style={styles.loginText}>Clic aquí para iniciar sesión</Text>
+            </TouchableOpacity>
+          )}
         </View>
       ) : (
         <FlatList
@@ -153,10 +165,11 @@ export default function ShopCart() {
   );
 }
 
+// 🔹 Estilos
 const styles = StyleSheet.create({
-  container: { flex: 1,  justifyContent: "center" },
+  container: { flex: 1, justifyContent: "center" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  emptyText: { color: "#fff", fontSize: 18, textAlign: "center",width: '80%' },
+  emptyText: { fontSize: 18, textAlign: "center", width: "80%" },
   mainContainer: {
     backgroundColor: "#1a1a1a",
     marginBottom: 10,
@@ -194,10 +207,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  login:{
-   padding:30,
-  },
-  loginText:{
-    color: "#0066ffff",
-  }
+  login: { padding: 30 },
+  loginText: { color: "#0066ff" },
 });

@@ -17,6 +17,7 @@ import DrawerNavigator from './navigation/DrawerNavigator';
 import ErrorBoundary from './error/ErrorBoundary';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider, useThemeContext } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 
 function MainApp() {
   const { theme } = useThemeContext();
@@ -48,11 +49,14 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <CartProvider>
-        <ThemeProvider>
-          <MainApp />
-        </ThemeProvider>
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+          <ThemeProvider>
+            <MainApp />
+          </ThemeProvider>
+        </CartProvider>
+      </AuthProvider>
+
     </ErrorBoundary>
   );
 }
