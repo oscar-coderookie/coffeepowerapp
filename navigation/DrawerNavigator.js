@@ -79,8 +79,8 @@ function CustomDrawerContent(props) {
 
         {/* 🔹 Switch de modo oscuro */}
         <View style={styles.switchContainer}>
-          <Text style={[styles.switchLabel, { color: isDark ? "#fff" : "#000" }]}>
-            {isDark ? "Modo Claro" : "Modo Oscuro"}
+          <Text style={[styles.switchLabel, { color: isDark ? "#fff" : "#000", }]}>
+            {isDark ? "Cambiar a Tema Light" : "Cambiar a Tema Dark"}
           </Text>
           <Switch
             value={!!isDark}

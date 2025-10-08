@@ -12,12 +12,11 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [isLoadingCart, setIsLoadingCart] = useState(true);
 
+  // Carga inicial del carrito
   useEffect(() => {
     const loadCart = async () => {
       setIsLoadingCart(true);
-
       if (user) {
-        // 🔹 Usuario logueado → cargar Firestore
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
 
@@ -28,17 +27,16 @@ export const CartProvider = ({ children }) => {
           setCartItems([]);
         }
       } else {
-        // 🔹 Invitado → cargar carrito local
         const localCart = await AsyncStorage.getItem("cartItems");
         setCartItems(localCart ? JSON.parse(localCart) : []);
       }
-
       setIsLoadingCart(false);
     };
 
     loadCart();
-  }, [user]); // 🔥 Se actualiza cuando el usuario cambia
+  }, [user]);
 
+  // Guarda el carrito (Firestore o AsyncStorage)
   const saveCart = async (updatedCart) => {
     setCartItems(updatedCart);
 
@@ -55,27 +53,57 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  // Añadir item al carrito
   const addToCart = (item) => {
     const existing = cartItems.find((i) => i.id === item.id);
     let updatedCart;
     if (existing) {
+      // Si ya existe, suma la cantidad que envíes
       updatedCart = cartItems.map((i) =>
-        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
       );
     } else {
-      updatedCart = [...cartItems, { ...item, quantity: 1 }];
+      // Si no existe, agrega el item con su cantidad actual
+      updatedCart = [...cartItems, { ...item }];
     }
     saveCart(updatedCart);
   };
 
+  // Eliminar item del carrito
   const removeFromCart = (id) => {
     const updated = cartItems.filter((i) => i.id !== id);
     saveCart(updated);
   };
 
+  // Aumentar cantidad
+  const increaseQuantity = (id) => {
+    const updated = cartItems.map((i) =>
+      i.id === id ? { ...i, quantity: i.quantity + 1 } : i
+    );
+    saveCart(updated);
+  };
+
+  // Disminuir cantidad
+  const decreaseQuantity = (id) => {
+    const updated = cartItems.map((i) =>
+      i.id === id
+        ? { ...i, quantity: i.quantity > 1 ? i.quantity - 1 : 1 }
+        : i
+    );
+    saveCart(updated);
+  };
+
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, isLoadingCart }}
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        increaseQuantity,
+        decreaseQuantity,
+        isLoadingCart,
+        user,
+      }}
     >
       {children}
     </CartContext.Provider>

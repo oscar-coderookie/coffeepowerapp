@@ -1,14 +1,15 @@
-// components/AddEraseBtn.js
 import React, { useContext } from "react";
 import { Text, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
 import { CartContext } from "../context/CartContext";
+import { Ionicons } from "@expo/vector-icons"; // ✅ import Ionicons
 
 export const AddEraseBtn = ({ id, quantity }) => {
-  const { increaseQuantity, decreaseQuantity, removeFromCart, user } = useContext(CartContext);
+  const { increaseQuantity, decreaseQuantity, removeFromCart } = useContext(CartContext);
 
   const handleDecrease = () => {
     try {
       if (quantity <= 1) {
+        // 🔹 Si la cantidad es 1, eliminar del carrito
         removeFromCart(id);
       } else {
         decreaseQuantity(id);
@@ -31,7 +32,11 @@ export const AddEraseBtn = ({ id, quantity }) => {
   return (
     <View style={styles.quantityContainer}>
       <TouchableOpacity style={styles.qtyButton} onPress={handleDecrease}>
-        <Text style={styles.qtyText}>−</Text>
+        {quantity <= 1 ? (
+          <Ionicons name="trash-outline" size={24} color="#ff4444" />
+        ) : (
+          <Text style={styles.qtyText}>−</Text>
+        )}
       </TouchableOpacity>
 
       <Text style={styles.quantity}>{quantity}</Text>
@@ -52,20 +57,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     marginTop: 10,
-    alignSelf: "flex-start",
+    alignSelf: "center",
   },
   qtyButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    justifyContent: "center",
+    alignItems: "center",
   },
   qtyText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "bold",
   },
   quantity: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     marginHorizontal: 10,
     fontWeight: "600",
   },

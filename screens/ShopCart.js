@@ -9,16 +9,16 @@ import {
   Alert,
 } from "react-native";
 import { CartContext } from "../context/CartContext";
-import { AuthContext } from "../context/AuthContext"; // 🔹 Nuevo import
+import { AuthContext } from "../context/AuthContext";
 import { AddEraseBtn } from "../components/AddEraseBtn";
 import { useNavigation, useTheme } from "@react-navigation/native";
+import PriceTag from "../components/PriceTag";
 
 export default function ShopCart() {
   const { colors } = useTheme();
   const navigation = useNavigation();
 
-  // 🔹 Contextos
-  const { user } = useContext(AuthContext); // autenticación global
+  const { user } = useContext(AuthContext);
   const {
     cartItems,
     removeFromCart,
@@ -44,6 +44,17 @@ export default function ShopCart() {
     navigation.navigate("Checkout");
   };
 
+  // 🔹 Total de cafés
+  const totalCoffees = cartItems.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0
+  );
+  // Total de precio
+const totalPrice = cartItems.reduce(
+  (sum, item) => sum + (item.quantity * 30), // 30€ por unidad
+  0
+);
+
   // 🔹 Render individual de cada producto
   const renderItem = ({ item }) => (
     <View style={styles.mainContainer}>
@@ -66,9 +77,10 @@ export default function ShopCart() {
         )}
 
         <View style={styles.infoContainer}>
-          <Text style={styles.name}>{item?.name}</Text>
-          <Text style={styles.notes}>Saco de 300 Gramos.</Text>
-
+          <View style={styles.coffeeTitle}>
+            <Text style={styles.name}>{item?.name}</Text>
+            <Text style={styles.notes}>Café molido: Saco de 300 Gramos.</Text>
+          </View>
           <AddEraseBtn
             id={item.id}
             quantity={item?.quantity || 0}
@@ -76,18 +88,11 @@ export default function ShopCart() {
             onDecrease={() => decreaseQuantity(item.id)}
           />
         </View>
-
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => removeFromCart(item.id)}
-        >
-          <Text style={styles.deleteText}>✕</Text>
-        </TouchableOpacity>
+        <PriceTag price={`${item.quantity * 30}`} currency="€"/>
       </View>
     </View>
   );
 
-  // 🔹 UI
   return (
     <View style={styles.container}>
       <Text
@@ -96,9 +101,8 @@ export default function ShopCart() {
           backgroundColor: colors.text,
           textTransform: "uppercase",
           fontFamily: "Jost_600SemiBold",
-          fontSize: 24,
+          fontSize: 20,
           textAlign: "center",
-          marginBottom: 20,
           paddingTop: 20,
           paddingBottom: 20,
         }}
@@ -111,61 +115,83 @@ export default function ShopCart() {
           style={[styles.emptyContainer, { backgroundColor: colors.background }]}
         >
           <Text style={[styles.emptyText, { color: colors.text }]}>
-            {user
-              ? "Tu carrito está vacío ☕"
-              : "Agrega productos para guardarlos temporalmente ☕"}
+            "Tu carrito está vacío ☕"
           </Text>
 
-          {/* 🔹 Botón de login solo si no hay usuario */}
           {!user && (
             <TouchableOpacity
               style={styles.login}
-              onPress={()=> navigation.navigate("Área personal", { screen: "Login" })} // ✅ Ya no pasamos por "Área personal"
+              onPress={() =>
+                navigation.navigate("Área personal", { screen: "Login" })
+              }
             >
               <Text style={styles.loginText}>Clic aquí para iniciar sesión</Text>
             </TouchableOpacity>
           )}
         </View>
       ) : (
-        <FlatList
-          data={cartItems}
-          keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-          renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 40 }}
-        />
-      )}
+        <>
+          <FlatList
+            data={cartItems}
+            keyExtractor={(item, index) =>
+              item.id?.toString() || index.toString()
+            }
+            renderItem={renderItem}
+            contentContainerStyle={{
+              paddingBottom: 20,
+              paddingTop:10
 
-      {cartItems && cartItems.length > 0 && (
-        <TouchableOpacity
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: colors.text,
-            padding: 20,
-            borderRadius: 10,
-            marginBottom: 20,
-            margin: 10,
-          }}
-          onPress={handleCheckout}
-        >
-          <Text
+            }}
+          />
+
+          {/* 🔹 Total de cafés */}
+          <View
             style={{
-              color: colors.background,
-              textTransform: "uppercase",
-              fontFamily: "Jost_600SemiBold",
-              fontSize: 18,
-              textAlign: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingHorizontal: 20,
+              paddingVertical:14,
+              borderTopColor: colors.text,
+              borderTopWidth: 1
             }}
           >
-            ☕ Iniciar Pedido ☕
-          </Text>
-        </TouchableOpacity>
+            <Text style={{ color: colors.text }}>Total:</Text>
+            <Text style={{ color: colors.text }}>{totalCoffees} Productos</Text>
+            <Text style={{ color: colors.text }}>{totalPrice} €</Text>
+            
+          </View>
+
+          {/* 🔹 Botón de checkout */}
+          <TouchableOpacity
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: colors.text,
+              padding: 10,
+              borderRadius: 10,
+              marginBottom: 20,
+              marginHorizontal: 20,
+            }}
+            onPress={handleCheckout}
+          >
+            <Text
+              style={{
+                color: colors.background,
+                textTransform: "uppercase",
+                fontFamily: "Jost_600SemiBold",
+                fontSize: 18,
+                textAlign: "center",
+              }}
+            >
+              ☕ Iniciar Pedido ☕
+            </Text>
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );
 }
 
-// 🔹 Estilos
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
@@ -174,11 +200,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#1a1a1a",
     marginBottom: 10,
     borderRadius: 10,
-    margin: 10,
+    marginHorizontal: 10,
   },
   itemContainer: {
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
     flexDirection: "row",
     marginBottom: 15,
     borderRadius: 10,
@@ -190,13 +216,24 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 10,
   },
-  name: { color: "#fff", fontSize: 14, fontFamily: "Jost_600SemiBold" },
-  notes: { color: "#ccc", fontSize: 12, textAlign: "justify", width: "100%" },
+  name: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "Jost_600SemiBold",
+    textAlign: "center",
+    textTransform: "capitalize",
+  },
+  notes: {
+    color: "#ccc",
+    fontSize: 12,
+    textAlign: "center",
+    fontFamily: "Jost_400Regular",
+  },
   deleteText: { color: "#fff", fontSize: 14, fontWeight: "bold" },
   infoContainer: {
     justifyContent: "center",
     flex: 1,
-    alignItems: "flex-start",
+    alignItems: "center",
   },
   deleteButton: {
     marginRight: 20,
