@@ -1,6 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
-import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  updateDoc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  addDoc,
+} from "firebase/firestore";
 import { db, auth } from "../config/firebase";
 import {
   View,
@@ -16,31 +24,33 @@ import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
 import { CartContext } from "../context/CartContext";
 import LoadingScreen from "../components/LoadingScreen";
-import CountryPicker from "react-native-country-picker-modal";
-import Icon from "react-native-vector-icons/FontAwesome";
 import AvatarPicker from "../components/AvatarPicker";
+import AddressBlock from "../components/AddressBlock";
+import WhatsappBlock from "../components/CaptureWhatsapp";
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [address, setAddress] = useState({
-    pais: "",
-    ciudad: "",
-    codigoPostal: "",
-    calle: "",
-    numero: "",
-    piso: "",
-    referencia: "",
-  });
-  const [phone, setPhone] = useState({ codigo: "57", numero: "" });
-  const [countryCode, setCountryCode] = useState("CO");
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [phone, setPhone] = useState({ codigo: "34", numero: "" });
+  const [countryCode, setCountryCode] = useState("ES");
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [avatar, setAvatar] = useState(null);
+  const [addresses, setAddresses] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const { colors } = useTheme();
   const { isLoading } = useContext(CartContext);
+  const user = auth.currentUser;
+  const getCountryCodeFromCallingCode = (callingCode) => {
+  switch (callingCode) {
+    case "34":
+      return "ES";
+    default:
+      return "ES"; // por defecto España
+  }
+};
 
+  // 🔹 Verificar sesión y cargar datos
   useEffect(() => {
     const verifySession = async () => {
       try {
@@ -54,25 +64,28 @@ export default function UserAreaScreen({ navigation }) {
         setUserName(name);
         setUserEmail(email);
 
-        const user = auth.currentUser;
         if (user) {
           const userRef = doc(db, "users", user.uid);
           const userSnap = await getDoc(userRef);
 
           if (userSnap.exists()) {
             const data = userSnap.data();
-            if (data.direccion)
-              setAddress((a) => ({ ...a, ...data.direccion }));
-            if (data.phone) {
-              const match = data.phone.match(/^\+(\d+)(\d+)/);
-              if (match) {
-                setPhone({ codigo: match[1], numero: match[2] });
-              }
+            if (data.phone && typeof data.phone === "object") {
+              setPhone({
+                codigo: data.phone.codigo || "34",
+                numero: data.phone.numero || "",
+              });
+              setCountryCode(getCountryCodeFromCallingCode(data.phone.codigo));
+            } else {
+              // Para compatibilidad si antes había string
+              setPhone({ codigo: "34", numero: "" });
             }
           } else {
-            // Si no existe el documento, lo crea vacío para evitar errores de updateDoc
-            await setDoc(userRef, { direccion: {}, phone: "" });
+            await setDoc(userRef, { phone: "" });
           }
+
+          // 🔹 Cargar direcciones desde la subcolección
+          await fetchAddresses();
         }
       } catch (error) {
         console.log("Error verificando sesión:", error);
@@ -84,24 +97,48 @@ export default function UserAreaScreen({ navigation }) {
     verifySession();
   }, []);
 
-  if (checkingAuth || isLoading) {
-    return <LoadingScreen message="Verificando sesión..." />;
-  }
-
-  const saveAddress = async () => {
+  // 🔹 Obtener direcciones del usuario
+  const fetchAddresses = async () => {
+    if (!user) return;
     try {
-      const user = auth.currentUser;
-      if (!user) return Alert.alert("Error", "Debes iniciar sesión.");
-      const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, { direccion: address });
-      Alert.alert("Guardado", "Dirección actualizada correctamente ✅");
-      setIsEditingAddress(false);
+      const snapshot = await getDocs(collection(db, `users/${user.uid}/addresses`));
+      const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setAddresses(list);
     } catch (error) {
-      console.log("Error guardando dirección:", error);
-      Alert.alert("Error", "No se pudo guardar la dirección.");
+      console.log("Error cargando direcciones:", error);
     }
   };
 
+  // 🔹 Añadir nueva dirección vacía
+  const handleAddAddress = async () => {
+    if (!user) return;
+    try {
+      const ref = collection(db, `users/${user.uid}/addresses`);
+      const docRef = await addDoc(ref, {
+        CA: "",
+        provincia: "",
+        codigoPostal: "",
+        calle: "",
+        numero: "",
+        piso: "",
+        referencia: "",
+      });
+
+      setEditingId(docRef.id); // 🔹 activa edición automática para esta dirección
+      fetchAddresses();
+    } catch (error) {
+      console.log("Error añadiendo dirección:", error);
+    }
+  };
+
+
+  // 🔹 Callbacks para AddressBlock
+  const handleDeleted = (id) => {
+    setAddresses((prev) => prev.filter((a) => a.id !== id));
+  };
+  const handleUpdated = () => fetchAddresses();
+
+  // 🔹 Guardar teléfono
   const savePhone = async () => {
     if (!phone.numero) {
       Alert.alert("Número vacío", "Por favor, ingresa tu número.");
@@ -110,10 +147,11 @@ export default function UserAreaScreen({ navigation }) {
 
     const formatted = `+${phone.codigo}${phone.numero.replace(/\D/g, "")}`;
     try {
-      const user = auth.currentUser;
       if (!user) return Alert.alert("Error", "Debes iniciar sesión.");
+
       const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, { phone: formatted });
+      await setDoc(userRef, { phone: formatted }, { merge: true });
+
       setIsEditingPhone(false);
       Alert.alert("Guardado", "Número de WhatsApp actualizado ✅");
     } catch (error) {
@@ -122,10 +160,14 @@ export default function UserAreaScreen({ navigation }) {
     }
   };
 
+  if (checkingAuth || isLoading) {
+    return <LoadingScreen message="Verificando sesión..." />;
+  }
+
   return (
     <View style={styles.container}>
       <CustomHeader
-        title={`Hola: ${userName?.toUpperCase() || "Usuario"} 👋`}
+        title={`Perfil: ${userName?.toUpperCase() || "Usuario"}`}
         showBack={false}
       />
 
@@ -143,7 +185,7 @@ export default function UserAreaScreen({ navigation }) {
             }}
           >
             <AvatarPicker
-              size={120}
+              size={100}
               initialAvatar={avatar}
               onAvatarChange={setAvatar}
             />
@@ -163,196 +205,44 @@ export default function UserAreaScreen({ navigation }) {
               Datos personales:
             </Text>
 
+            <Text style={[styles.text, { color: colors.text }]}>
+              Aquí puedes gestionar tus datos de envío para tus pedidos:
+            </Text>
+
             <View style={styles.field}>
-              {/* DIRECCIÓN */}
-              {isEditingAddress ? (
-                <View style={{ width: "100%" }}>
-                  {/* Campos */}
-                  <View style={{ flexDirection: "row", gap: 8 }}>
-                    <TextInput
-                      style={[
-                        styles.input,
-                        {
-                          flex: 1,
-                          color: colors.text,
-                          borderColor: colors.text,
-                        },
-                      ]}
-                      value={address.pais}
-                      onChangeText={(v) =>
-                        setAddress((a) => ({ ...a, pais: v }))
-                      }
-                      placeholder="País"
-                      placeholderTextColor={colors.text}
-                    />
-                    <TextInput
-                      style={[
-                        styles.input,
-                        {
-                          flex: 1,
-                          color: colors.text,
-                          borderColor: colors.text,
-                        },
-                      ]}
-                      value={address.ciudad}
-                      onChangeText={(v) =>
-                        setAddress((a) => ({ ...a, ciudad: v }))
-                      }
-                      placeholder="Ciudad"
-                      placeholderTextColor={colors.text}
-                    />
-                  </View>
+              {/* 🔹 DIRECCIONES DINÁMICAS */}
+              {addresses.map((item) => (
+                <AddressBlock
+                  key={item.id}
+                  addressId={item.id}
+                  initialData={item}
+                  onDeleted={handleDeleted}
+                  onUpdated={handleUpdated}
+                  isEditingAddress={editingId === item.id} // 🔹 solo este entra en edición
+                  setIsEditingAddress={(value) => {
+                    if (!value) setEditingId(null); // si termina de editar, limpiamos
+                    else setEditingId(item.id);
+                  }}
+                />
+              ))}
 
-                  <TouchableOpacity
-                    style={[styles.button, { backgroundColor: colors.text }]}
-                    onPress={saveAddress}
-                  >
-                    <Text
-                      style={[styles.buttonText, { color: colors.background }]}
-                    >
-                      Guardar dirección
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View style={[styles.addressBox]}>
-                  <Text style={styles.addressTitle}>
-                    📍 Dirección de Entrega:
-                  </Text>
-                  {Object.entries(address).map(([key, value]) => (
-                    <View style={styles.addressRow} key={key}>
-                      <Text style={styles.addressLabel}>
-                        {key.charAt(0).toUpperCase() + key.slice(1)}:
-                      </Text>
-                      <Text style={styles.addressValue}>{value || "-"}</Text>
-                    </View>
-                  ))}
-                  <TouchableOpacity
-                    style={[
-                      styles.editBtn,
-                      {
-                        marginTop: 10,
-                        backgroundColor: colors.background,
-                      },
-                    ]}
-                    onPress={() => setIsEditingAddress(true)}
-                  >
-                    <Text
-                      style={{
-                        color: colors.text,
-                        textTransform: "uppercase",
-                        fontFamily: "Jost_600SemiBold",
-                        textAlign: "center",
-                      }}
-                    >
-                      Editar dirección de entrega
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {/* WHATSAPP */}
-              <View
-                style={[
-                  styles.addressBox,
-                  isEditingPhone && {
-                    backgroundColor: colors.background,
-                    borderWidth: 0,
-                  },
-                ]}
+              <TouchableOpacity
+                onPress={handleAddAddress}
+                style={{
+                  backgroundColor: colors.text,
+                  borderRadius: 10,
+                  padding: 12,
+                  alignItems: "center",
+                  marginTop: 10,
+                  marginVertical: 10
+                }}
               >
-                {isEditingPhone ? (
-                  <View style={{ width: "100%" }}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 10,
-                      }}
-                    >
-                      <CountryPicker
-                        countryCode={countryCode}
-                        withFilter
-                        withFlag
-                        withCallingCode
-                        onSelect={(country) => {
-                          setCountryCode(country.cca2);
-                          setPhone((p) => ({
-                            ...p,
-                            codigo: country.callingCode[0],
-                          }));
-                        }}
-                      />
-                      <TextInput
-                        style={[
-                          styles.input,
-                          {
-                            flex: 1,
-                            color: colors.text,
-                            borderColor: colors.text,
-                          },
-                        ]}
-                        value={phone.numero}
-                        onChangeText={(num) =>
-                          setPhone((p) => ({ ...p, numero: num }))
-                        }
-                        placeholder="Número sin código de país"
-                        placeholderTextColor={colors.text}
-                        keyboardType="phone-pad"
-                      />
-                    </View>
-
-                    <TouchableOpacity
-                      style={[styles.button, { backgroundColor: colors.text }]}
-                      onPress={savePhone}
-                    >
-                      <Text
-                        style={[styles.buttonText, { color: colors.background }]}
-                      >
-                        Guardar número
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <View>
-                    <View style={styles.phoneRow}>
-                      <Icon name="whatsapp" size={24} color="#25D366" />
-                      <Text style={styles.addressTitle}> WhatsApp:</Text>
-                    </View>
-
-                    <View style={styles.addressRow}>
-                      <Text style={styles.addressLabel}>Número:</Text>
-                      <Text style={styles.addressValue}>
-                        {phone.numero
-                          ? `+${phone.codigo}${phone.numero}`
-                          : "No registrado"}
-                      </Text>
-                    </View>
-
-                    <TouchableOpacity
-                      style={[
-                        styles.editBtn,
-                        {
-                          marginTop: 10,
-                          backgroundColor: colors.background,
-                        },
-                      ]}
-                      onPress={() => setIsEditingPhone(true)}
-                    >
-                      <Text
-                        style={{
-                          color: colors.text,
-                          textTransform: "uppercase",
-                          fontFamily: "Jost_600SemiBold",
-                          textAlign: "center",
-                        }}
-                      >
-                        {phone.numero ? "Editar número" : "Agregar número"}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
+                <Text style={{ color: colors.background, fontFamily: 'Jost_700Bold', textTransform: 'uppercase', width: ' 100%', textAlign: 'center' }}>
+                  + Añadir dirección
+                </Text>
+              </TouchableOpacity>
+              {/* 🔹 BLOQUE WHATSAPP */}
+              <WhatsappBlock />
             </View>
           </View>
         </ScrollView>
@@ -409,7 +299,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-    marginTop: 10,
+    marginBottom: 10,
   },
   addressTitle: {
     fontSize: 16,
@@ -433,7 +323,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   addressValue: {
-    fontFamily: "Jost_400Regular",
+    fontFamily: "Jost_600SemiBold",
     color: "#ccc",
     fontSize: 14,
     flex: 1,
@@ -445,7 +335,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: { width: "100%" },
   field: {
-    alignItems: "center",
+
     width: "100%",
     justifyContent: "center",
     padding: 10,
