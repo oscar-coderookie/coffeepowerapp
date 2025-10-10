@@ -18,6 +18,7 @@ import ErrorBoundary from './error/ErrorBoundary';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider, useThemeContext } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { FavoritesProvider } from './context/FavoritesContext';
 
 function MainApp() {
   const { theme } = useThemeContext();
@@ -50,13 +51,14 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <CartProvider>
-          <ThemeProvider>
-            <MainApp />
-          </ThemeProvider>
-        </CartProvider>
+        <FavoritesProvider>
+          <CartProvider>
+            <ThemeProvider>
+              <MainApp />
+            </ThemeProvider>
+          </CartProvider>
+        </FavoritesProvider>
       </AuthProvider>
-
     </ErrorBoundary>
   );
 }

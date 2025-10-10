@@ -5,28 +5,29 @@ import { doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 import { db, auth } from "../config/firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useTheme } from "@react-navigation/native";
+import ComunidadProvinciaPicker from "./ComunityInput";
 
-export default function AddressBlock({   addressId,
+export default function AddressBlock({ addressId,
   initialData = {},
   onDeleted,
   onUpdated,
   isEditingAddress = false,
-  setIsEditingAddress = () => {} }) {
+  setIsEditingAddress = () => { } }) {
   const [isEditing, setIsEditing] = useState(false);
   const [address, setAddress] = useState({
     CA: "",
     provincia: "",
     codigoPostal: "",
     calle: "",
-    numero: "",
+    puerta: "",
     piso: "",
     referencia: "",
   });
   const { colors } = useTheme();
 
   useEffect(() => {
-  setIsEditing(isEditingAddress);
-}, [isEditingAddress]);
+    setIsEditing(isEditingAddress);
+  }, [isEditingAddress]);
 
   useEffect(() => {
     if (initialData) setAddress(initialData);
@@ -79,20 +80,26 @@ export default function AddressBlock({   addressId,
       {isEditing ? (
         <View style={{ width: "100%", }}>
           <View style={{ flexDirection: "row", gap: 8 }}>
-            <TextInput
+            {/* <TextInput
               style={[styles.input, { flex: 1, color: colors.text, borderColor: colors.text }]}
               value={address.CA}
               onChangeText={(v) => setAddress((a) => ({ ...a, CA: v }))}
               placeholder="Comunidad Autónoma"
               placeholderTextColor={colors.text}
+            /> */}
+            <ComunidadProvinciaPicker
+              valueCA={address.CA}
+              valueProv={address.provincia}
+              onChangeCA={(value) => setAddress((a) => ({ ...a, CA: value }))}
+              onChangeProv={(value) => setAddress((a) => ({ ...a, provincia: value }))}
             />
-            <TextInput
+            {/* <TextInput
               style={[styles.input, { flex: 1, color: colors.text, borderColor: colors.text }]}
               value={address.provincia}
               onChangeText={(v) => setAddress((a) => ({ ...a, provincia: v }))}
               placeholder="Provincia"
               placeholderTextColor={colors.text}
-            />
+            /> */}
           </View>
 
           <View style={{ flexDirection: "row", gap: 8 }}>
@@ -123,11 +130,11 @@ export default function AddressBlock({   addressId,
             />
             <TextInput
               style={[styles.input, { flex: 1, color: colors.text, borderColor: colors.text }]}
-              value={address.numero}
+              value={address.puerta}
               onChangeText={(v) => setAddress((a) => ({ ...a, numero: v }))}
-              placeholder="Número"
+              placeholder="Puerta"
               placeholderTextColor={colors.text}
-              keyboardType="numeric"
+              keyboardType="text"
             />
           </View>
 

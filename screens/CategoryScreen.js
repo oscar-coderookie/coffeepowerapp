@@ -1,16 +1,17 @@
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  Image, 
-  TouchableOpacity, 
-  Dimensions 
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Dimensions
 } from "react-native";
 import { getCoffeesByTag } from '../data/CoffeesData';
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
+import FavoriteButton from "../components/FavouriteButton";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -35,10 +36,10 @@ export default function CategoryScreen({ route }) {
       style={styles.bg}
     >
       {/* 🔹 Header dinámico */}
-      <CustomHeader 
-        title={category.name} 
+      <CustomHeader
+        title={category.name}
         showBack={true}
-        onBack={() => navigation.goBack()} 
+        onBack={() => navigation.goBack()}
       />
 
       <View style={styles.overlay}>
@@ -56,6 +57,7 @@ export default function CategoryScreen({ route }) {
               style={styles.card}
               onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}
             >
+              <FavoriteButton cafe={item} />
               <View style={styles.cardInfo}>
                 <Text style={styles.cardTitle}>{item.name}</Text>
                 <Text style={styles.cardDesc}>{item.description}</Text>
@@ -68,6 +70,7 @@ export default function CategoryScreen({ route }) {
                   style={styles.image}
                 />
               </View>
+              
             </TouchableOpacity>
           )}
         />
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+
     borderRadius: 12,
     padding: 10,
   },
@@ -130,6 +133,6 @@ const styles = StyleSheet.create({
   image: {
     width: "200%",
     height: "200%",
-    transform:[{translateX: -4}, {translateY: 10}]
+    transform: [{ translateX: -4 }, { translateY: 10 }]
   },
 });

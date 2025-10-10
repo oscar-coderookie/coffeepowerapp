@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import {
   doc,
@@ -50,64 +51,70 @@ export default function UserAreaScreen({ navigation }) {
   }
 };
 
-  // 🔹 Verificar sesión y cargar datos
-  useEffect(() => {
-    const verifySession = async () => {
+ // 🔹 1️⃣ Verificar sesión y usuario
+useEffect(() => {
+  console.log("🔄 Iniciando verificación de sesión...");
+
+  const unsubscribe = onAuthStateChanged(auth, async (userAuth) => {
+
+
+    if (userAuth) {
+
       try {
-        const session = await AsyncStorage.getItem("userSession");
-        if (!session) {
-          navigation.replace("Login");
-          return;
+        const userRef = doc(db, "users", userAuth.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+ 
+          await setDoc(userRef, { phone: "" });
         }
 
-        const { name, email } = JSON.parse(session);
-        setUserName(name);
-        setUserEmail(email);
+        const data = userSnap.data() || {};
+  
 
-        if (user) {
-          const userRef = doc(db, "users", user.uid);
-          const userSnap = await getDoc(userRef);
-
-          if (userSnap.exists()) {
-            const data = userSnap.data();
-            if (data.phone && typeof data.phone === "object") {
-              setPhone({
-                codigo: data.phone.codigo || "34",
-                numero: data.phone.numero || "",
-              });
-              setCountryCode(getCountryCodeFromCallingCode(data.phone.codigo));
-            } else {
-              // Para compatibilidad si antes había string
-              setPhone({ codigo: "34", numero: "" });
-            }
-          } else {
-            await setDoc(userRef, { phone: "" });
-          }
-
-          // 🔹 Cargar direcciones desde la subcolección
-          await fetchAddresses();
+        if (data.phone && typeof data.phone === "object") {
+          setPhone({
+            codigo: data.phone.codigo || "34",
+            numero: data.phone.numero || "",
+          });
+          setCountryCode(getCountryCodeFromCallingCode(data.phone.codigo));
+        } else {
+          setPhone({ codigo: "34", numero: "" });
         }
-      } catch (error) {
-        console.log("Error verificando sesión:", error);
-        navigation.replace("Login");
+
+        setUserName(userAuth.displayName || "Usuario");
+        setUserEmail(userAuth.email || "");
+        await fetchAddresses(userAuth.uid);
+      } catch (err) {
+        console.log("❌ Error cargando datos del usuario:", err);
       } finally {
         setCheckingAuth(false);
       }
-    };
-    verifySession();
-  }, []);
+    } else {
+      console.log("🚫 No hay usuario, redirigiendo a Login...");
+      setTimeout(() => {
+        navigation.replace("Login");
+      }, 1500);
+    }
+  });
+
+  return unsubscribe;
+}, []);
+
+
+
 
   // 🔹 Obtener direcciones del usuario
-  const fetchAddresses = async () => {
-    if (!user) return;
-    try {
-      const snapshot = await getDocs(collection(db, `users/${user.uid}/addresses`));
-      const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setAddresses(list);
-    } catch (error) {
-      console.log("Error cargando direcciones:", error);
-    }
-  };
+const fetchAddresses = async (uid = user?.uid) => {
+  if (!uid) return;
+  try {
+    const snapshot = await getDocs(collection(db, `users/${uid}/addresses`));
+    const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    setAddresses(list);
+  } catch (error) {
+    console.log("Error cargando direcciones:", error);
+  }
+};
 
   // 🔹 Añadir nueva dirección vacía
   const handleAddAddress = async () => {

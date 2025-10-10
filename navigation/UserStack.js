@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import ForgotPasswordScreen from "../screens/ForgotPassword";
+import UserTabs from "./UserTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,7 +44,7 @@ const UserStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={initialRoute}>
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="UserArea" component={UserAreaScreen} />
+      <Stack.Screen name="UserArea" component={UserTabs} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   );
