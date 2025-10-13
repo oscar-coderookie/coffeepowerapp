@@ -19,14 +19,18 @@ import { CartProvider } from './context/CartContext';
 import { ThemeProvider, useThemeContext } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
+import { StripeProvider } from '@stripe/stripe-react-native';
 
 function MainApp() {
   const { theme } = useThemeContext();
 
   return (
-    <NavigationContainer theme={theme}>
-      <DrawerNavigator />
-    </NavigationContainer>
+    <StripeProvider publishableKey="pk_test_51SHlhHDF3l7m7jkhqzTntSB1nsRHUhvipcnCrGKMfLB5j2UvJmcUNGI7KEC2FEsyZzlCL8FkEYid2EkJSeopmVNr00JNoHF3eP">
+      <NavigationContainer theme={theme}>
+        <DrawerNavigator />
+      </NavigationContainer>
+    </StripeProvider>
+
   );
 }
 

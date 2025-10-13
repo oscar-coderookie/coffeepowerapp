@@ -1,12 +1,14 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
+
 import RegisterScreen from "../screens/RegisterScreen";
 import LoginScreen from "../screens/LoginScreen";
 import UserAreaScreen from "../screens/UserAreaScreen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
 import ForgotPasswordScreen from "../screens/ForgotPassword";
 import UserTabs from "./UserTabs";
+
+import { auth } from "../config/firebase";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,24 +16,19 @@ const UserStack = () => {
   const [initialRoute, setInitialRoute] = useState(null);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const session = await AsyncStorage.getItem("userSession");
-        if (session) {
-          setInitialRoute("UserArea"); // si hay sesión → área cliente
-        } else {
-          setInitialRoute("Login"); // si no hay sesión → login
-        }
-      } catch (error) {
-        console.log("Error leyendo sesión:", error);
-        setInitialRoute("Login");
+    // Escucha cambios en la sesión de Firebase
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setInitialRoute("UserArea"); // Usuario logueado → área personal
+      } else {
+        setInitialRoute("Login"); // No hay usuario → login
       }
-    };
+    });
 
-    checkSession();
+    return () => unsubscribe(); // limpiar listener al desmontar
   }, []);
 
-  // Mientras revisa sesión mostramos un loader
+  // Mientras detecta la sesión mostramos loader
   if (!initialRoute) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
