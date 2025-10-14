@@ -17,10 +17,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  TextInput,
   Alert,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
 import { CartContext } from "../context/CartContext";
@@ -42,79 +40,83 @@ export default function UserAreaScreen({ navigation }) {
   const { colors } = useTheme();
   const { isLoading } = useContext(CartContext);
   const user = auth.currentUser;
+
   const getCountryCodeFromCallingCode = (callingCode) => {
-  switch (callingCode) {
-    case "34":
-      return "ES";
-    default:
-      return "ES"; // por defecto España
-  }
-};
-
- // 🔹 1️⃣ Verificar sesión y usuario
-useEffect(() => {
-  console.log("🔄 Iniciando verificación de sesión...");
-
-  const unsubscribe = onAuthStateChanged(auth, async (userAuth) => {
-
-
-    if (userAuth) {
-
-      try {
-        const userRef = doc(db, "users", userAuth.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists()) {
- 
-          await setDoc(userRef, { phone: "" });
-        }
-
-        const data = userSnap.data() || {};
-  
-
-        if (data.phone && typeof data.phone === "object") {
-          setPhone({
-            codigo: data.phone.codigo || "34",
-            numero: data.phone.numero || "",
-          });
-          setCountryCode(getCountryCodeFromCallingCode(data.phone.codigo));
-        } else {
-          setPhone({ codigo: "34", numero: "" });
-        }
-
-        setUserName(userAuth.displayName || "Usuario");
-        setUserEmail(userAuth.email || "");
-        await fetchAddresses(userAuth.uid);
-      } catch (err) {
-        console.log("❌ Error cargando datos del usuario:", err);
-      } finally {
-        setCheckingAuth(false);
-      }
-    } else {
-      console.log("🚫 No hay usuario, redirigiendo a Login...");
-      setTimeout(() => {
-        navigation.replace("Login");
-      }, 1500);
+    switch (callingCode) {
+      case "34":
+        return "ES";
+      default:
+        return "ES";
     }
-  });
+  };
 
-  return unsubscribe;
-}, []);
+  // 🔹 1️⃣ Verificar sesión y cargar datos de usuario desde Firestore
+  useEffect(() => {
+    console.log("🔄 Iniciando verificación de sesión...");
 
+    const unsubscribe = onAuthStateChanged(auth, async (userAuth) => {
+      if (userAuth) {
+        try {
+          const userRef = doc(db, "users", userAuth.uid);
+          const userSnap = await getDoc(userRef);
 
+          // 🔹 Si el usuario no existe en Firestore, creamos el documento con name y phone
+          if (!userSnap.exists()) {
+            await setDoc(userRef, {
+              phone: "",
+              name: userAuth.displayName || "Usuario",
+            });
+          }
 
+          const data = userSnap.exists() ? userSnap.data() : { phone: "", name: "Usuario" };
+
+          // 🔹 Configuramos el nombre desde Firestore
+          setUserName(data.name || "Usuario");
+
+          // 🔹 Configuramos el email
+          setUserEmail(userAuth.email || "");
+
+          // 🔹 Configuramos el teléfono
+          if (data.phone && typeof data.phone === "object") {
+            setPhone({
+              codigo: data.phone.codigo || "34",
+              numero: data.phone.numero || "",
+            });
+            setCountryCode(getCountryCodeFromCallingCode(data.phone.codigo));
+          } else {
+            setPhone({ codigo: "34", numero: "" });
+          }
+
+          // 🔹 Cargamos direcciones
+          await fetchAddresses(userAuth.uid);
+
+        } catch (err) {
+          console.log("❌ Error cargando datos del usuario:", err);
+        } finally {
+          setCheckingAuth(false);
+        }
+      } else {
+        console.log("🚫 No hay usuario, redirigiendo a Login...");
+        setTimeout(() => {
+          navigation.replace("Login");
+        }, 1500);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   // 🔹 Obtener direcciones del usuario
-const fetchAddresses = async (uid = user?.uid) => {
-  if (!uid) return;
-  try {
-    const snapshot = await getDocs(collection(db, `users/${uid}/addresses`));
-    const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    setAddresses(list);
-  } catch (error) {
-    console.log("Error cargando direcciones:", error);
-  }
-};
+  const fetchAddresses = async (uid = user?.uid) => {
+    if (!uid) return;
+    try {
+      const snapshot = await getDocs(collection(db, `users/${uid}/addresses`));
+      const list = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setAddresses(list);
+    } catch (error) {
+      console.log("Error cargando direcciones:", error);
+    }
+  };
 
   // 🔹 Añadir nueva dirección vacía
   const handleAddAddress = async () => {
@@ -131,13 +133,12 @@ const fetchAddresses = async (uid = user?.uid) => {
         referencia: "",
       });
 
-      setEditingId(docRef.id); // 🔹 activa edición automática para esta dirección
+      setEditingId(docRef.id);
       fetchAddresses();
     } catch (error) {
       console.log("Error añadiendo dirección:", error);
     }
   };
-
 
   // 🔹 Callbacks para AddressBlock
   const handleDeleted = (id) => {
@@ -165,6 +166,14 @@ const fetchAddresses = async (uid = user?.uid) => {
       console.log("❌ Error guardando número:", error);
       Alert.alert("Error", "No se pudo guardar el número. Intenta de nuevo.");
     }
+  };
+
+  // 🔹 Guardar nombre del usuario (opcional)
+  const saveUserName = async (newName) => {
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(userRef, { name: newName }, { merge: true });
+    setUserName(newName);
   };
 
   if (checkingAuth || isLoading) {
@@ -225,9 +234,9 @@ const fetchAddresses = async (uid = user?.uid) => {
                   initialData={item}
                   onDeleted={handleDeleted}
                   onUpdated={handleUpdated}
-                  isEditingAddress={editingId === item.id} // 🔹 solo este entra en edición
+                  isEditingAddress={editingId === item.id}
                   setIsEditingAddress={(value) => {
-                    if (!value) setEditingId(null); // si termina de editar, limpiamos
+                    if (!value) setEditingId(null);
                     else setEditingId(item.id);
                   }}
                 />
@@ -244,10 +253,11 @@ const fetchAddresses = async (uid = user?.uid) => {
                   marginVertical: 10
                 }}
               >
-                <Text style={{ color: colors.background, fontFamily: 'Jost_700Bold', textTransform: 'uppercase', width: ' 100%', textAlign: 'center' }}>
+                <Text style={{ color: colors.background, fontFamily: 'Jost_700Bold', textTransform: 'uppercase', width: '100%', textAlign: 'center' }}>
                   + Añadir dirección
                 </Text>
               </TouchableOpacity>
+
               {/* 🔹 BLOQUE WHATSAPP */}
               <WhatsappBlock />
             </View>
@@ -286,65 +296,15 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_400Regular",
   },
   button: { padding: 15, borderRadius: 8, margin: 8 },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    marginVertical: 6,
-    fontFamily: "Jost_400Regular",
+  infoContainer: { width: "100%" },
+  field: {
     width: "100%",
-    backgroundColor: "transparent",
-  },
-  editBtn: { borderWidth: 1, borderRadius: 8, padding: 14 },
-  addressBox: {
-    width: "100%",
-    backgroundColor: "#222",
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-    marginBottom: 10,
-  },
-  addressTitle: {
-    fontSize: 16,
-    fontFamily: "Jost_700Bold",
-    color: "#a88e19",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    textAlign: "center",
-  },
-  addressRow: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
-  addressLabel: {
-    fontFamily: "Jost_600SemiBold",
-    color: "#fff",
-    width: 120,
-    fontSize: 14,
-  },
-  phoneRow: {
-    alignItems: "center",
-    flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 10,
-  },
-  addressValue: {
-    fontFamily: "Jost_600SemiBold",
-    color: "#ccc",
-    fontSize: 14,
-    flex: 1,
+    padding: 10,
   },
   buttonText: {
     fontFamily: "Jost_700Bold",
     textTransform: "uppercase",
     textAlign: "center",
-  },
-  infoContainer: { width: "100%" },
-  field: {
-
-    width: "100%",
-    justifyContent: "center",
-    padding: 10,
   },
 });
