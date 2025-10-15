@@ -1,58 +1,117 @@
+import React, { useState } from "react";
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
-    Dimensions,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity,
 } from "react-native";
-import imageBck from '../assets/images/nuestros-cafes.png'
 import { useNavigation } from "@react-navigation/native";
-
-import { coffeeCategories } from "../data/CoffeesData";
+import imageBck from "../assets/images/nuestros-cafes.png";
+import { coffeeCategories, coffeesCatalogue } from "../data/CoffeesData";
+import SearchBar from "../components/SearchBar";
 
 const OurCoffees = () => {
     const navigation = useNavigation();
-    return (
-        <ImageBackground source={imageBck} style={styles.background}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <Text style={styles.title} >Nuestros Cafés</Text>
+    const [searchResults, setSearchResults] = useState([]);
 
-                <View style={styles.mosaic}>
-                    {coffeeCategories.map((item, index) => (
-                        <TouchableOpacity style={styles.card} key={index} onPress={() => navigation.navigate("Category", { category: item })}>
-                            <Text style={styles.cardTitle}>{item.name}</Text>
-                            <Text style={styles.legend}>{item.legend}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            </ScrollView>
-        </ImageBackground>
-    )
+    const handleSearch = (query) => {
+        if (!query) {
+            setSearchResults([]);
+            return;
+        }
+
+        const filtered = coffeesCatalogue.filter((coffee) => {
+            const lowerQuery = query.toLowerCase();
+
+            // Buscar por nombre
+            const matchName = coffee.name?.toLowerCase().includes(lowerQuery);
+
+            // Buscar por descripción
+            const matchDescription = coffee.description?.toLowerCase().includes(lowerQuery);
+
+            // Buscar por tags
+            const matchTags = coffee.tags?.some((tag) =>
+                tag.toLowerCase().includes(lowerQuery)
+            );
+
+            return matchName || matchDescription || matchTags;
+        });
+
+        setSearchResults(filtered);
+    };
+
+    return (
+        <View style={{ flex: 1 }}>
+            <SearchBar onSearch={handleSearch} />
+            <ImageBackground source={imageBck} style={styles.background}>
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    {searchResults.length > 0 ? (
+                        <>
+                            <Text style={styles.title}>Resultados de búsqueda</Text>
+                            <View style={styles.mosaic}>
+                                {searchResults.map((coffee, index) => (
+                                    <TouchableOpacity
+                                        key={index} // ✅ key único por cada café
+                                        style={styles.card}
+                                        onPress={() =>
+                                            navigation.navigate("CoffeeDetail", { coffee })
+                                        }
+                                    >
+                                        <Text style={styles.cardTitle}>{coffee.name}</Text>
+
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </>
+                    ) : (
+                        <>
+                            <Text style={styles.title}>Nuestros Cafés</Text>
+                            <View style={styles.mosaic}>
+                                {coffeeCategories.map((item, index) => (
+                                    <TouchableOpacity
+                                        key={index} // ✅ key único por cada categoría
+                                        style={styles.card}
+                                        onPress={() =>
+                                            navigation.navigate("Category", { category: item })
+                                        }
+                                    >
+                                        <Text style={styles.cardTitle}>{item.name}</Text>
+                                        {item.legend && (
+                                            <Text style={styles.legend}>{item.legend}</Text>
+                                        )}
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </>
+                    )}
+                </ScrollView>
+            </ImageBackground>
+        </View>
+    );
 };
 
-export default OurCoffees
+export default OurCoffees;
 
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        resizeMode: 'cover', // se ajusta al tamaño de pantalla
+        resizeMode: "cover",
     },
     scrollContent: {
         padding: 20,
-        paddingBottom: 100
+        paddingBottom: 100,
     },
     title: {
-        fontSize: 28,
-        fontWeight: "500",
-        fontFamily: 'Jost_600SemiBold',
+        fontSize: 24,
+        fontFamily: "Jost_600SemiBold",
         color: "#fff",
-        textTransform: 'uppercase',
+        textTransform: "uppercase",
         textAlign: "center",
-        marginBottom: 40,
+        marginBottom: 20,
         textShadowColor: "rgba(0, 0, 0, 0.54)",
-        textShadowOffset: { width: 1, height: 1 },
+        textShadowOffset: { width: 0.5, height: 0.5 },
         textShadowRadius: 6,
     },
     mosaic: {
@@ -60,24 +119,21 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     card: {
-        backgroundColor: "rgba(0, 0, 0, 0.45)", // un poco de transparencia para leer bien el texto
+        backgroundColor: "rgba(0, 0, 0, 0.45)",
         borderRadius: 12,
         padding: 16,
-        backdropFilter: "blur(8px)",
     },
     cardTitle: {
         fontSize: 20,
-        textAlign: 'center',
-        fontWeight: "500",
-        fontFamily: 'Jost_600SemiBold',
-        textTransform: 'capitalize',
+        textAlign: "center",
+        fontFamily: "Jost_600SemiBold",
         color: "#fff",
         marginBottom: 8,
     },
     legend: {
         fontSize: 16,
-        fontFamily: 'Jost_400Regular',
-        textAlign: 'center',
+        fontFamily: "Jost_400Regular",
+        textAlign: "center",
         color: "#ccc",
-    }
+    },
 });

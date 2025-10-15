@@ -10,11 +10,12 @@ export default function CustomHeader({ title, children, showBack = false }) {
   return (
     <View
       style={{
-        height: 60,
+
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         paddingHorizontal: 10,
+        paddingVertical:10,
         borderBottomColor: colors.border,
         borderBottomWidth: 1,
         backgroundColor: colors.background,

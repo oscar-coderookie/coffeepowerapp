@@ -1,6 +1,4 @@
 import { View, Text, StyleSheet, Image, ScrollView, Dimensions, ImageBackground, TouchableOpacity, Alert, TextInput } from "react-native";
-import Header from "../components/CustomHeader";
-import MarqueeTitle from "../components/AnimatedTitle";
 import { useContext, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { CartContext } from "../context/CartContext";
@@ -113,6 +111,7 @@ const styles = StyleSheet.create({
   section2: {
     flex: 1,
     paddingTop: 40,
+    backgroundColor:'#000000ff'
   },
   imageContainer: {
     alignItems: "center",

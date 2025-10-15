@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-    marginBottom: 10,
+
   },
   input: {
     borderWidth: 1,

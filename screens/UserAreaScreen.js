@@ -26,6 +26,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import AvatarPicker from "../components/AvatarPicker";
 import AddressBlock from "../components/AddressBlock";
 import WhatsappBlock from "../components/CaptureWhatsapp";
+import ButtonGeneral from "../components/ButtonGeneral";
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
@@ -146,47 +147,13 @@ export default function UserAreaScreen({ navigation }) {
   };
   const handleUpdated = () => fetchAddresses();
 
-  // 🔹 Guardar teléfono
-  const savePhone = async () => {
-    if (!phone.numero) {
-      Alert.alert("Número vacío", "Por favor, ingresa tu número.");
-      return;
-    }
-
-    const formatted = `+${phone.codigo}${phone.numero.replace(/\D/g, "")}`;
-    try {
-      if (!user) return Alert.alert("Error", "Debes iniciar sesión.");
-
-      const userRef = doc(db, "users", user.uid);
-      await setDoc(userRef, { phone: formatted }, { merge: true });
-
-      setIsEditingPhone(false);
-      Alert.alert("Guardado", "Número de WhatsApp actualizado ✅");
-    } catch (error) {
-      console.log("❌ Error guardando número:", error);
-      Alert.alert("Error", "No se pudo guardar el número. Intenta de nuevo.");
-    }
-  };
-
-  // 🔹 Guardar nombre del usuario (opcional)
-  const saveUserName = async (newName) => {
-    if (!user) return;
-    const userRef = doc(db, "users", user.uid);
-    await setDoc(userRef, { name: newName }, { merge: true });
-    setUserName(newName);
-  };
-
   if (checkingAuth || isLoading) {
     return <LoadingScreen message="Verificando sesión..." />;
   }
 
   return (
     <View style={styles.container}>
-      <CustomHeader
-        title={`Perfil: ${userName?.toUpperCase() || "Usuario"}`}
-        showBack={false}
-      />
-
+      <CustomHeader title='Espacio personal' showBack={false} />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
@@ -196,8 +163,10 @@ export default function UserAreaScreen({ navigation }) {
             style={{
               flex: 1,
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: "space-around",
+              flexDirection: 'row',
               paddingTop: 10,
+              paddingBottom: 10
             }}
           >
             <AvatarPicker
@@ -205,12 +174,14 @@ export default function UserAreaScreen({ navigation }) {
               initialAvatar={avatar}
               onAvatarChange={setAvatar}
             />
+            <View style={{
+              alignItems: 'center'
+            }}>
+              <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase', width: '100%' }}>Bienvenido:</Text>
+              <Text style={{ textTransform: 'capitalize', fontFamily: 'Jost_400Regular' }}>{userName}</Text>
+            </View>
+
           </View>
-
-          <Text style={[styles.text, { color: colors.text }]}>
-            Bienvenido a tu espacio personal de Coffee Power APP
-          </Text>
-
           <View style={styles.infoContainer}>
             <Text
               style={[
@@ -218,9 +189,8 @@ export default function UserAreaScreen({ navigation }) {
                 { backgroundColor: colors.text, color: colors.background },
               ]}
             >
-              Datos personales:
+              Datos de contacto:
             </Text>
-
             <Text style={[styles.text, { color: colors.text }]}>
               Aquí puedes gestionar tus datos de envío para tus pedidos:
             </Text>
@@ -242,39 +212,17 @@ export default function UserAreaScreen({ navigation }) {
                 />
               ))}
 
-              <TouchableOpacity
-                onPress={handleAddAddress}
-                style={{
-                  backgroundColor: colors.text,
-                  borderRadius: 10,
-                  padding: 12,
-                  alignItems: "center",
-                  marginTop: 10,
-                  marginVertical: 10
-                }}
-              >
-                <Text style={{ color: colors.background, fontFamily: 'Jost_700Bold', textTransform: 'uppercase', width: '100%', textAlign: 'center' }}>
-                  + Añadir dirección
-                </Text>
-              </TouchableOpacity>
-
+              <ButtonGeneral bckColor={colors.text} Color text="+ Añadir dirección" textColor={colors.background} onTouch={handleAddAddress} />
               {/* 🔹 BLOQUE WHATSAPP */}
               <WhatsappBlock />
             </View>
           </View>
         </ScrollView>
+         <ButtonGeneral bckColor={colors.text} Color text="ir a tu carrito" textColor={colors.background} onTouch={() =>
+        navigation.navigate("Nuestros Cafés", { screen: "Carrito" })} marginHorizontal={10} />
       </KeyboardAvoidingView>
 
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: colors.text }]}
-        onPress={() =>
-          navigation.navigate("Nuestros Cafés", { screen: "Carrito" })
-        }
-      >
-        <Text style={[styles.buttonText, { color: colors.background }]}>
-          Ir a tu carrito
-        </Text>
-      </TouchableOpacity>
+     
     </View>
   );
 }
@@ -290,8 +238,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   text: {
-    fontSize: 16,
-    padding: 20,
+    padding: 10,
     textAlign: "center",
     fontFamily: "Jost_400Regular",
   },

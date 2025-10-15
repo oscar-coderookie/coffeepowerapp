@@ -22,12 +22,14 @@ import icon2 from "../assets/icons/menu-2.png";
 import icon3 from "../assets/icons/menu-3.png";
 import icon4 from "../assets/icons/menu-4.png";
 import icon5 from "../assets/icons/menu-btn2.png";
+import LegalStack from "./LegalStack";
 
 const Drawer = createDrawerNavigator();
 
 function CustomDrawerContent(props) {
   const { isDark, toggleTheme } = useThemeContext();
   const [user, setUser] = useState(null);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => setUser(currentUser));
@@ -98,69 +100,80 @@ export default function DrawerNavigator() {
   const { colors } = useTheme();
 
   return (
-    <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
-        drawerStyle: { backgroundColor: colors.background },
-        drawerActiveTintColor: colors.text,
-        drawerInactiveTintColor: colors.text,
-        drawerLabelStyle: {
-          fontFamily: "Jost_600SemiBold",
-          textTransform: "uppercase",
-          letterSpacing: 1,
-        },
-        headerTitle: "",
-        headerRight: () => (
-          <TouchableOpacity>
-            <Image
-              source={logo}
-              style={{ width: 102.5, height: 37.5, marginRight: 8 }}
-            />
-          </TouchableOpacity>
-        ),
-      }}
-    >
-      <Drawer.Screen
-        name="Nuestros Cafés"
-        component={Tabs}
-        options={{
-          drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
+
+      
+      <Drawer.Navigator
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+        screenOptions={{
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
+          drawerStyle: { backgroundColor: colors.background },
+          drawerActiveTintColor: colors.text,
+          drawerInactiveTintColor: colors.text,
+          
+          drawerLabelStyle: {
+            fontFamily: "Jost_600SemiBold",
+            textTransform: "uppercase",
+            letterSpacing: 1,
+          },
+          headerTitle: "",
+          headerRight: () => (
+            <TouchableOpacity>
+              <Image
+                source={logo}
+                style={{ width: 102.5, height: 37.5, marginRight: 8 }}
+              />
+            </TouchableOpacity>
+          ),
         }}
-      />
-      <Drawer.Screen
-        name="¿Quiénes Somos?"
-        component={AboutUsTabs}
-        options={{
-          drawerIcon: ({ size }) => <Image source={icon2} style={{ width: size, height: size }} />,
-        }}
-      />
-      <Drawer.Screen
-        name="Eventos"
-        component={EventsTabs}
-        options={{
-          drawerIcon: ({ size }) => <Image source={icon3} style={{ width: size, height: size }} />,
-        }}
-      />
-      <Drawer.Screen
-        name="Accesorios Pro"
-        component={AccesoriesPro}
-        options={{
-          drawerIcon: ({ size }) => <Image source={icon4} style={{ width: size, height: size }} />,
-        }}
-      />
-      {/* 👇 Solo muestra "Área personal" si hay usuario logueado */}
-     
+      >
+        <Drawer.Screen
+          name="Nuestros Cafés"
+          component={Tabs}
+          options={{
+            drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
+          }}
+        />
+        <Drawer.Screen
+          name="¿Quiénes Somos?"
+          component={AboutUsTabs}
+          options={{
+            drawerIcon: ({ size }) => <Image source={icon2} style={{ width: size, height: size }} />,
+          }}
+        />
+        <Drawer.Screen
+          name="Eventos"
+          component={EventsTabs}
+          options={{
+            drawerIcon: ({ size }) => <Image source={icon3} style={{ width: size, height: size }} />,
+          }}
+        />
+        <Drawer.Screen
+          name="Accesorios Pro"
+          component={AccesoriesPro}
+          options={{
+            drawerIcon: ({ size }) => <Image source={icon4} style={{ width: size, height: size }} />,
+          }}
+        />
+        {/* 👇 Solo muestra "Área personal" si hay usuario logueado */}
+
         <Drawer.Screen
           name="Área personal"
           component={UserStack}
           options={{
             drawerIcon: ({ size }) => <Image source={icon5} style={{ width: size, height: size }} />,
           }}
-        /> 
- 
-    </Drawer.Navigator>
+        />
+         <Drawer.Screen
+          name="Legal"
+          component={LegalStack}
+          options={{
+            drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
+          }}
+        />
+
+      </Drawer.Navigator>
+
   );
 }
 

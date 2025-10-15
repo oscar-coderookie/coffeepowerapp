@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   },
   dataRow: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     marginVertical: 4,
   },
   label: {

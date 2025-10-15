@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Necesitamos acceso a tu galería para que puedas elegir o cambiar tu avatar.",
+        "NSCameraUsageDescription": "Necesitamos acceso a tu cámara para que puedas tomar una foto de perfil."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,6 +25,11 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
+      ],
       "package": "com.oscarsc90.coffeepowerapp"
     },
     "web": {
