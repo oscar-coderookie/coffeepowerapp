@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
+import { comunidades } from "../data/spainRegions";
+
 import { db, auth } from "../config/firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useTheme } from "@react-navigation/native";
@@ -79,27 +81,24 @@ export default function AddressBlock({ addressId,
     <View style={[styles.addressBox, { backgroundColor: isEditing ? colors.background : colors.text }]}>
       {isEditing ? (
         <View style={{ width: "100%", }}>
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            {/* <TextInput
-              style={[styles.input, { flex: 1, color: colors.text, borderColor: colors.text }]}
-              value={address.CA}
-              onChangeText={(v) => setAddress((a) => ({ ...a, CA: v }))}
-              placeholder="Comunidad Autónoma"
-              placeholderTextColor={colors.text}
-            /> */}
+          <View style={{ flexDirection: "column", gap: 10 }}>
             <ComunidadProvinciaPicker
-              valueCA={address.CA}
-              valueProv={address.provincia}
-              onChangeCA={(value) => setAddress((a) => ({ ...a, CA: value }))}
-              onChangeProv={(value) => setAddress((a) => ({ ...a, provincia: value }))}
+              label="Comunidad Autónoma"
+              value={address.CA}
+              options={comunidades.map((ca) => ca.nombre)}
+              onChange={(value) => {
+                setAddress((a) => ({ ...a, CA: value, provincia: "" }));
+              }}
             />
-            {/* <TextInput
-              style={[styles.input, { flex: 1, color: colors.text, borderColor: colors.text }]}
+
+            <ComunidadProvinciaPicker
+              label="Provincia"
               value={address.provincia}
-              onChangeText={(v) => setAddress((a) => ({ ...a, provincia: v }))}
-              placeholder="Provincia"
-              placeholderTextColor={colors.text}
-            /> */}
+              options={
+                comunidades.find((ca) => ca.nombre === address.CA)?.provincias || []
+              }
+              onChange={(value) => setAddress((a) => ({ ...a, provincia: value }))}
+            />
           </View>
 
           <View style={{ flexDirection: "row", gap: 8 }}>
@@ -107,7 +106,7 @@ export default function AddressBlock({ addressId,
               style={[styles.input, { flex: 1, color: colors.text, borderColor: colors.text }]}
               value={address.codigoPostal}
               onChangeText={(v) => setAddress((a) => ({ ...a, codigoPostal: v }))}
-              placeholder="Código Postal"
+              placeholder="Código Postal*"
               placeholderTextColor={colors.text}
               keyboardType="numeric"
             />
@@ -125,8 +124,9 @@ export default function AddressBlock({ addressId,
               style={[styles.input, { flex: 2, color: colors.text, borderColor: colors.text }]}
               value={address.calle}
               onChangeText={(v) => setAddress((a) => ({ ...a, calle: v }))}
-              placeholder="Calle"
+              placeholder="Calle *"
               placeholderTextColor={colors.text}
+
             />
             <TextInput
               style={[styles.input, { flex: 1, color: colors.text, borderColor: colors.text }]}

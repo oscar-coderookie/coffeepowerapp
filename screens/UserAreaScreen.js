@@ -27,6 +27,7 @@ import AvatarPicker from "../components/AvatarPicker";
 import AddressBlock from "../components/AddressBlock";
 import WhatsappBlock from "../components/CaptureWhatsapp";
 import ButtonGeneral from "../components/ButtonGeneral";
+import VerifyEmailBlock from "../components/VerifyEmail";
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
@@ -153,7 +154,8 @@ export default function UserAreaScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <CustomHeader title='Espacio personal' showBack={false} />
+      <CustomHeader title='Perfil Personal' showBack={false}  />
+      <VerifyEmailBlock />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
@@ -177,12 +179,13 @@ export default function UserAreaScreen({ navigation }) {
             <View style={{
               alignItems: 'center'
             }}>
-              <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase', width: '100%' }}>Bienvenido:</Text>
-              <Text style={{ textTransform: 'capitalize', fontFamily: 'Jost_400Regular' }}>{userName}</Text>
+              <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase', width: '100%', color: colors.text }}>Bienvenido:</Text>
+              <Text style={{ textTransform: 'capitalize', fontFamily: 'Jost_400Regular',color: colors.text }}>{userName}</Text>
             </View>
-
+             
           </View>
           <View style={styles.infoContainer}>
+            
             <Text
               style={[
                 styles.title,
@@ -191,6 +194,16 @@ export default function UserAreaScreen({ navigation }) {
             >
               Datos de contacto:
             </Text>
+               <View style={{
+              alignItems: 'center',
+              marginVertical: 10
+    
+            }}>
+                <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase',color: colors.text}}>correo vinculado:</Text>
+              <Text style={{  fontFamily: 'Jost_400Regular', color: colors.text }}>{userEmail}</Text>
+            </View>
+            
+
             <Text style={[styles.text, { color: colors.text }]}>
               Aquí puedes gestionar tus datos de envío para tus pedidos:
             </Text>
@@ -231,14 +244,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "flex-start", paddingBottom: 20 },
   title: {
     fontSize: 18,
-    marginBottom: 10,
     textTransform: "uppercase",
     textAlign: "center",
     fontFamily: "Jost_700Bold",
     padding: 10,
   },
   text: {
-    padding: 10,
+
     textAlign: "center",
     fontFamily: "Jost_400Regular",
   },

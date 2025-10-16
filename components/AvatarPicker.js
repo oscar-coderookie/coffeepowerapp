@@ -15,6 +15,7 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db, auth } from "../config/firebase";
 import { useTheme } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AvatarPicker({ size = 100 }) {
   const { colors } = useTheme();
@@ -22,6 +23,7 @@ export default function AvatarPicker({ size = 100 }) {
   const [loading, setLoading] = useState(false);
 
   const storage = getStorage();
+  const PERMISSION_KEY = "avatar_permission_alert_shown";
 
   // 🔹 Cargar avatar existente
   useEffect(() => {
@@ -42,14 +44,31 @@ export default function AvatarPicker({ size = 100 }) {
     fetchAvatar();
   }, []);
 
-  // 🔹 Pedir permisos
+  // 🔹 Pedir permisos de manera segura con AsyncStorage
   useEffect(() => {
-    (async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permiso denegado", "Necesitamos acceso a tus fotos");
+    const checkPermissions = async () => {
+      try {
+        const alertShown = await AsyncStorage.getItem(PERMISSION_KEY);
+        if (alertShown === "true") return; // ya mostramos alert antes
+
+        const { status: existingStatus } = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+        if (existingStatus !== "granted") {
+          const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (newStatus !== "granted") {
+            Alert.alert(
+              "Permiso denegado",
+              "Necesitamos acceso a tus fotos para que puedas subir tu avatar."
+            );
+          }
+        }
+
+        await AsyncStorage.setItem(PERMISSION_KEY, "true"); // guardamos que ya mostramos alert
+      } catch (err) {
+        console.error("Error revisando permisos:", err);
       }
-    })();
+    };
+    checkPermissions();
   }, []);
 
   // 🔹 Subir avatar nuevo
@@ -76,7 +95,7 @@ export default function AvatarPicker({ size = 100 }) {
     }
   };
 
-  // 🔹 Función para subir avatar a Firebase Storage y actualizar Firestore
+  // 🔹 Subir avatar a Firebase Storage y actualizar Firestore
   const uploadAvatar = async (uri) => {
     const user = auth.currentUser;
     if (!user) {
@@ -105,7 +124,7 @@ export default function AvatarPicker({ size = 100 }) {
     }
   };
 
-  // 🔹 Función para eliminar avatar
+  // 🔹 Eliminar avatar
   const deleteAvatar = async () => {
     const user = auth.currentUser;
     if (!user) return;
@@ -118,13 +137,11 @@ export default function AvatarPicker({ size = 100 }) {
     try {
       setLoading(true);
 
-      // Eliminar del Storage
       const storageRef = ref(storage, `avatars/${user.uid}/avatar.jpg`);
       await deleteObject(storageRef).catch((err) => {
         console.log("Archivo no encontrado en Storage, continuar...", err);
       });
 
-      // Eliminar referencia en Firestore
       const userDoc = doc(db, "users", user.uid);
       await setDoc(userDoc, { avatar: "" }, { merge: true });
 

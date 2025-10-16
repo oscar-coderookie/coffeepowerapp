@@ -157,7 +157,8 @@ export default function WhatsappBlock() {
           </TouchableOpacity>
         </View>
       ) : (
-        <View>
+        <View >
+
           <View style={styles.headerRow}>
             <Icon name="whatsapp" size={22} color="#25D366" />
             <Text
@@ -166,35 +167,38 @@ export default function WhatsappBlock() {
               WhatsApp
             </Text>
           </View>
+          <View style={{ flexDirection: 'row' , alignItems:'center', justifyContent:'space-around'}}
+          >
+            <View style={styles.dataRow}>
+              <Text style={[styles.label, { color: colors.background }]}>
+                Número:
+              </Text>
+              <Text style={[styles.value, { color: colors.background }]}>
+                {phone.numero
+                  ? `+${phone.codigo}${phone.numero}`
+                  : "No registrado"}
+              </Text>
+            </View>
 
-          <View style={styles.dataRow}>
-            <Text style={[styles.label, { color: colors.background }]}>
-              Número:
-            </Text>
-            <Text style={[styles.value, { color: colors.background }]}>
-              {phone.numero
-                ? `+${phone.codigo}${phone.numero}`
-                : "No registrado"}
-            </Text>
-          </View>
-
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={[styles.iconBtn, { backgroundColor: "#555" }]}
-              onPress={() => setIsEditing(true)}
-            >
-              <Icon name="pencil" size={18} color="#fff" />
-            </TouchableOpacity>
-
-            {phone.numero ? (
+            <View style={styles.buttonRow}>
               <TouchableOpacity
-                style={[styles.iconBtn, { backgroundColor: "#d9534f" }]}
-                onPress={handleDelete}
+                style={[styles.iconBtn, { backgroundColor: "#555" }]}
+                onPress={() => setIsEditing(true)}
               >
-                <Icon name="trash" size={18} color="#fff" />
+                <Icon name="pencil" size={18} color="#fff" />
               </TouchableOpacity>
-            ) : null}
+
+              {phone.numero ? (
+                <TouchableOpacity
+                  style={[styles.iconBtn, { backgroundColor: "#d9534f" }]}
+                  onPress={handleDelete}
+                >
+                  <Icon name="trash" size={18} color="#fff" />
+                </TouchableOpacity>
+              ) : null}
+            </View>
           </View>
+
         </View>
       )}
     </View>
@@ -231,7 +235,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 10,
   },
   title: {
     fontSize: 16,

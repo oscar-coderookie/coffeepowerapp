@@ -77,8 +77,4 @@ export const comunidades = [
     nombre: "Ceuta y Melilla",
     provincias: ["Ceuta", "Melilla"]
   },
-  {
-    nombre: "Canarias",
-    provincias: ["Canarias"]
-  }
 ];
