@@ -8,6 +8,7 @@ import { useTheme } from "@react-navigation/native";
 import UserAreaScreen from '../screens/UserAreaScreen';
 import FavoritesScreen from '../screens/FavouritesScreen';
 import PaymentMethods from '../screens/PaymentMethods';
+import UserSettings from '../screens/UserSettings';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,6 +34,8 @@ const UserTabs = () => {
                         iconName = focused ? 'star' : 'star-outline'
                     } else if (route.name === "Pagos") {
                          iconName = focused ? 'card' : 'card-outline'
+                    }  else if (route.name === "Ajustes") {
+                         iconName = focused ? 'settings' : 'settings-outline'
                     }
                     return <Ionicons name={iconName} color={color} size={size} />
                 }
@@ -42,6 +45,7 @@ const UserTabs = () => {
             <Tab.Screen name="Perfil" component={UserAreaScreen} />
             <Tab.Screen name="Favoritos" component={FavoritesScreen} />
             <Tab.Screen name="Pagos" component={PaymentMethods} />
+            <Tab.Screen name="Ajustes" component={UserSettings} />
 
         </Tab.Navigator>
     )

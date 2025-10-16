@@ -8,6 +8,7 @@ export const FavoritesContext = createContext();
 export const FavoritesProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const [user, setUser] = useState(null);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   // 🔹 Detectar el usuario actual de Firebase Auth
   useEffect(() => {
@@ -20,8 +21,8 @@ export const FavoritesProvider = ({ children }) => {
 
   // 🔹 Escuchar en tiempo real los favoritos del usuario
   useEffect(() => {
-    if (!user) {
-      setFavorites([]); // limpiar al cerrar sesión
+    if (!user || isDeletingAccount) {
+      setFavorites([]); // limpiar al cerrar sesión o al eliminar cuenta
       return;
     }
 
@@ -31,17 +32,15 @@ export const FavoritesProvider = ({ children }) => {
       if (snap.exists()) {
         const data = snap.data();
         setFavorites(data.favorites || []);
-      } else {
-        // Si no existe el documento del usuario, se crea vacío
-        setDoc(userRef, { favorites: [] });
-      }
+      } 
+      // ❌ ya no crear el documento si no existe
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, isDeletingAccount]);
 
   return (
-    <FavoritesContext.Provider value={{ favorites, setFavorites, user }}>
+    <FavoritesContext.Provider value={{ favorites, setFavorites, user, setIsDeletingAccount }}>
       {children}
     </FavoritesContext.Provider>
   );

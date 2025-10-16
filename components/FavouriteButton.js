@@ -1,15 +1,17 @@
 import React, { useContext, useState } from "react";
-import { TouchableOpacity, ActivityIndicator } from "react-native";
+import { TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../config/firebase";
 import { FavoritesContext } from "../context/FavoritesContext";
+import { isDeletingAccount } from "../utils/deleteAccount";
 
 export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) {
   const { favorites } = useContext(FavoritesContext);
   const [loading, setLoading] = useState(false);
   const user = auth.currentUser;
 
+  // 🔹 Si no hay usuario logueado o café, no renderizamos nada
   if (!user || !cafe) return null;
 
   const cafeName = cafe.name || cafe.nombre;
@@ -22,15 +24,30 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
 
   const toggleFavorite = async () => {
     if (!cafeName) return;
+
+    // 🚫 Bloquear acción si se está eliminando la cuenta
+    if (isDeletingAccount) {
+      Alert.alert("Cuenta en eliminación", "Tu cuenta está siendo eliminada. No puedes modificar tus favoritos ahora.");
+      return;
+    }
+
+    // 🔸 Evitamos acción si el usuario no tiene sesión
+    if (!user) {
+      Alert.alert("Inicia sesión", "Por favor inicia sesión para guardar tus favoritos.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const userRef = doc(db, "users", user.uid);
       const snap = await getDoc(userRef);
 
-      // Si el documento no existe aún
+      // 🚫 Si el documento no existe, no lo creamos vacío
       if (!snap.exists()) {
-        await setDoc(userRef, { favorites: [] });
+        console.log("El usuario no tiene documento en Firestore, no se agregará favorito.");
+        setLoading(false);
+        return;
       }
 
       const data = snap.data() || {};
@@ -39,12 +56,12 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
       let updatedFavs;
 
       if (isFavorite) {
-        // 🧹 Eliminar si ya está
+        // 🧹 Eliminar si ya está en favoritos
         updatedFavs = currentFavs.filter(
           (f) => f.nombre?.toLowerCase() !== cafeName.toLowerCase()
         );
       } else {
-        // ✨ Agregar solo si no existe
+        // ✨ Agregar si no existe todavía
         const exists = currentFavs.some(
           (f) => f.nombre?.toLowerCase() === cafeName.toLowerCase()
         );

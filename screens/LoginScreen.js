@@ -26,8 +26,18 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // El AuthContext detectará el usuario automáticamente
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userLogged = userCredential.user;
+
+      if (!userLogged.emailVerified) {
+        Alert.alert(
+          "Cuenta no verificada",
+          "Por favor, verifica tu correo antes de iniciar sesión."
+        );
+        return;
+      }
+
+      // El AuthContext detectará el usuario automáticamente y navegará
     } catch (error) {
       console.log("Error login:", error);
       Alert.alert("Error", error.message);
