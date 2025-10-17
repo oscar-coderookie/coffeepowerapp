@@ -12,6 +12,7 @@ import {
   updatePassword 
 } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/native";
 
 export default function ChangePasswordDirect({ onSuccess }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -20,6 +21,7 @@ export default function ChangePasswordDirect({ onSuccess }) {
   const [showNew, setShowNew] = useState(false);
   const [passwordValid, setPasswordValid] = useState(null);
   const [loading, setLoading] = useState(false);
+  const {colors} = useTheme();
 
   // Validación de la nueva contraseña
   const validatePassword = (pass) => {
@@ -103,7 +105,7 @@ export default function ChangePasswordDirect({ onSuccess }) {
           placeholderTextColor="#999"
         />
         <TouchableOpacity onPress={() => setShowNew(!showNew)}>
-          <Ionicons name={showNew ? "eye-off" : "eye"} size={22} color="#333" />
+          <Ionicons name={showNew ? "eye-off" : "eye"} size={22} color={colors.text}/>
         </TouchableOpacity>
         {newPassword.length > 0 && (
           <Ionicons
@@ -121,14 +123,14 @@ export default function ChangePasswordDirect({ onSuccess }) {
 
       {/* Botón actualizar */}
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: loading ? "#999" : "#333" }]}
+        style={[styles.button, { backgroundColor: colors.text }]}
         onPress={handleChangePassword}
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={colors.text}/>
         ) : (
-          <Text style={styles.buttonText}>Actualizar contraseña</Text>
+          <Text style={[styles.buttonText,{color: colors.background}]}>Actualizar contraseña</Text>
         )}
       </TouchableOpacity>
     </View>
@@ -136,7 +138,7 @@ export default function ChangePasswordDirect({ onSuccess }) {
 }
 
 const styles = StyleSheet.create({
-  container: { marginVertical: 10 },
+  container: { marginVertical: 10 , marginHorizontal: 10},
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",

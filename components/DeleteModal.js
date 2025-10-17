@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import Modal from "react-native-modal";
 import { useDeleteAccount } from "../utils/deleteAccount";
+import { useTheme } from "@react-navigation/native";
 
 const ConfirmDeleteModal = ({ isVisible, onClose }) => {
   const [confirmationText, setConfirmationText] = useState("");
+  const {colors} = useTheme();
   const [loading, setLoading] = useState(false);
     const { deleteAccount } = useDeleteAccount(); // 👈 aquí usamos el hook
 
@@ -42,12 +44,12 @@ const ConfirmDeleteModal = ({ isVisible, onClose }) => {
           padding: 20,
         }}
       >
-        <Text style={{ fontSize: 20, fontWeight: "bold", color: "#B22222", textAlign: "center" }}>
+        <Text style={{ fontSize: 20, fontFamily:'Jost_700Bold', color: "#B22222", textAlign: "center" }}>
           Eliminar cuenta
         </Text>
-        <Text style={{ color: "#555", textAlign: "center", marginVertical: 10 }}>
+        <Text style={{ color: colors.text, textAlign: "center", marginVertical: 10, fontFamily:'Jost_400Regular' }}>
           Esta acción eliminará permanentemente tu cuenta y todos tus datos personales.
-          Si estás seguro, escribe <Text style={{ fontWeight: "bold" }}>ELIMINAR</Text> para confirmar.
+          Si estás seguro, escribe <Text style={{ fontFamily:'Jost_700Bold' }}>ELIMINAR</Text> para confirmar.
         </Text>
 
         <TextInput
@@ -61,7 +63,7 @@ const ConfirmDeleteModal = ({ isVisible, onClose }) => {
             borderRadius: 8,
             padding: 10,
             textAlign: "center",
-            fontWeight: "bold",
+            fontFamily:'Jost_700Bold',
             marginVertical: 10,
           }}
         />
@@ -78,7 +80,7 @@ const ConfirmDeleteModal = ({ isVisible, onClose }) => {
               marginRight: 8,
             }}
           >
-            <Text style={{ color: "#333", textAlign: "center", fontWeight: "bold" }}>Cancelar</Text>
+            <Text style={{ color: "#333", textAlign: "center", fontFamily:'Jost_700Bold'}}>Cancelar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -92,7 +94,7 @@ const ConfirmDeleteModal = ({ isVisible, onClose }) => {
               marginLeft: 8,
             }}
           >
-            <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold" }}>
+            <Text style={{ color: "#fff", textAlign: "center", fontFamily:'Jost_700Bold'}}>
               {loading ? "Eliminando..." : "Eliminar"}
             </Text>
           </TouchableOpacity>

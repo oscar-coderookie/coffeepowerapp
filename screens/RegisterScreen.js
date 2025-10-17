@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { auth, db } from "../config/firebase";
-import { createUserWithEmailAndPassword,sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -84,10 +84,6 @@ export default function RegisterScreen({ navigation }) {
         favorites: [],
         verified: false
       });
-
-      // ✅ Enviar correo de verificación
-      await sendEmailVerification(user);
-
       Alert.alert("Éxito", "Registro completado con éxito.");
       navigation.replace("Login");
     } catch (error) {

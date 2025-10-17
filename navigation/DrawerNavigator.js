@@ -29,7 +29,7 @@ const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const { isDark, toggleTheme } = useThemeContext();
   const [user, setUser] = useState(null);
-
+  const { colors } = useTheme()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => setUser(currentUser));
@@ -64,15 +64,15 @@ function CustomDrawerContent(props) {
         <View style={styles.authContainer}>
           {user ? (
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-              <Ionicons name="exit-outline" size={24} color={isDark ? "#fff" : "#222"} />
-              <Text style={[styles.logoutText, { color: isDark ? "#fff" : "#000" }]}>
+              <Ionicons name="exit-outline" size={24} color={colors.text} />
+              <Text style={[styles.logoutText, { color: colors.text }]}>
                 Cerrar sesión
               </Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLoginRedirect}>
-              <Ionicons name="log-in-outline" size={24} color={isDark ? "#fff" : "#222"} />
-              <Text style={[styles.logoutText, { color: isDark ? "#fff" : "#000" }]}>
+              <Ionicons name="log-in-outline" size={24} color={colors.text} />
+              <Text style={[styles.logoutText, { color:colors.text }]}>
                 Iniciar sesión
               </Text>
             </TouchableOpacity>
@@ -81,13 +81,13 @@ function CustomDrawerContent(props) {
 
         {/* 🔹 Switch de modo oscuro */}
         <View style={styles.switchContainer}>
-          <Text style={[styles.switchLabel, { color: isDark ? "#fff" : "#000", }]}>
+          <Text style={[styles.switchLabel, { color: colors.text }]}>
             {isDark ? "Cambiar a Tema Light" : "Cambiar a Tema Dark"}
           </Text>
           <Switch
             value={!!isDark}
             onValueChange={toggleTheme}
-            thumbColor={isDark ? "#fff" : "#000"}
+            thumbColor={colors.text}
             trackColor={{ false: "#999", true: "#666" }}
           />
         </View>
@@ -101,78 +101,79 @@ export default function DrawerNavigator() {
 
   return (
 
-      
-      <Drawer.Navigator
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={{
-          headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.text,
-          drawerStyle: { backgroundColor: colors.background },
-          drawerActiveTintColor: colors.text,
-          drawerInactiveTintColor: colors.text,
-          
-          drawerLabelStyle: {
-            fontFamily: "Jost_600SemiBold",
-            textTransform: "uppercase",
-            letterSpacing: 1,
-          },
-          headerTitle: "",
-          headerRight: () => (
-            <TouchableOpacity>
-              <Image
-                source={logo}
-                style={{ width: 102.5, height: 37.5, marginRight: 8 }}
-              />
-            </TouchableOpacity>
-          ),
+
+    <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.text,
+        drawerStyle: { backgroundColor: colors.background },
+        drawerActiveTintColor: colors.text,
+        drawerInactiveTintColor: colors.text,
+
+        drawerLabelStyle: {
+          fontFamily: "Jost_600SemiBold",
+          textTransform: "uppercase",
+          letterSpacing: 1,
+        },
+        headerTitle: "",
+        headerRight: () => (
+          <TouchableOpacity>
+            <Image
+              source={logo}
+              style={{ width: 102.5, height: 37.5, marginRight: 8 }}
+            />
+          </TouchableOpacity>
+        ),
+      }}
+    >
+      <Drawer.Screen
+        name="Nuestros Cafés"
+        component={Tabs}
+        options={{
+          drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
         }}
-      >
-        <Drawer.Screen
-          name="Nuestros Cafés"
-          component={Tabs}
-          options={{
-            drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
-          }}
-        />
-        <Drawer.Screen
-          name="¿Quiénes Somos?"
-          component={AboutUsTabs}
-          options={{
-            drawerIcon: ({ size }) => <Image source={icon2} style={{ width: size, height: size }} />,
-          }}
-        />
-        <Drawer.Screen
-          name="Eventos"
-          component={EventsTabs}
-          options={{
-            drawerIcon: ({ size }) => <Image source={icon3} style={{ width: size, height: size }} />,
-          }}
-        />
-        <Drawer.Screen
-          name="Accesorios Pro"
-          component={AccesoriesPro}
-          options={{
-            drawerIcon: ({ size }) => <Image source={icon4} style={{ width: size, height: size }} />,
-          }}
-        />
-        {/* 👇 Solo muestra "Área personal" si hay usuario logueado */}
+      />
+      <Drawer.Screen
+        name="¿Quiénes Somos?"
+        component={AboutUsTabs}
+        options={{
+          drawerIcon: ({ size }) => <Image source={icon2} style={{ width: size, height: size }} />,
+        }}
+      />
+ 
+      {/* 👇 Solo muestra "Área personal" si hay usuario logueado */}
 
-        <Drawer.Screen
-          name="Área personal"
-          component={UserStack}
-          options={{
-            drawerIcon: ({ size }) => <Image source={icon5} style={{ width: size, height: size }} />,
-          }}
-        />
-         <Drawer.Screen
-          name="Legal"
-          component={LegalStack}
-          options={{
-            drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
-          }}
-        />
+      <Drawer.Screen
+        name="Área personal"
+        component={UserStack}
+        options={{
+          drawerIcon: ({ size }) => <Image source={icon5} style={{ width: size, height: size }} />,
+        }}
+      />
+           <Drawer.Screen
+        name="Eventos"
+        component={EventsTabs}
+        options={{
+          drawerIcon: ({ size }) => <Image source={icon3} style={{ width: size, height: size }} />,
+        }}
+      />
+      <Drawer.Screen
+        name="Accesorios Pro"
+        component={AccesoriesPro}
+        options={{
+          drawerIcon: ({ size }) => <Image source={icon4} style={{ width: size, height: size }} />,
+        }}
+      />
+      <Drawer.Screen
+        name="Legal"
+        component={LegalStack}
+        options={{
+          drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
+        }}
+      />
 
-      </Drawer.Navigator>
+    </Drawer.Navigator>
 
   );
 }

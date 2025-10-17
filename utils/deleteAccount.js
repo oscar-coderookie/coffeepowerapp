@@ -1,68 +1,65 @@
-import { useContext } from "react";
-import { FavoritesContext } from "../context/FavoritesContext"; // ruta según tu proyecto
 import { Alert } from "react-native";
 import { auth, db } from "../config/firebase";
-import { deleteUser } from "firebase/auth";
-import { doc, deleteDoc, getDoc } from "firebase/firestore";
-import { getStorage, ref, deleteObject } from "firebase/storage";
+import {
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  deleteUser,
+} from "firebase/auth";
+import { doc, deleteDoc } from "firebase/firestore";
 
 export const useDeleteAccount = () => {
-  const { setIsDeletingAccount } = useContext(FavoritesContext);
+  const deleteAccount = async () => {
+    const user = auth.currentUser;
 
-  const deleteAccount = () => {
-    Alert.alert(
-      "Eliminar cuenta",
-      "¿Estás seguro de que deseas eliminar tu cuenta y todos tus datos personales? Esta acción no se puede deshacer.",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const user = auth.currentUser;
-              if (!user) {
-                Alert.alert("Error", "No hay una sesión activa.");
-                return;
+    if (!user) {
+      Alert.alert("Error", "No hay usuario autenticado.");
+      return;
+    }
+
+    // ⚠️ Pedimos la contraseña al usuario antes de eliminar
+    return new Promise((resolve, reject) => {
+      Alert.prompt(
+        "Confirmar contraseña",
+        "Por seguridad, ingresa tu contraseña para eliminar la cuenta:",
+        [
+          { text: "Cancelar", style: "cancel", onPress: reject },
+          {
+            text: "Confirmar",
+            onPress: async (password) => {
+              try {
+                // 1️⃣ Reautenticación
+                const credential = EmailAuthProvider.credential(user.email, password);
+                await reauthenticateWithCredential(user, credential);
+
+                // 2️⃣ Eliminar documento de Firestore
+                const userRef = doc(db, "users", user.uid);
+                await deleteDoc(userRef);
+
+                // 3️⃣ Eliminar cuenta del Auth
+                await deleteUser(user);
+
+                Alert.alert("Cuenta eliminada", "Tu cuenta ha sido borrada exitosamente.");
+                resolve();
+              } catch (error) {
+                console.log("Error eliminando cuenta:", error);
+                if (error.code === "auth/wrong-password") {
+                  Alert.alert("Contraseña incorrecta", "La contraseña ingresada no es válida.");
+                } else if (error.code === "auth/requires-recent-login") {
+                  Alert.alert(
+                    "Inicio de sesión requerido",
+                    "Por seguridad, vuelve a iniciar sesión antes de eliminar tu cuenta."
+                  );
+                } else {
+                  Alert.alert("Error", "No se pudo eliminar la cuenta.");
+                }
+                reject(error);
               }
-
-              setIsDeletingAccount(true);
-
-              const storage = getStorage();
-              const userRef = doc(db, "users", user.uid);
-              const userSnap = await getDoc(userRef);
-
-              // 🔹 Si el usuario tiene avatar, eliminarlo del Storage
-              if (userSnap.exists() && userSnap.data().avatar) {
-                const avatarRef = ref(storage, `avatars/${user.uid}/avatar.jpg`);
-                await deleteObject(avatarRef).catch(() =>
-                  console.log("No se encontró avatar, continuando...")
-                );
-              }
-
-              // 🔹 Eliminar documento del usuario
-              await deleteDoc(userRef);
-
-              // 🔹 Eliminar la cuenta en Firebase Authentication
-              await deleteUser(user);
-
-              Alert.alert(
-                "Cuenta eliminada",
-                "Tu cuenta y tus datos personales han sido eliminados correctamente."
-              );
-            } catch (error) {
-              console.error("Error eliminando cuenta:", error);
-              Alert.alert(
-                "Error",
-                "No se pudo eliminar tu cuenta. Es posible que debas volver a iniciar sesión antes de intentarlo nuevamente."
-              );
-            } finally {
-              setIsDeletingAccount(false);
-            }
+            },
           },
-        },
-      ]
-    );
+        ],
+        "secure-text" // 🔒 para ocultar la contraseña en el prompt
+      );
+    });
   };
 
   return { deleteAccount };

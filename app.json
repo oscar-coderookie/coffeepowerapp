@@ -4,13 +4,13 @@
     "slug": "coffee-power-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo-nuevo.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#E8D8C3"
     },
     "ios": {
       "supportsTablet": true,
@@ -37,7 +37,8 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-video"
+      "expo-video",
+      "expo-font"
     ],
     "extra": {
       "eas": {

@@ -3,21 +3,19 @@ import { onAuthStateChanged } from "firebase/auth";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import {
   doc,
-  updateDoc,
   getDoc,
   setDoc,
   collection,
   getDocs,
   addDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { db, auth } from "../config/firebase";
 import {
   View,
   Text,
-  TouchableOpacity,
-  StyleSheet,
   ScrollView,
-  Alert,
+  StyleSheet
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
@@ -31,7 +29,7 @@ import VerifyEmailBlock from "../components/VerifyEmail";
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const [notificationEmail, setNotificationEmail] = useState(""); // correo de Firestore
   const [phone, setPhone] = useState({ codigo: "34", numero: "" });
   const [countryCode, setCountryCode] = useState("ES");
   const [isEditingPhone, setIsEditingPhone] = useState(false);
@@ -52,33 +50,32 @@ export default function UserAreaScreen({ navigation }) {
     }
   };
 
-  // 🔹 1️⃣ Verificar sesión y cargar datos de usuario desde Firestore
+  // 🔹 Verificar sesión y cargar datos de usuario desde Firestore
   useEffect(() => {
-    console.log("🔄 Iniciando verificación de sesión...");
-
     const unsubscribe = onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
         try {
           const userRef = doc(db, "users", userAuth.uid);
           const userSnap = await getDoc(userRef);
 
-          // 🔹 Si el usuario no existe en Firestore, creamos el documento con name y phone
           if (!userSnap.exists()) {
             await setDoc(userRef, {
               phone: "",
               name: userAuth.displayName || "Usuario",
+              email: "", // correo de notificaciones inicial vacío
             });
           }
 
-          const data = userSnap.exists() ? userSnap.data() : { phone: "", name: "Usuario" };
+          const data = userSnap.exists()
+            ? userSnap.data()
+            : { phone: "", name: "Usuario", email: "" };
 
-          // 🔹 Configuramos el nombre desde Firestore
           setUserName(data.name || "Usuario");
 
-          // 🔹 Configuramos el email
-          setUserEmail(userAuth.email || "");
+          // 🔹 Correo de notificaciones
+          setNotificationEmail(data.email || "");
 
-          // 🔹 Configuramos el teléfono
+          // 🔹 Teléfono
           if (data.phone && typeof data.phone === "object") {
             setPhone({
               codigo: data.phone.codigo || "34",
@@ -89,8 +86,17 @@ export default function UserAreaScreen({ navigation }) {
             setPhone({ codigo: "34", numero: "" });
           }
 
-          // 🔹 Cargamos direcciones
+          // 🔹 Direcciones
           await fetchAddresses(userAuth.uid);
+
+          // 🔹 Listener para actualizar correo automáticamente si cambia en Firestore
+          const unsubscribeEmail = onSnapshot(userRef, (docSnap) => {
+            if (docSnap.exists()) {
+              setNotificationEmail(docSnap.data().email || "");
+            }
+          });
+
+          return () => unsubscribeEmail();
 
         } catch (err) {
           console.log("❌ Error cargando datos del usuario:", err);
@@ -98,7 +104,6 @@ export default function UserAreaScreen({ navigation }) {
           setCheckingAuth(false);
         }
       } else {
-        console.log("🚫 No hay usuario, redirigiendo a Login...");
         setTimeout(() => {
           navigation.replace("Login");
         }, 1500);
@@ -182,34 +187,29 @@ export default function UserAreaScreen({ navigation }) {
               <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase', width: '100%', color: colors.text }}>Bienvenido:</Text>
               <Text style={{ textTransform: 'capitalize', fontFamily: 'Jost_400Regular',color: colors.text }}>{userName}</Text>
             </View>
-             
           </View>
+
           <View style={styles.infoContainer}>
-            
             <Text
-              style={[
-                styles.title,
-                { backgroundColor: colors.text, color: colors.background },
-              ]}
+              style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}
             >
               Datos de contacto:
             </Text>
-               <View style={{
-              alignItems: 'center',
-              marginVertical: 10
-    
-            }}>
-                <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase',color: colors.text}}>correo vinculado:</Text>
-              <Text style={{  fontFamily: 'Jost_400Regular', color: colors.text }}>{userEmail}</Text>
+
+            <View style={{ alignItems: 'center', marginVertical: 10 }}>
+              <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase', color: colors.text }}>
+                Correo para notificaciones:
+              </Text>
+              <Text style={{ fontFamily: 'Jost_400Regular', color: colors.text }}>
+                {notificationEmail || "No definido"}
+              </Text>
             </View>
-            
 
             <Text style={[styles.text, { color: colors.text }]}>
               Aquí puedes gestionar tus datos de envío para tus pedidos:
             </Text>
 
             <View style={styles.field}>
-              {/* 🔹 DIRECCIONES DINÁMICAS */}
               {addresses.map((item) => (
                 <AddressBlock
                   key={item.id}
@@ -225,17 +225,30 @@ export default function UserAreaScreen({ navigation }) {
                 />
               ))}
 
-              <ButtonGeneral bckColor={colors.text} Color text="+ Añadir dirección" textColor={colors.background} onTouch={handleAddAddress} />
-              {/* 🔹 BLOQUE WHATSAPP */}
+              <ButtonGeneral
+                bckColor={colors.text}
+                Color
+                text="+ Añadir dirección"
+                textColor={colors.background}
+                onTouch={handleAddAddress}
+              />
+
               <WhatsappBlock />
             </View>
           </View>
         </ScrollView>
-         <ButtonGeneral bckColor={colors.text} Color text="ir a tu carrito" textColor={colors.background} onTouch={() =>
-        navigation.navigate("Nuestros Cafés", { screen: "Carrito" })} marginHorizontal={10} />
-      </KeyboardAvoidingView>
 
-     
+        <ButtonGeneral
+          bckColor={colors.text}
+          Color
+          text="Ir a tu carrito"
+          textColor={colors.background}
+          onTouch={() =>
+            navigation.navigate("Nuestros Cafés", { screen: "Carrito" })
+          }
+          marginHorizontal={10}
+        />
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -250,7 +263,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   text: {
-
     textAlign: "center",
     fontFamily: "Jost_400Regular",
   },
