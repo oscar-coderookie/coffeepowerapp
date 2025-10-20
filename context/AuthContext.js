@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
-  reload, updateEmail, reauthenticateWithCredential, EmailAuthProvider
+  reload, updateEmail, reauthenticateWithCredential, EmailAuthProvider,verifyBeforeUpdateEmail
 } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase"; // tu instancia de Firestore
@@ -28,6 +28,38 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
   //Funcionalidad para actualizar el correo electronico(modificar):
+
+const changeEmail = async (newEmail, currentPassword) => {
+  try {
+    const user = auth.currentUser;
+    if (!user) throw new Error("No hay usuario logueado");
+
+    // 🔹 1. Crear credenciales con email actual y contraseña ingresada por el usuario
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+    // 🔹 2. Reautenticación
+    await reauthenticateWithCredential(user, credential);
+
+    // 🔹 3. Enviar correo de verificación antes de actualizar el email
+    await verifyBeforeUpdateEmail(user, newEmail);
+
+    return { 
+      success: true, 
+      message: "Se envió un correo de verificación a la nueva dirección. Confirma tu email para completar el cambio." 
+    };
+
+  } catch (error) {
+    console.error("Error al cambiar correo:", error);
+
+    if (error.code === "auth/requires-recent-login") {
+      return { success: false, message: "Debes iniciar sesión de nuevo para cambiar tu correo." };
+    } else if (error.code === "auth/email-already-in-use") {
+      return { success: false, message: "Este correo ya está en uso." };
+    } else {
+      return { success: false, message: error.message };
+    }
+  }
+};
 const changeEmailFirestore = async (userId, newEmail) => {
   try {
     if (!userId) throw new Error("No hay usuario logueado");
@@ -100,7 +132,7 @@ const changeEmailFirestore = async (userId, newEmail) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoadingUser, authError, register, login, logout, resetPassword,changeEmailFirestore }}
+      value={{ user, isLoadingUser, authError, register, login, logout, resetPassword,changeEmailFirestore,changeEmail }}
     >
       {children}
     </AuthContext.Provider>

@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import { AddEraseBtn } from "../components/AddEraseBtn";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import PriceTag from "../components/PriceTag";
+import ButtonGeneral from "../components/ButtonGeneral";
 
 export default function ShopCart() {
   const { colors } = useTheme();
@@ -12,7 +13,7 @@ export default function ShopCart() {
   const { user } = useContext(AuthContext);
   const { cartItems, increaseQuantity, decreaseQuantity } = useContext(CartContext);
 
- 
+
 
   const handleCheckout = () => {
     if (!user) {
@@ -30,7 +31,7 @@ export default function ShopCart() {
     navigation.navigate("Checkout");
   };
 
-const isVerifiedOrGuest = !user || user?.emailVerified === true;
+  const isVerifiedOrGuest = !user || user?.emailVerified === true;
   const totalCoffees = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.quantity * 30), 0);
 
@@ -117,30 +118,14 @@ const isVerifiedOrGuest = !user || user?.emailVerified === true;
             <Text style={{ color: colors.text }}>{totalCoffees} Productos</Text>
             <Text style={{ color: colors.text }}>{totalPrice} €</Text>
           </View>
-
-          <TouchableOpacity
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: isVerifiedOrGuest ? colors.text : "#999",
-              padding: 10,
-              borderRadius: 10,
-              marginBottom: 20,
-              marginHorizontal: 20,
-            }}
-            onPress={handleCheckout}
-            disabled={!isVerifiedOrGuest}
-          >
-            <Text style={{
-              color: colors.background,
-              textTransform: "uppercase",
-              fontFamily: "Jost_600SemiBold",
-              fontSize: 18,
-              textAlign: "center",
-            }}>
-              ☕ Iniciar Pedido ☕
-            </Text>
-          </TouchableOpacity>
+        
+          <ButtonGeneral 
+          text='☕ Iniciar Pedido ☕' 
+          onTouch={handleCheckout} 
+          textColor={colors.background} 
+          bckColor={colors.text} 
+          marginHorizontal={10}
+          disable={!isVerifiedOrGuest} />
         </>
       )}
     </View>

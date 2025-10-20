@@ -18,7 +18,7 @@ export default function PayoutScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.container}>
       <CustomHeader
         title='Datos de Pago:'
-        onBack={() => navigation.goBack()}
+        showBack={true}
       />
       <View style={styles.infoContainer}>
         <View style={styles.inputContainer}>

@@ -29,7 +29,7 @@ import VerifyEmailBlock from "../components/VerifyEmail";
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
-  const [notificationEmail, setNotificationEmail] = useState(""); // correo de Firestore
+  const [userEmail, setUserEmail] = useState(""); // correo de Firestore
   const [phone, setPhone] = useState({ codigo: "34", numero: "" });
   const [countryCode, setCountryCode] = useState("ES");
   const [isEditingPhone, setIsEditingPhone] = useState(false);
@@ -41,77 +41,59 @@ export default function UserAreaScreen({ navigation }) {
   const { isLoading } = useContext(CartContext);
   const user = auth.currentUser;
 
-  const getCountryCodeFromCallingCode = (callingCode) => {
-    switch (callingCode) {
-      case "34":
-        return "ES";
-      default:
-        return "ES";
-    }
-  };
 
   // 🔹 Verificar sesión y cargar datos de usuario desde Firestore
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (userAuth) => {
-      if (userAuth) {
-        try {
-          const userRef = doc(db, "users", userAuth.uid);
-          const userSnap = await getDoc(userRef);
+useEffect(() => {
+  let unsubscribeEmail = () => {};
 
-          if (!userSnap.exists()) {
-            await setDoc(userRef, {
-              phone: "",
-              name: userAuth.displayName || "Usuario",
-              email: "", // correo de notificaciones inicial vacío
-            });
-          }
+  const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
+    if (userAuth) {
+      try {
+        const userRef = doc(db, "users", userAuth.uid);
+        const userSnap = await getDoc(userRef);
 
-          const data = userSnap.exists()
-            ? userSnap.data()
-            : { phone: "", name: "Usuario", email: "" };
-
-          setUserName(data.name || "Usuario");
-
-          // 🔹 Correo de notificaciones
-          setNotificationEmail(data.email || "");
-
-          // 🔹 Teléfono
-          if (data.phone && typeof data.phone === "object") {
-            setPhone({
-              codigo: data.phone.codigo || "34",
-              numero: data.phone.numero || "",
-            });
-            setCountryCode(getCountryCodeFromCallingCode(data.phone.codigo));
-          } else {
-            setPhone({ codigo: "34", numero: "" });
-          }
-
-          // 🔹 Direcciones
-          await fetchAddresses(userAuth.uid);
-
-          // 🔹 Listener para actualizar correo automáticamente si cambia en Firestore
-          const unsubscribeEmail = onSnapshot(userRef, (docSnap) => {
-            if (docSnap.exists()) {
-              setNotificationEmail(docSnap.data().email || "");
-            }
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            phone: "",
+            name: userAuth.displayName || "Usuario",
+            email: "",
           });
-
-          return () => unsubscribeEmail();
-
-        } catch (err) {
-          console.log("❌ Error cargando datos del usuario:", err);
-        } finally {
-          setCheckingAuth(false);
         }
-      } else {
-        setTimeout(() => {
-          navigation.replace("Login");
-        }, 1500);
-      }
-    });
 
-    return unsubscribe;
-  }, []);
+        const data = userSnap.exists()
+          ? userSnap.data()
+          : { phone: "", name: "Usuario", email: "" };
+
+        setUserName(data.name || "Usuario");
+
+        // ✅ Aquí usamos el correo de Auth, no Firestore
+        setUserEmail(userAuth.email || "No definido");
+
+        // Listener de Firestore solo si quieres notificaciones u otros campos
+        unsubscribeEmail = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            // si quieres mantener sincronizado un campo adicional de email en Firestore
+            // setNotificationEmail(docSnap.data().email || "");
+          }
+        });
+
+        await fetchAddresses(userAuth.uid);
+      } catch (err) {
+        console.log("❌ Error cargando datos del usuario:", err);
+      } finally {
+        setCheckingAuth(false);
+      }
+    } else {
+      setTimeout(() => navigation.replace("Login"), 1500);
+    }
+  });
+
+  return () => {
+    unsubscribeAuth();
+    unsubscribeEmail(); // limpia también el snapshot
+  };
+}, []);
+
 
   // 🔹 Obtener direcciones del usuario
   const fetchAddresses = async (uid = user?.uid) => {
@@ -198,10 +180,10 @@ export default function UserAreaScreen({ navigation }) {
 
             <View style={{ alignItems: 'center', marginVertical: 10 }}>
               <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase', color: colors.text }}>
-                Correo para notificaciones:
+                Correo registrado:
               </Text>
               <Text style={{ fontFamily: 'Jost_400Regular', color: colors.text }}>
-                {notificationEmail || "No definido"}
+                {userEmail || "No definido"}
               </Text>
             </View>
 

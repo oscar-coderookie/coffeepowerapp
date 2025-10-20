@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Alert, Text, TextInput, View } from "react-native";
 import ButtonGeneral from "../components/ButtonGeneral";
 import ConfirmDeleteModal from "../components/DeleteModal";
 import { useState, useEffect, useContext } from "react";
@@ -9,14 +9,18 @@ import ChangeEmailDirect from "../components/ChangeEmailDirect";
 import { AuthContext } from "../context/AuthContext";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../config/firebase";
+import PassInput from "../components/PassInput";
 
 const UserSettings = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showChangeEmail, setShowChangeEmail] = useState(false);
+  const [showChange2Email, setShowChange2Email] = useState(false);
   const [notificationEmail, setNotificationEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const { colors } = useTheme();
-  const { user } = useContext(AuthContext);
+  const { user, changeEmail } = useContext(AuthContext);
 
   // 🔹 Escuchar cambios en Firestore para el correo de notificaciones
   useEffect(() => {
@@ -30,6 +34,22 @@ const UserSettings = () => {
 
     return () => unsubscribe();
   }, [user]);
+
+  const handleChangeEmail = async () => {
+    if (!newEmail || !currentPassword) {
+      Alert.alert("Error", "Debes completar todos los campos.");
+      return;
+    }
+
+    const result = await changeEmail(newEmail, currentPassword);
+    if (result.success) {
+      Alert.alert("Éxito", result.message);
+      setNewEmail("");
+      setCurrentPassword("");
+    } else {
+      Alert.alert("Error", result.message);
+    }
+  };
 
   return (
     <View>
@@ -58,23 +78,35 @@ const UserSettings = () => {
       {showChangePassword && (
         <ChangePasswordDirect onSuccess={() => setShowChangePassword(false)} />
       )}
+      {showChange2Email && (
+        <View style={{ marginHorizontal: 10 }}>
+          <TextInput
+            placeholder="Nuevo correo"
+            value={newEmail}
+            onChangeText={setNewEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
 
-      {/* Botón mostrar formulario cambiar correo */}
+          <PassInput
+            password={currentPassword}
+            setPassword={setCurrentPassword} />
+          <ButtonGeneral
+            text="Actualizar correo"
+            bckColor={colors.text}
+            textColor={colors.background}
+            onTouch={handleChangeEmail}
+          />
+        </View>
+
+      )}
       <ButtonGeneral
-        text={showChangeEmail ? "Cancelar" : "Cambiar correo notificaciones"}
-        onTouch={() => setShowChangeEmail(!showChangeEmail)}
+        text={showChange2Email ? "Cancelar" : "Cambiar correo registrado"}
+        onTouch={() => setShowChange2Email(!showChange2Email)}
         bckColor={colors.text}
         marginHorizontal={10}
         textColor={colors.background}
       />
-
-      {/* Formulario cambiar correo */}
-      {showChangeEmail && (
-        <ChangeEmailDirect
-          currentEmail={notificationEmail} // pasamos el correo actual
-          onSuccess={() => setShowChangeEmail(false)}
-        />
-      )}
     </View>
   );
 };
