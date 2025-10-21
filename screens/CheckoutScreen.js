@@ -1,15 +1,16 @@
 // screens/CheckoutScreen.js
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import CustomHeader from "../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { auth, db } from '../config/firebase'
 import Icon from "react-native-vector-icons/FontAwesome6";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import ButtonGeneral from "../components/ButtonGeneral";
 import { Modal } from "react-native";
+import PaymentSelector from "../components/PaymentSelector";
 
 //modal de confirmacion:
 function ConfirmModal({ visible, onClose, address, deliveryType, onConfirm, colors }) {
@@ -141,8 +142,110 @@ const modalStyles = StyleSheet.create({
   },
 });
 
-export default function CheckoutScreen({ navigation }) {
+const PaymentMethods = () => {
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [name, setName] = useState("");
+
   const { colors } = useTheme();
+
+  return (
+    <View style={payStyles.infoContainer}>
+      <View style={payStyles.inputContainer}>
+        <Text style={payStyles.label}>Nombre en la tarjeta</Text>
+        <TextInput
+          style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
+          placeholder="Ej: Óscar Serna"
+          placeholderTextColor={colors.text}
+          value={name}
+          onChangeText={setName}
+        />
+      </View>
+
+      <View style={payStyles.inputContainer}>
+        <Text style={payStyles.label}>Número de tarjeta</Text>
+        <TextInput
+          style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
+          placeholder="1234 5678 9012 3456"
+          placeholderTextColor={colors.text}
+          keyboardType="numeric"
+          value={cardNumber}
+          onChangeText={setCardNumber}
+        />
+      </View>
+
+      <View style={payStyles.row}>
+        <View style={[payStyles.inputContainer, { flex: 1, marginRight: 10 }]}>
+          <Text style={payStyles.label}>Expira</Text>
+          <TextInput
+            style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
+            placeholder="MM/AA"
+            placeholderTextColor={colors.text}
+            keyboardType="numeric"
+            value={expiry}
+            onChangeText={setExpiry}
+          />
+        </View>
+
+        <View style={[payStyles.inputContainer, { flex: 1 }]}>
+          <Text style={payStyles.label}>CVV</Text>
+          <TextInput
+            style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
+            placeholder="***"
+            placeholderTextColor={colors.text}
+            secureTextEntry
+            keyboardType="numeric"
+            value={cvv}
+            onChangeText={setCvv}
+          />
+        </View>
+      </View>
+    </View>
+
+  )
+}
+
+const payStyles = StyleSheet.create({
+  container: {
+
+  },
+  title: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 30,
+    textAlign: "center",
+  },
+  inputContainer: { marginBottom: 20 },
+  label: { marginBottom: 6, fontSize: 14, fontFamily: 'Jost_400Regular' },
+  input: {
+    backgroundColor: "#1a1a1a",
+    padding: 15,
+    fontFamily: 'Jost_400Regular',
+    borderRadius: 10,
+    color: "#fff",
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#333",
+  },
+  row: { flexDirection: "row" },
+  payButton: {
+    backgroundColor: "#8a6d0d",
+    padding: 18,
+    borderRadius: 12,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  payText: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  infoContainer: {
+    marginVertical: 10
+  }
+});
+
+export default function CheckoutScreen({ navigation, route }) {
+  const { colors } = useTheme();
+  const { cartItems } = route.params;
   const [selected, setSelected] = useState(null);
   const [user, setUser] = useState(null);
   const [deliveryType, setDeliveryType] = useState("normal");
@@ -152,59 +255,87 @@ export default function CheckoutScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [details, setDetails] = useState("");
   const [email, setEmail] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("Tarjeta");
 
-  const handlePayout = () => {
-    setModalVisible(true);
-  }
+  const handleContinue = () => {
+    // Buscar la dirección completa según el ID seleccionado
+    const selectedAddress = directions.find(dir => dir.id === selected);
+
+    if (!selectedAddress) {
+      Alert.alert("Selecciona una dirección de entrega");
+      return;
+    }
+
+    const shippingData = {
+      address: selectedAddress,
+      deliveryType,
+      phone,
+      email
+
+    };
+
+    const paymentData = {
+      method: paymentMethod,
+    };
+
+    navigation.navigate("Payout", {
+      cartItems,
+      shippingData,
+      paymentData,
+    });
+  };
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      if (currentUser) {
 
+      if (currentUser) {
         try {
-          // Si hay usuario logueado, busca sus direcciones
+          // 🔹 Cargar direcciones guardadas
           const addressesRef = collection(db, "users", currentUser.uid, "addresses");
           const snapshot = await getDocs(addressesRef);
           const directions = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-          }))
-          setDirections(directions)
+          }));
+          setDirections(directions);
 
           if (directions.length === 1) {
             setSelected(directions[0].id);
           }
-        } catch (error) {
-          console.error("Error al obtener direcciones:", error);
-        }
 
+          // 🔹 NUEVO: Traer teléfono del documento del usuario
+          const userRef = doc(db, "users", currentUser.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            if (data.phone) {
+              setPhone(data.phone); // { countryCode: "+34", number: "600123456" }
+            }
+            if (data.name) setName(data.name);
+            if (data.email) setEmail(data.email);
+          }
+        } catch (error) {
+          console.error("Error al obtener datos del usuario:", error);
+        }
       }
     });
-    console.log(directions)
+
     return unsubscribe;
   }, []);
-
-  // ✅ Condición: todos los campos deben estar llenos
-  const isFormValid =
-    name.trim() !== "" &&
-    address.trim() !== "" &&
-    phone.trim() !== "" &&
-    email.trim() !== "";
-
 
   return (
     <View style={styles.container}>
       <CustomHeader
-        title='Datos de Envío'
+        title='Datos de Envío y pago'
         showBack={true}
       />
 
       {user ? (
         // 🔥 Si el usuario está logueado, muestra sus direcciones
-        <View style={{ marginVertical: 10, marginHorizontal: 10 }}>
-          <Text style={{ fontSize: 18, fontFamily: 'Jost_600SemiBold', marginBottom: 8 }}>
+        <ScrollView style={{ marginVertical: 10, marginHorizontal: 10 }}>
+          <Text style={{ fontSize: 18, fontFamily: 'Jost_600SemiBold', marginBottom: 8, color: colors.text }}>
             Seleccionar dirección de entrega:
           </Text>
           {directions.map((item, index) => {
@@ -213,12 +344,12 @@ export default function CheckoutScreen({ navigation }) {
               <View style={{ borderColor: colors.text, borderWidth: 1, padding: 10, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between' }} key={index}>
 
                 <View>
-                  <Text style={{ fontFamily: 'Jost_600SemiBold' }}>Direccion de entrega 1:</Text>
-                  <Text style={{ fontFamily: 'Jost_400Regular' }}>
+                  <Text style={{ fontFamily: 'Jost_600SemiBold', color: colors.text }}>Direccion de entrega 1:</Text>
+                  <Text style={{ fontFamily: 'Jost_400Regular', color: colors.text }}>
                     Calle: {item.calle}, {item.numero}, Piso {item.piso}
                   </Text>
-                  <Text style={{ fontFamily: 'Jost_400Regular' }}>{item.provincia}, {item.CA}</Text>
-                  <Text style={{ fontFamily: 'Jost_400Regular' }}>Codigo Postal: {item.codigoPostal}</Text>
+                  <Text style={{ fontFamily: 'Jost_400Regular', color: colors.text }}>{item.provincia}, {item.CA}</Text>
+                  <Text style={{ fontFamily: 'Jost_400Regular', color: colors.text }}>Codigo Postal: {item.codigoPostal}</Text>
                 </View>
                 <TouchableOpacity
                   onPress={() => setSelected(item.id)}
@@ -236,13 +367,13 @@ export default function CheckoutScreen({ navigation }) {
           })}
           {/* 🔹 Selector de tipo de entrega */}
           <View style={{ marginVertical: 10 }}>
-            <Text style={{ fontSize: 18, fontFamily: 'Jost_600SemiBold', marginBottom: 8 }}>
+            <Text style={{ fontSize: 18, fontFamily: 'Jost_600SemiBold', marginBottom: 8, color: colors.text }}>
               Seleccionar tipo de entrega:
             </Text>
 
             {[
-              { id: "normal", label: "Entrega normal (3-5 días)", icon: "truck" },
-              { id: "prioritaria", label: "Entrega VIP (El mismo día)", icon: "crown", backgroundColor: "#8a6d0dff" },
+              { id: "Estándar", label: "Entrega Estándar (3-5 días)", icon: "truck" },
+              { id: "VIP", label: "Entrega VIP (El mismo día)", icon: "crown", backgroundColor: "#8a6d0dff" },
             ].map((option) => (
               <TouchableOpacity
                 key={option.id}
@@ -272,24 +403,15 @@ export default function CheckoutScreen({ navigation }) {
               </TouchableOpacity>
             ))}
           </View>
+          <PaymentSelector selectedMethod={paymentMethod}
+            onSelect={setPaymentMethod} />
           <ButtonGeneral
-            onTouch={handlePayout}
+            onTouch={handleContinue}
             text='Continuar al pago'
             textColor={colors.background}
             bckColor={colors.text}
           />
-          <ConfirmModal
-            visible={modalVisible}
-            onClose={() => setModalVisible(false)}
-            onConfirm={() => {
-              setModalVisible(false);
-              navigation.navigate('Payout');
-            }}
-            address={directions.find((d) => d.id === selected)}
-            deliveryType={deliveryType}
-            colors={colors}
-          />
-        </View>
+        </ScrollView>
       ) : (
         // 👤 Si NO está logueado, muestra el formulario de invitado
         <View style={styles.form}>

@@ -23,7 +23,8 @@ const coffeesCatalogue = [
             'Panamá Geisha Esmeralda" es más que un café: es el estándar del lujo. Una obra de arte en taza. El grano que cambió la historia del café de especialidad y elevó a Panamá como la cuna del sabor más exquisito del planeta.',
             'Cada grano es recolectado a mano con precisión quirúrgica, cultivado con devoción y procesado como si fuera oro. Su perfil no se describe, se contempla. Es el perfume del café. El susurro de las flores. La elegancia líquida.',
             'Para los paladares más exigentes del mundo. Para los que saben que hay cafés... y hay leyendas.'
-        ]
+        ],
+        price: 10
     },
     {
         name: "🇳🇮 nicaragua: oro Volcánico",
@@ -49,7 +50,8 @@ const coffeesCatalogue = [
         emotionalDescription: [
             '"Nicaragua Oro Volcánico" es un café que no busca brillar... pero brilla. Es la elegancia discreta, el oro escondido en la tierra, la voz suave de una historia larga. Cada grano es cultivado con paciencia por manos sabias que entienden que el café se hace con tiempo y amor.',
             'Este origen es para los que valoran lo auténtico. Para quienes encuentran belleza en lo silencioso. Es un café que no pretende conquistar: te seduce sin que lo notes.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -78,7 +80,8 @@ const coffeesCatalogue = [
             '"Perú Andino Orgánico" es un café con alma indígena. Cada grano crece en armonía con la Pachamama, bajo el cuidado de comunidades que cultivan con sabiduría ancestral y respeto profundo por la naturaleza.',
             'Este café no grita: susurra. Habla con dulzura, con calma, con propósito. Es un abrazo de montaña, una caminata entre neblinas, una historia contada al calor del fuego.',
             'Para quienes buscan más que sabor: buscan conexión. Para los que sienten que el verdadero lujo... está en lo auténtico.'
-        ]
+        ], 
+        price: 10
     },
     {
         name: "hawái:kona élite",
@@ -105,7 +108,8 @@ const coffeesCatalogue = [
             '"Hawái Kona Elite" es una postal que se bebe. Una fantasía líquida que nace entre olas, volcanes y flores exóticas. Cada grano es cultivado como si fuera una perla en la isla, en fincas pequeñas que miman la calidad por encima de la cantidad.',
             'Este café es símbolo de sofisticación tropical, de elegancia sin prisa, de experiencias que solo se viven una vez. Su sabor evoca el viento cálido, el perfume de las gardenias y el susurro del océano.',
             'No es una taza, es un destino. Y cada sorbo... una luna de miel con el paladar.'
-        ]
+        ], 
+        price: 10
     },
     {
         name: "🇵🇷 puerto rico: reserva del caribe",
@@ -132,7 +136,8 @@ const coffeesCatalogue = [
             '"Puerto Rico Reserva del Caribe" es más que café. Es historia líquida. Es una taza que habla de orgullo, de lucha, de raíces. Cultivado en una isla que ha resistido huracanes y olvidos, este grano es símbolo de resiliencia y sabor con alma.',
             'Cada sorbo lleva la pasión boricua: fuerte pero dulce, firme pero vibrante. Un café con carácter de pueblo, con corazón de abuela, con sabor de fiesta.',
             'Para los que entienden que una isla entera cabe en una taza... y que el sabor del Caribe no se olvida, se celebra.'
-        ]
+        ], 
+        price: 10
     },
     {
         name: "🇨🇷 costa rica: valle central",
@@ -159,7 +164,8 @@ const coffeesCatalogue = [
             '"Costa Rica Valle Central" es una sinfonía de pureza. Nace en un país que lo ha apostado todo a la sostenibilidad y la excelencia, y cada grano refleja esa filosofía de respeto y equilibrio con la tierra.',
             'Este café es la definición de claridad en taza. Cada sorbo es como una caminata por senderos de montaña: fresco, limpio, armonioso. No necesita exagerar para brillar. Su fuerza está en su elegancia sutil, en su ligereza envolvente, en su carácter natural.',
             'Ideal para quienes aman lo puro. Para los que encuentran la perfección en lo simple... y la magia en lo real.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -187,7 +193,8 @@ const coffeesCatalogue = [
             '"Brasil Cerrado Mineiro" es ese café que nunca falla. Tiene alma de campeón y corazón de hogar. Es el sabor que acompaña conversaciones, madrugadas, sobremesas y grandes ideas.',
             'Este grano es la base sólida de muchas mezclas... pero por sí solo ya brilla. Tiene ese algo que no se explica pero se siente: calidez, profundidad y una redondez que abraza el alma.',
             'Para los que buscan equilibrio, sabor clásico y textura cremosa. Para los que saben que un buen café no necesita gritar para enamorar... solo necesita ser Brasil.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -205,7 +212,8 @@ const coffeesCatalogue = [
             'Final sedoso y especiado con canela de Ceylan molida al momento'
         ],
         tasteNotes: [],
-        emotionalDescription: []
+        emotionalDescription: [], 
+        price: 10
     },
     {
         name: "Coffee Power Total Relax",
@@ -222,7 +230,8 @@ const coffeesCatalogue = [
             'Final redondo y reconfortante que acaricia el paladar'
         ],
         tasteNotes: [],
-        emotionalDescription: []
+        emotionalDescription: [], 
+        price: 10
 
     },
     {
@@ -250,7 +259,8 @@ const coffeesCatalogue = [
             'Cada grano proviene de fincas de altura en Colombia, donde el respeto por el cultivo y el amor por el café se sienten en cada cosecha. Ha sido descafeinado con el método Swiss Water, el más natural y puro, sin químicos ni disolventes, solo agua y paciencia.',
             'Tostado con maestría por un experto con más de 40 años de experiencia, utilizando tecnología de precisión que permite mantener intacta su esencia.',
             'Serenidad no solo es su nombre. Es lo que sentirás en cada sorbo.'
-        ]
+        ], 
+        price: 10
     },
     {
         name: "🇨🇴 Coffee Power Supremo",
@@ -277,7 +287,8 @@ const coffeesCatalogue = [
             ' Trabajamos codo a codo con expertos de confianza, para garantizar que cada lote que recibimos cumpla con los más altos estándares de calidad, sostenibilidad y sabor.',
             'Es el café que mejor representa la filosofía Coffee Power: autenticidad, excelencia y respeto por el arte de cultivar.',
             'Cuando eliges este café, no solo disfrutas un origen legendario. Te llevas a casa el resultado de años de colaboración, pasión y una búsqueda incansable por ofrecer lo mejor.'
-        ]
+        ], 
+        price: 10
     },
     {
         name: "🇨🇴 Coffee Power AMUCC",
@@ -304,7 +315,8 @@ const coffeesCatalogue = [
             'Cada grano es cultivado en pequeñas fincas a altitudes entre 1.700 y 1.900 metros, en suelos volcánicos que aportan riqueza y carácter al café.',
             'El proceso de producción se realiza bajo prácticas ecológicas y de comercio justo, garantizando un impacto positivo en las comunidades y el medio ambiente.',
             'Al elegir este café, apoyas el empoderamiento de mujeres que, a través del café, han transformado sus vidas y las de sus comunidades.'
-        ]
+        ], 
+        price: 10
     },
     {
         name: "🇲🇽 Coffee Power Relax",
@@ -330,7 +342,8 @@ const coffeesCatalogue = [
             'Cada grano ha sido descafeinado con el método Swiss Water, libre de químicos y disolventes, manteniendo su esencia natural.',
             'Cultivado en tierras mexicanas que le aportan su sabor suave y amigable.',
             'Coffee Power Relax es el descanso que te mereces en cada taza.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -358,7 +371,8 @@ const coffeesCatalogue = [
             '"Esencia de Victoria" no es solo café —es un homenaje. Inspirada en la hija del fundador de Coffee Power, una joven dulce, alegre y enamorada de República Dominicana, esta creación refleja su carácter: encantadora, vibrante y adictiva.',
             'Desde los cafetales bañados por mangos en Colombia, pasando por la profundidad ancestral de Etiopía, hasta el encanto meloso del Caribe, esta composición nace del amor familiar y el arte de crear experiencias únicas en una taza.',
             'Un elixir que transforma cada sorbo en un recuerdo, en una emoción. Es la fusion perfecta entre ternura y carácter. Entre lo dulce… y lo inolvidable.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -387,7 +401,8 @@ const coffeesCatalogue = [
             'Es una declaración de amor a República Dominicana, tierra fértil, alegre, vibrante y poderosa. Cada grano nace entre montañas, brisa tropical y plantaciones de banano, donde el sol no solo calienta la tierra… la llena de energía.',
             'Esta creación honra al pueblo dominicano: su espíritu trabajador, su sonrisa eterna y su conexión única con la naturaleza. Es el café que vibra alto, que te abraza con fuerza y te hace sonreír.',
             'Y sí, también lleva el ADN de una leyenda: 💪 Plátano Power, como el de los beisbolistas dominicanos que conquistan el mundo. Aquí, esa energía se bebe. Natural. Auténtica. Bendecida. Porque lo bendecido no se improvisa… se cultiva. Y en esta taza, se celebra.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -417,7 +432,8 @@ const coffeesCatalogue = [
             '“El Origen” es una joya nacida en las tierras altas de Etiopía, cuna ancestral del café. Un grano cultivado en altitud extrema, donde el aire es más puro, el tiempo más lento, y el alma del café más viva que nunca.',
             'Este café ha sido creado para los momentos donde el cuerpo pide calma, pero el paladar aún desea magia. Su baja cafeína lo convierte en el compañero perfecto para las tardes, cuando el cuerpo humano, guiado por su ciclo circadiano, comienza a prepararse para el descanso. Ligero en energía, profundo en sensaciones.',
             'Su color recuerda al chocolate con leche, su sabor acaricia el alma. Y su textura… convierte cada cappuccino en un ritual suave, sedoso e inolvidable. “El Origen” es más que un café. Es el equilibrio perfecto entre tradición, salud y placer.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -457,7 +473,8 @@ const coffeesCatalogue = [
             '"Kenia SL28" es un canto a la intensidad. Una danza salvaje de frutas rojas, acidez jugosa y elegancia africana. Este café representa lo indomable, lo puro, lo que no se puede domar.',
             'Cultivado en tierras volcánicas, bajo un cielo que respira historia y leyenda, este café es como el rugido de un león en la sabana: inolvidable. Cada sorbo es una travesía que despierta el alma, transportando a quien lo prueba a un lugar donde la energía se convierte en sabor y el café se convierte en fuego líquido.',
             'No es para todos. Es para quienes buscan algo más que una taza: una experiencia feroz, brillante y auténtica.'
-        ]
+        ], 
+        price: 10
     },
     {
         name: "🇨🇴 Coffee Power Geisha",
@@ -486,7 +503,8 @@ const coffeesCatalogue = [
             'Este Geisha no solo destaca por su linaje y perfección sensorial, sino por haber conquistado el corazón y el paladar de quien lidera cada receta en Coffee Power.',
             'Cada grano es un testimonio de excelencia, tradición y el compromiso de ofrecer solo lo mejor a los amantes del café de especialidad.',
             'No es un café más. Es una declaración de maestría. Una experiencia reservada solo para los verdaderos conocedores.'
-        ]
+        ], 
+        price: 10
 
     },
     {
@@ -505,7 +523,8 @@ const coffeesCatalogue = [
             'Este café ofrece una estructura noble, con equilibrio perfecto entre acidez suave, dulzor natural y aromas envolventes.'
         ],
         tasteNotes: [],
-        emotionalDescription: []
+        emotionalDescription: [], 
+        price: 10
 
     },
     {
@@ -533,7 +552,8 @@ const coffeesCatalogue = [
             '"Caracolillo" es un hallazgo. Es ese tesoro inesperado que la naturaleza regala solo a quienes miran más allá de lo evidente. Cada grano es una joya diminuta, pero poderosa; un unverso concentrado en una sola semilla.',
             'Este café no solo es raro. Es especial por cómo vibra en boca, por la intensidad de sus matices y por la armonía que transmite en cada sorbo. Su rareza no es capricho, es identidad. Su sabor, un susurro elegante que acaricia el alma.',
             'Para quienes creen que lo más valioso viene en frascos pequeños. Para los que saben que una taza puede guardar magia.'
-        ]
+        ], 
+        price: 10
     },
 
 ];

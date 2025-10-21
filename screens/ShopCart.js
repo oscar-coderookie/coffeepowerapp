@@ -6,6 +6,7 @@ import { AddEraseBtn } from "../components/AddEraseBtn";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import PriceTag from "../components/PriceTag";
 import ButtonGeneral from "../components/ButtonGeneral";
+import CustomHeader from "../components/CustomHeader";
 
 export default function ShopCart() {
   const { colors } = useTheme();
@@ -28,14 +29,15 @@ export default function ShopCart() {
       Alert.alert("Carrito vacío", "Agrega productos antes de continuar 🚀");
       return;
     }
-    navigation.navigate("Checkout");
+    navigation.navigate("Checkout",{ cartItems });
   };
 
   const isVerifiedOrGuest = !user || user?.emailVerified === true;
   const totalCoffees = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.quantity * 30), 0);
+  const totalPrice = cartItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
 
   const renderItem = ({ item }) => (
+    
     <View style={styles.mainContainer}>
       <View style={styles.itemContainer}>
         {item.image ? (
@@ -58,25 +60,15 @@ export default function ShopCart() {
             disabled={!isVerifiedOrGuest}
           />
         </View>
-        <PriceTag price={item.quantity * 30} currency="€" />
+        <PriceTag price={(Number(item.price) || 0) * (Number(item.quantity) || 0)} currency="€" />
       </View>
     </View>
+    
   );
 
   return (
     <View style={styles.container}>
-      <Text style={{
-        color: colors.background,
-        backgroundColor: colors.text,
-        textTransform: "uppercase",
-        fontFamily: "Jost_600SemiBold",
-        fontSize: 20,
-        textAlign: "center",
-        paddingTop: 20,
-        paddingBottom: 20,
-      }}>
-        {user ? "Resumen de tu Compra:" : "Carrito de compra (INVITADO)"}
-      </Text>
+      <CustomHeader title={user ? "Resumen de tu Compra:" : "Carrito de compra (INVITADO)"} showBack={false}/>
 
       {user && !isVerifiedOrGuest && (
         <View style={{ backgroundColor: "#b22222", padding: 10 }}>
