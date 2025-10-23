@@ -5,22 +5,33 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  Dimensions
 } from "react-native";
 import { getCoffeesByTag } from '../data/CoffeesData';
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
 import FavoriteButton from "../components/FavouriteButton";
+import { useEffect, useState } from "react";
+import LoadingScreen from '../components/LoadingScreen'
 
-const screenHeight = Dimensions.get("window").height;
 
 export default function CategoryScreen({ route }) {
   const { category } = route.params;
   const navigation = useNavigation();
 
-  // 🔹 Filtramos cafés según la categoría
-  const coffees = getCoffeesByTag(category.key);
+  const [coffees, setCoffees] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  loading
+
+  useEffect(() => {
+    const loadCoffees = async () => {
+      const data = await getCoffeesByTag(category.key);
+      setCoffees(data);
+      setLoading(false);
+    };
+    loadCoffees();
+  }, [category.key]);
 
   return (
     <LinearGradient
@@ -42,7 +53,7 @@ export default function CategoryScreen({ route }) {
         onBack={() => navigation.goBack()}
       />
 
-      <View style={styles.overlay}>
+      {loading ? (<LoadingScreen />) : (<View style={styles.overlay}>
         {category.legend && (
           <Text style={styles.legend}>{category.legend}</Text>
         )}
@@ -70,11 +81,11 @@ export default function CategoryScreen({ route }) {
                   style={styles.image}
                 />
               </View>
-              
+
             </TouchableOpacity>
           )}
         />
-      </View>
+      </View>)}
     </LinearGradient>
   );
 }

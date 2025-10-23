@@ -5,9 +5,9 @@ import { useTheme } from "@react-navigation/native";
 export default function LoadingScreen({ message = "Cargando..." }) {
   const { colors } = useTheme();
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color={colors.text} />
-      <Text style={[styles.text, { color: colors.text }]}>{message}</Text>
+    <View style={[styles.container, {backgroundColor: colors.text}]}>
+      <ActivityIndicator size="large" color={colors.background} />
+      <Text style={[styles.text, { color: colors.background }]}>{message}</Text>
     </View>
   );
 }
@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#464646ff",
   },
   text: {
     marginTop: 20,

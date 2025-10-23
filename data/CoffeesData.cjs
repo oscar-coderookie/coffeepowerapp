@@ -560,9 +560,4 @@ const coffeesCatalogue = [
 
 module.exports = coffeesCatalogue;
 
-// // 3. Función para filtrar cafés de cada categoría
-// const getCoffeesByTag = (tag) => {
-//     return coffeesCatalogue.filter((coffee) => coffee.tags.includes(tag));
-// };
 
-// export { coffeesCatalogue, coffeeCategories, getCoffeesByTag };

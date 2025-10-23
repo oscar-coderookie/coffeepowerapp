@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -9,12 +9,35 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import imageBck from "../assets/images/nuestros-cafes.png";
-import { coffeeCategories, coffeesCatalogue } from "../data/CoffeesData";
+import { coffeeCategories, coffeesCatalogue } from "../data/CoffesCategories";
 import SearchBar from "../components/SearchBar";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../config/firebase"; // tu config ya inicializada
 
 const OurCoffees = () => {
     const navigation = useNavigation();
     const [searchResults, setSearchResults] = useState([]);
+    const [coffees, setCoffees] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCoffees = async () => {
+            try {
+                const snapshot = await getDocs(collection(db, "coffees"));
+                const data = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setCoffees(data);
+            } catch (error) {
+                console.error("❌ Error trayendo cafés:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCoffees();
+    }, []);
 
     const handleSearch = (query) => {
         if (!query) {
@@ -22,7 +45,7 @@ const OurCoffees = () => {
             return;
         }
 
-        const filtered = coffeesCatalogue.filter((coffee) => {
+        const filtered = coffees.filter((coffee) => {
             const lowerQuery = query.toLowerCase();
 
             // Buscar por nombre
@@ -66,25 +89,25 @@ const OurCoffees = () => {
                             </View>
                         </>
                     ) : (
-                        <>
-                            <Text style={styles.title}>Nuestros Cafés</Text>
-                            <View style={styles.mosaic}>
-                                {coffeeCategories.map((item, index) => (
-                                    <TouchableOpacity
-                                        key={index} // ✅ key único por cada categoría
-                                        style={styles.card}
-                                        onPress={() =>
-                                            navigation.navigate("Category", { category: item })
-                                        }
-                                    >
-                                        <Text style={styles.cardTitle}>{item.name}</Text>
-                                        {item.legend && (
-                                            <Text style={styles.legend}>{item.legend}</Text>
-                                        )}
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </>
+                    <>
+                        <Text style={styles.title}>Nuestros Cafés</Text>
+                        <View style={styles.mosaic}>
+                            {coffeeCategories.map((item, index) => (
+                                <TouchableOpacity
+                                    key={index} // ✅ key único por cada categoría
+                                    style={styles.card}
+                                    onPress={() =>
+                                        navigation.navigate("Category", { category: item })
+                                    }
+                                >
+                                    <Text style={styles.cardTitle}>{item.name}</Text>
+                                    {item.legend && (
+                                        <Text style={styles.legend}>{item.legend}</Text>
+                                    )}
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </>
                     )}
                 </ScrollView>
             </ImageBackground>

@@ -1,4 +1,4 @@
-export const coffeeCategories = [
+const coffeeCategories = [
     {
         key: "mas-vendido",
         name: "Los Más Vendidos",
@@ -47,3 +47,9 @@ export const coffeeCategories = [
 
     },
 ];
+// // 3. Función para filtrar cafés de cada categoría
+const getCoffeesByTag = (tag) => {
+    return coffeesCatalogue.filter((coffee) => coffee.tags.includes(tag));
+};
+
+export {  coffeeCategories, getCoffeesByTag };
