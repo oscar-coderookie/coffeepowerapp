@@ -5,7 +5,7 @@ import {
   EmailAuthProvider,
   deleteUser,
 } from "firebase/auth";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, collection, getDocs } from "firebase/firestore";
 
 export const useDeleteAccount = () => {
   const deleteAccount = async () => {
@@ -16,7 +16,6 @@ export const useDeleteAccount = () => {
       return;
     }
 
-    // ⚠️ Pedimos la contraseña al usuario antes de eliminar
     return new Promise((resolve, reject) => {
       Alert.prompt(
         "Confirmar contraseña",
@@ -27,15 +26,24 @@ export const useDeleteAccount = () => {
             text: "Confirmar",
             onPress: async (password) => {
               try {
-                // 1️⃣ Reautenticación
                 const credential = EmailAuthProvider.credential(user.email, password);
                 await reauthenticateWithCredential(user, credential);
 
-                // 2️⃣ Eliminar documento de Firestore
                 const userRef = doc(db, "users", user.uid);
+
+                // 🔹 Eliminar subcolecciones antes del documento
+                const subcollections = ["cart", "addresses", "orders"];
+                for (const sub of subcollections) {
+                  const subRef = collection(db, `users/${user.uid}/${sub}`);
+                  const snapshot = await getDocs(subRef);
+                  const batchDeletes = snapshot.docs.map((d) => deleteDoc(d.ref));
+                  await Promise.all(batchDeletes);
+                }
+
+                // 🔹 Eliminar documento principal
                 await deleteDoc(userRef);
 
-                // 3️⃣ Eliminar cuenta del Auth
+                // 🔹 Finalmente, eliminar usuario de Auth
                 await deleteUser(user);
 
                 Alert.alert("Cuenta eliminada", "Tu cuenta ha sido borrada exitosamente.");
@@ -57,7 +65,7 @@ export const useDeleteAccount = () => {
             },
           },
         ],
-        "secure-text" // 🔒 para ocultar la contraseña en el prompt
+        "secure-text"
       );
     });
   };

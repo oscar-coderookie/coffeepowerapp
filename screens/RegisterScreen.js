@@ -81,8 +81,10 @@ export default function RegisterScreen({ navigation }) {
         email: email.trim(),
         createdAt: new Date(),
         cart: [],
+        coupons: [],
         favorites: [],
-        verified: false
+        verified: false,
+        isAdmin: false
       });
       Alert.alert("Éxito", "Registro completado con éxito.");
       navigation.replace("Login");

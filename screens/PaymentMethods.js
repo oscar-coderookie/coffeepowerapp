@@ -166,8 +166,8 @@ const PaymentMethods = () => {
 
   return (
     <View style={styles.container}>
-      <CustomHeader title="Métodos de pago:" />
-      <View style={{ marginHorizontal: 10 }}>
+
+      <View >
         <Text style={[styles.subtitle, { color: colors.text }]}>
           Aquí puedes añadir y modificar tus métodos de pago:
         </Text>
@@ -225,6 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     paddingVertical: 12,
+    marginHorizontal:10,
     marginVertical: 6,
     alignItems: "center",
     flexDirection: "row",

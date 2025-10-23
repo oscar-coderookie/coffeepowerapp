@@ -15,7 +15,8 @@ import {
   View,
   Text,
   ScrollView,
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
@@ -26,73 +27,57 @@ import AddressBlock from "../components/AddressBlock";
 import WhatsappBlock from "../components/CaptureWhatsapp";
 import ButtonGeneral from "../components/ButtonGeneral";
 import VerifyEmailBlock from "../components/VerifyEmail";
+import PaymentMethods from "./PaymentMethods";
+import { AuthContext } from "../context/AuthContext";
+
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState(""); // correo de Firestore
-  const [phone, setPhone] = useState({ codigo: "34", numero: "" });
-  const [countryCode, setCountryCode] = useState("ES");
-  const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [avatar, setAvatar] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const { colors } = useTheme();
   const { isLoading } = useContext(CartContext);
-  const user = auth.currentUser;
+  const { user } = useContext(AuthContext);
 
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (!user) {
+        setCheckingAuth(false);
+        setTimeout(() => navigation.replace("Login"), 300);
+        return;
+      }
 
-  // 🔹 Verificar sesión y cargar datos de usuario desde Firestore
-useEffect(() => {
-  let unsubscribeEmail = () => {};
-
-  const unsubscribeAuth = onAuthStateChanged(auth, async (userAuth) => {
-    if (userAuth) {
       try {
-        const userRef = doc(db, "users", userAuth.uid);
-        const userSnap = await getDoc(userRef);
+        const userRef = doc(db, "users", user.uid);
+        let userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
           await setDoc(userRef, {
             phone: "",
-            name: userAuth.displayName || "Usuario",
-            email: "",
+            name: user.displayName || "Usuario",
+            email: user.email || "",
+            coupons: [],
+            createdAt: new Date(),
           });
+          userSnap = await getDoc(userRef);
         }
 
-        const data = userSnap.exists()
-          ? userSnap.data()
-          : { phone: "", name: "Usuario", email: "" };
-
+        const data = userSnap.data();
         setUserName(data.name || "Usuario");
-
-        // ✅ Aquí usamos el correo de Auth, no Firestore
-        setUserEmail(userAuth.email || "No definido");
-
-        // Listener de Firestore solo si quieres notificaciones u otros campos
-        unsubscribeEmail = onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            // si quieres mantener sincronizado un campo adicional de email en Firestore
-            // setNotificationEmail(docSnap.data().email || "");
-          }
-        });
-
-        await fetchAddresses(userAuth.uid);
+        setUserEmail(user.email || "No definido");
+        await fetchAddresses(user.uid);
       } catch (err) {
-        console.log("❌ Error cargando datos del usuario:", err);
+        console.error("❌ Error cargando datos del usuario:", err);
       } finally {
         setCheckingAuth(false);
       }
-    } else {
-      setTimeout(() => navigation.replace("Login"), 1500);
-    }
-  });
+    };
 
-  return () => {
-    unsubscribeAuth();
-    unsubscribeEmail(); // limpia también el snapshot
-  };
-}, []);
+    loadUserData();
+  }, [user]);
 
 
   // 🔹 Obtener direcciones del usuario
@@ -129,19 +114,19 @@ useEffect(() => {
     }
   };
 
+
   // 🔹 Callbacks para AddressBlock
   const handleDeleted = (id) => {
     setAddresses((prev) => prev.filter((a) => a.id !== id));
   };
+
   const handleUpdated = () => fetchAddresses();
 
-  if (checkingAuth || isLoading) {
-    return <LoadingScreen message="Verificando sesión..." />;
-  }
+
 
   return (
     <View style={styles.container}>
-      <CustomHeader title='Perfil Personal' showBack={false}  />
+      <CustomHeader title='Perfil Personal' showBack={false} />
       <VerifyEmailBlock />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -167,7 +152,7 @@ useEffect(() => {
               alignItems: 'center'
             }}>
               <Text style={{ fontFamily: 'Jost_600SemiBold', textTransform: 'uppercase', width: '100%', color: colors.text }}>Bienvenido:</Text>
-              <Text style={{ textTransform: 'capitalize', fontFamily: 'Jost_400Regular',color: colors.text }}>{userName}</Text>
+              <Text style={{ textTransform: 'capitalize', fontFamily: 'Jost_400Regular', color: colors.text }}>{userName}</Text>
             </View>
           </View>
 
@@ -217,6 +202,14 @@ useEffect(() => {
 
               <WhatsappBlock />
             </View>
+            <Text
+              style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}
+            >
+              Métodos de pago:
+            </Text>
+            <View style={styles.paymentMethods}>
+              <PaymentMethods />
+            </View>
           </View>
         </ScrollView>
 
@@ -260,4 +253,13 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     textAlign: "center",
   },
+  paymentMethods: {
+    justifyContent: 'center',
+
+  },
+  addPay: {
+    padding: 16,
+    borderRadius: 10,
+    margin: 10
+  }
 });

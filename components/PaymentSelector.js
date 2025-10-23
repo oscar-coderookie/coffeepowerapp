@@ -11,7 +11,7 @@ export default function PaymentSelector({ selectedMethod, onSelect }) {
       label: "Bizum",
       logo: require("../assets/icons/bizum-logo.png"), // 🟢 Asegúrate de tener este logo
     },
-    {
+    { 
       id: "visa",
       label: "Tarjeta Visa",
       logo: require("../assets/icons/visa.png"),
@@ -20,6 +20,11 @@ export default function PaymentSelector({ selectedMethod, onSelect }) {
       id: "mastercard",
       label: "Tarjeta Mastercard",
       logo: require("../assets/icons/mastercard.png"),
+    },
+    {
+      id: "amex",
+      label: "American Express",
+      logo: require("../assets/icons/amexpress.png"),
     },
     {
       id: "gpay",
@@ -36,11 +41,7 @@ export default function PaymentSelector({ selectedMethod, onSelect }) {
       label: "Transferencia SEPA",
       logo: require("../assets/icons/sepa.png"),
     },
-     {
-      id: "amex",
-      label: "American Express",
-      logo: require("../assets/icons/amexpress.png"),
-    },
+     
   ];
 
   return (

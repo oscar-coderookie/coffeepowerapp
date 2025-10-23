@@ -5,16 +5,15 @@ import { useState, useEffect, useContext } from "react";
 import { useTheme } from "@react-navigation/native";
 import ChangePasswordDirect from "../components/ChangePass";
 import CustomHeader from "../components/CustomHeader";
-import ChangeEmailDirect from "../components/ChangeEmailDirect";
-import { AuthContext } from "../context/AuthContext";
-import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../config/firebase";
 import PassInput from "../components/PassInput";
+import { AuthContext } from "../context/AuthContext";
+import { deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import { db, auth } from "../config/firebase";
+import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "firebase/auth";
 
 const UserSettings = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [showChangeEmail, setShowChangeEmail] = useState(false);
   const [showChange2Email, setShowChange2Email] = useState(false);
   const [notificationEmail, setNotificationEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
@@ -22,13 +21,52 @@ const UserSettings = () => {
   const { colors } = useTheme();
   const { user, changeEmail } = useContext(AuthContext);
 
-  // 🔹 Escuchar cambios en Firestore para el correo de notificaciones
+  // ✅ Recibe la contraseña desde el modal
+  const handleDeleteAccount = async (password) => {
+    if (!password) {
+      Alert.alert("Error", "Ingresa tu contraseña para confirmar.");
+      return;
+    }
+
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      Alert.alert("Error", "No hay usuario autenticado.");
+      return;
+    }
+
+    try {
+      // 1️⃣ Reautenticar usuario
+      const credential = EmailAuthProvider.credential(currentUser.email, password);
+      await reauthenticateWithCredential(currentUser, credential);
+
+      // 2️⃣ Borrar documento del usuario
+      await deleteDoc(doc(db, "users", currentUser.uid));
+
+      // 3️⃣ Borrar cuenta del Auth
+      await deleteUser(currentUser);
+
+      // 4️⃣ Cerrar modal y confirmar
+      setModalVisible(false);
+      Alert.alert("Cuenta eliminada", "Tu cuenta ha sido eliminada exitosamente.");
+    } catch (error) {
+      console.error("❌ Error eliminando cuenta:", error);
+      if (error.code === "auth/wrong-password") {
+        Alert.alert("Contraseña incorrecta", "La contraseña ingresada no es válida.");
+      } else if (error.code === "auth/requires-recent-login") {
+        Alert.alert("Inicio de sesión requerido", "Vuelve a iniciar sesión antes de eliminar tu cuenta.");
+      } else {
+        Alert.alert("Error", error.message);
+      }
+    }
+  };
+
+  // 🔹 Escuchar cambios en Firestore
   useEffect(() => {
     if (!user) return;
 
     const unsubscribe = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
       if (docSnap.exists()) {
-        setNotificationEmail(docSnap.data().email); // email de notificaciones
+        setNotificationEmail(docSnap.data().email);
       }
     });
 
@@ -55,7 +93,7 @@ const UserSettings = () => {
     <View>
       <CustomHeader showBack={false} title="Ajustes:" />
 
-      {/* Botón eliminar cuenta */}
+      {/* 🗑 Botón eliminar cuenta */}
       <ButtonGeneral
         text="Eliminar cuenta"
         onTouch={() => setModalVisible(true)}
@@ -63,9 +101,14 @@ const UserSettings = () => {
         marginHorizontal={10}
         textColor="white"
       />
-      <ConfirmDeleteModal isVisible={modalVisible} onClose={() => setModalVisible(false)} />
 
-      {/* Botón mostrar formulario cambiar contraseña */}
+      <ConfirmDeleteModal
+        isVisible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleDeleteAccount} // ✅ ahora sí pasa la password
+      />
+
+      {/* 🔐 Cambiar contraseña */}
       <ButtonGeneral
         text={showChangePassword ? "Cancelar" : "Cambiar contraseña"}
         onTouch={() => setShowChangePassword(!showChangePassword)}
@@ -73,11 +116,9 @@ const UserSettings = () => {
         marginHorizontal={10}
         textColor={colors.background}
       />
+      {showChangePassword && <ChangePasswordDirect onSuccess={() => setShowChangePassword(false)} />}
 
-      {/* Formulario cambiar contraseña */}
-      {showChangePassword && (
-        <ChangePasswordDirect onSuccess={() => setShowChangePassword(false)} />
-      )}
+      {/* ✉️ Cambiar correo */}
       {showChange2Email && (
         <View style={{ marginHorizontal: 10 }}>
           <TextInput
@@ -87,10 +128,7 @@ const UserSettings = () => {
             keyboardType="email-address"
             autoCapitalize="none"
           />
-
-          <PassInput
-            password={currentPassword}
-            setPassword={setCurrentPassword} />
+          <PassInput password={currentPassword} setPassword={setCurrentPassword} />
           <ButtonGeneral
             text="Actualizar correo"
             bckColor={colors.text}
@@ -98,8 +136,8 @@ const UserSettings = () => {
             onTouch={handleChangeEmail}
           />
         </View>
-
       )}
+
       <ButtonGeneral
         text={showChange2Email ? "Cancelar" : "Cambiar correo registrado"}
         onTouch={() => setShowChange2Email(!showChange2Email)}

@@ -13,23 +13,37 @@ import ButtonGeneral from "../components/ButtonGeneral";
 export default function PayoutScreen({ navigation, route }) {
   const { colors } = useTheme();
   const { cartItems = [], shippingData = {}, paymentData = {} } = route.params || {};
+  // 🔹 Aquí obtienes el cupón correctamente
+  const appliedCoupon = shippingData?.appliedCoupon || null;
 
   const [shippingCost, setShippingCost] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [discountValueEuros, setDiscountValue] = useState(0);
+
 
   useEffect(() => {
     try {
-      const baseShipping = shippingData?.deliveryType === "prioritaria" ? 6 : 3;
+      const baseShipping = shippingData?.deliveryType === "VIP" ? 6 : 3;
       setShippingCost(baseShipping);
 
-      const subtotal = cartItems.reduce((sum, item) => {
+      const calculatedSubtotal = cartItems.reduce((sum, item) => {
         const price = parseFloat(item.price) || 0;
         const quantity = parseInt(item.quantity) || 0;
         return sum + price * quantity;
       }, 0);
+      setSubtotal(calculatedSubtotal);
 
-      setTotal(subtotal + baseShipping);
+
+      // 🔹 Aplicar descuento si hay cupón
+      const discountPercent = shippingData?.appliedCoupon?.discount || 0;
+      const discountAmount = calculatedSubtotal * (discountPercent / 100);
+      setDiscountAmount(discountAmount);
+      setDiscountValue()
+      const totalWithDiscount = calculatedSubtotal - discountAmount + baseShipping;
+      setTotal(totalWithDiscount);
       setLoading(false);
     } catch (error) {
       console.error("Error calculando totales:", error);
@@ -50,95 +64,116 @@ export default function PayoutScreen({ navigation, route }) {
   }
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader title="Completar orden" showBack={true} />
 
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Resumen del pedido</Text>
+      <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Resumen del pedido</Text>
 
-      {cartItems.map((item, idx) => (
-        <View key={idx} style={styles.item}>
-          <Text style={[styles.itemText, { color: colors.text }]}>
-            {item.name} 300gr. × {item.quantity}
+        {cartItems.map((item, idx) => (
+          <View key={idx} style={styles.item}>
+            <Text style={[styles.itemText, { color: colors.text }]}>
+              {item.name} 300gr. × {item.quantity}
+            </Text>
+            <Text style={[styles.price, { color: colors.text }]}>
+              €{((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(2)}
+            </Text>
+          </View>
+        ))}
+
+        <View style={styles.divider} />
+
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>datos de Envío y pago:</Text>
+        <View style={styles.row}>
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            Dirección:
           </Text>
-          <Text style={[styles.price, { color: colors.text }]}>
-            €{((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(2)}
+          <Text style={[styles.detailsText, { color: colors.text }]}>
+            {shippingData.address
+              ? `${shippingData.address.calle}, ${shippingData.address.numero}, Piso ${shippingData.address.piso}\n${shippingData.address.provincia}, ${shippingData.address.CA}\nCódigo Postal: ${shippingData.address.codigoPostal}`
+              : "No especificada"}
           </Text>
         </View>
-      ))}
 
-      <View style={styles.divider} />
-
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>datos de Envío y pago:</Text>
-      <View style={styles.row}>
-        <Text style={[styles.subtitle, { color: colors.text }]}>
-          Dirección de entrega:
-        </Text>
-        <Text style={[styles.detailsText, { color: colors.text }]}>
-          {shippingData.address
-            ? `${shippingData.address.calle}, ${shippingData.address.numero}, Piso ${shippingData.address.piso}\n${shippingData.address.provincia}, ${shippingData.address.CA}\nCódigo Postal: ${shippingData.address.codigoPostal}`
-            : "No especificada"}
-        </Text>
-      </View>
-
-      <View style={styles.row}>
-        <Text style={[styles.subtitle, { color: colors.text }]}>
-          Número de contacto:
-        </Text>
-        <Text style={[styles.detailsText, { color: colors.text }]}>
-          +{shippingData.phone.codigo} {shippingData.phone.numero}
-        </Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={[styles.subtitle, { color: colors.text }]}>
-          Correo Electrónico:
-        </Text>
-        <Text style={[styles.detailsText, { color: colors.text }]}>
-          {shippingData.email}
-        </Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={[styles.subtitle, { color: colors.text }]}>
-          Tipo de entrega:
-        </Text>
-        <Text style={[styles.detailsText, { color: colors.text }]}>
-          {shippingData?.deliveryType || "No definido"}
-        </Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={[styles.subtitle, { color: colors.text }]}>
-          Método de pago:
-        </Text>
-        <Text style={[styles.detailsText, { color: colors.text }]}>
-         {paymentData?.method || "No seleccionado"}
-        </Text>
-      </View>
+        <View style={styles.row}>
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            Número de contacto:
+          </Text>
+          <Text style={[styles.detailsText, { color: colors.text }]}>
+            +{shippingData.phone.codigo} {shippingData.phone.numero}
+          </Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            Correo Electrónico:
+          </Text>
+          <Text style={[styles.detailsText, { color: colors.text }]}>
+            {shippingData.email}
+          </Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            Tipo de entrega:
+          </Text>
+          <Text style={[styles.detailsText, { color: colors.text }]}>
+            {shippingData?.deliveryType || "No definido"}
+          </Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            Método de pago:
+          </Text>
+          <Text style={[styles.detailsText, { color: colors.text }]}>
+            {paymentData?.method || "No seleccionado"}
+          </Text>
+        </View>
 
 
-      <View style={styles.divider} />
+        <View style={styles.divider} />
+        <View style={styles.row}>
+          <Text style={[styles.label, { color: colors.text }]}>
+            Subtotal:
+          </Text>
+          <Text style={[styles.value, { color: colors.text }]}>
+            €{subtotal.toFixed(2)}
+          </Text>
+        </View>
 
-      <View style={styles.row}>
-        <Text style={[styles.label, { color: colors.text }]}>
-          Gastos de envío: Entrega ({shippingData?.deliveryType}):
-        </Text>
-        <Text style={[styles.value, { color: colors.text }]}>
-          €{(shippingCost || 0).toFixed(2)}
-        </Text>
-      </View>
+        {appliedCoupon && (
+          <View style={styles.row}>
+            <Text style={[styles.label, { color: colors.text }]}>
+              Cupón aplicado ({appliedCoupon.code}):
+            </Text>
+            <Text style={[styles.value, { color: colors.text }]}>
+              -{appliedCoupon.discount}% ({discountAmount}€)
+            </Text>
+          </View>
+        )}
+        <View style={styles.row}>
+          <Text style={[styles.label, { color: colors.text }]}>
+            Gastos de envío: Entrega ({shippingData?.deliveryType}):
+          </Text>
+          <Text style={[styles.value, { color: colors.text }]}>
+            €{(shippingCost || 0).toFixed(2)}
+          </Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={[styles.total, { color: colors.text }]}>Total</Text>
+          <Text style={[styles.total, { color: colors.text }]}>
+            €{(total || 0).toFixed(2)}
+          </Text>
+        </View>
 
-      <View style={styles.row}>
-        <Text style={[styles.total, { color: colors.text }]}>Total</Text>
-        <Text style={[styles.total, { color: colors.text }]}>
-          €{(total || 0).toFixed(2)}
-        </Text>
-      </View>
 
-      <ButtonGeneral
-        text="Finalizar Pedido"
-        textColor={colors.background}
-        bckColor={colors.text}
-        onPress={handleFinish}
-      />
-    </ScrollView>
+        <ButtonGeneral
+          text="Finalizar Pedido"
+          textColor={colors.background}
+          bckColor={colors.text}
+          onPress={handleFinish}
+        />
+      </ScrollView>
+
+    </View>
   );
 }
 
@@ -168,7 +203,7 @@ const styles = StyleSheet.create({
   divider: {
     borderBottomWidth: 1,
     borderColor: "#ccc",
-    marginVertical: 15,
+    marginVertical: 10,
   },
   sectionTitle: {
     fontFamily: "Jost_600SemiBold",

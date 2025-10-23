@@ -1,20 +1,16 @@
-// navigators/DrawerNavigator.js
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { View, Image, StyleSheet, TouchableOpacity, Text, Switch } from "react-native";
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useThemeContext } from "../context/ThemeContext";
 import { useTheme } from "@react-navigation/native";
-
 import Tabs from "./TabNavigator";
 import AboutUsTabs from "./AboutUsTabs";
 import EventsTabs from "./EventsTabs";
-import CartStack from "./CartStack";
 import UserStack from "./UserStack";
 import AccesoriesPro from "../screens/AccesoriesPro";
-
 import logo from "../assets/images/logo.png";
 import logoMenu from "../assets/images/logo-nuevo.png";
 import icon1 from "../assets/icons/menu-1.png";
@@ -23,6 +19,11 @@ import icon3 from "../assets/icons/menu-3.png";
 import icon4 from "../assets/icons/menu-4.png";
 import icon5 from "../assets/icons/menu-btn2.png";
 import LegalStack from "./LegalStack";
+import AdminScreen from "../screens/admin/AdminScreen";
+import LoadingScreen from "../components/LoadingScreen";
+import { doc,getDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import AdminStack from "./AdminStack";
 
 const Drawer = createDrawerNavigator();
 
@@ -72,7 +73,7 @@ function CustomDrawerContent(props) {
           ) : (
             <TouchableOpacity style={styles.logoutBtn} onPress={handleLoginRedirect}>
               <Ionicons name="log-in-outline" size={24} color={colors.text} />
-              <Text style={[styles.logoutText, { color:colors.text }]}>
+              <Text style={[styles.logoutText, { color: colors.text }]}>
                 Iniciar sesión
               </Text>
             </TouchableOpacity>
@@ -98,6 +99,48 @@ function CustomDrawerContent(props) {
 
 export default function DrawerNavigator() {
   const { colors } = useTheme();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      console.log("❌ No hay usuario logueado");
+      setIsAdmin(false);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (snap.exists()) {
+        const data = snap.data();
+
+
+        if (data.isAdmin) {
+ 
+          setIsAdmin(true);
+        } else {
+   
+          setIsAdmin(false);
+        }
+      } else {
+   
+        setIsAdmin(false);
+      }
+    } catch (error) {
+      console.error("🔥 Error verificando admin:", error);
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  return () => unsubscribe();
+}, []);
+
 
   return (
 
@@ -141,7 +184,7 @@ export default function DrawerNavigator() {
           drawerIcon: ({ size }) => <Image source={icon2} style={{ width: size, height: size }} />,
         }}
       />
- 
+
       {/* 👇 Solo muestra "Área personal" si hay usuario logueado */}
 
       <Drawer.Screen
@@ -151,7 +194,7 @@ export default function DrawerNavigator() {
           drawerIcon: ({ size }) => <Image source={icon5} style={{ width: size, height: size }} />,
         }}
       />
-           <Drawer.Screen
+      <Drawer.Screen
         name="Eventos"
         component={EventsTabs}
         options={{
@@ -172,6 +215,16 @@ export default function DrawerNavigator() {
           drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
         }}
       />
+      {/* 🔒 Pantalla visible solo si es admin */}
+      {isAdmin && (
+        <Drawer.Screen
+          name="Panel de Administración"
+          component={AdminStack}
+          options={{
+            drawerIcon: ({ size }) => <MaterialIcons name="admin-panel-settings" size={size} color={colors.text} />,
+          }}
+        />
+      )}
 
     </Drawer.Navigator>
 

@@ -9,239 +9,9 @@ import { auth, db } from '../config/firebase'
 import Icon from "react-native-vector-icons/FontAwesome6";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import ButtonGeneral from "../components/ButtonGeneral";
-import { Modal } from "react-native";
 import PaymentSelector from "../components/PaymentSelector";
+import CouponSelectorModal from "../components/CouponsSelectorModal";
 
-//modal de confirmacion:
-function ConfirmModal({ visible, onClose, address, deliveryType, onConfirm, colors }) {
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-    >
-      <View style={modalStyles.overlay}>
-        <View style={[modalStyles.container, { backgroundColor: colors.background }]}>
-          <Text style={[modalStyles.title, { color: colors.text }]}>
-            Confirmar pedido
-          </Text>
-
-          {/* Dirección seleccionada */}
-          <View style={modalStyles.section}>
-            <Text style={[modalStyles.label, { color: colors.text }]}>
-              📍 Dirección de entrega:
-            </Text>
-            <Text style={[modalStyles.value, { color: colors.text }]}>
-              {address
-                ? `${address.calle}, ${address.numero}, Piso ${address.piso}\n${address.provincia}, ${address.CA}\nCódigo Postal: ${address.codigoPostal}`
-                : "No se ha seleccionado dirección"}
-            </Text>
-          </View>
-
-          {/* Tipo de entrega */}
-          <View style={modalStyles.section}>
-            <Text style={[modalStyles.label, { color: colors.text }]}>
-              🚚 Tipo de entrega:
-            </Text>
-            <Text style={[
-              modalStyles.value,
-              {
-                color: deliveryType === "prioritaria" ? "#8a6d0dff" : colors.text,
-                fontFamily: 'Jost_600SemiBold'
-              }
-            ]}>
-              {deliveryType === "prioritaria"
-                ? "Entrega VIP (El mismo día)"
-                : "Entrega normal (3-5 días)"}
-            </Text>
-          </View>
-
-          {/* Botones */}
-          <View style={modalStyles.buttons}>
-            <TouchableOpacity
-              style={[modalStyles.cancelBtn, { borderColor: colors.text }]}
-              onPress={onClose}
-            >
-              <Text style={[modalStyles.cancelText, { color: colors.text }]}>
-                Cancelar
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[modalStyles.confirmBtn, { backgroundColor: "#8a6d0dff" }]}
-              onPress={onConfirm}
-            >
-              <Text style={[modalStyles.confirmText, { color: colors.background }]}>
-                Confirmar
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
-const modalStyles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
-    paddingHorizontal: 20,
-  },
-  container: {
-    width: "100%",
-    borderRadius: 20,
-    padding: 20,
-    elevation: 5,
-  },
-  title: {
-    fontSize: 20,
-    fontFamily: "Jost_600SemiBold",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  section: {
-    marginBottom: 15,
-  },
-  label: {
-    fontFamily: "Jost_600SemiBold",
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  value: {
-    fontFamily: "Jost_400Regular",
-    fontSize: 15,
-    lineHeight: 20,
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  cancelBtn: {
-    flex: 1,
-    borderWidth: 1,
-    padding: 12,
-    borderRadius: 10,
-    marginRight: 10,
-  },
-  confirmBtn: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 10,
-  },
-  cancelText: {
-    textAlign: "center",
-    fontFamily: "Jost_600SemiBold",
-  },
-  confirmText: {
-    textAlign: "center",
-    fontFamily: "Jost_600SemiBold",
-  },
-});
-
-const PaymentMethods = () => {
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [name, setName] = useState("");
-
-  const { colors } = useTheme();
-
-  return (
-    <View style={payStyles.infoContainer}>
-      <View style={payStyles.inputContainer}>
-        <Text style={payStyles.label}>Nombre en la tarjeta</Text>
-        <TextInput
-          style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
-          placeholder="Ej: Óscar Serna"
-          placeholderTextColor={colors.text}
-          value={name}
-          onChangeText={setName}
-        />
-      </View>
-
-      <View style={payStyles.inputContainer}>
-        <Text style={payStyles.label}>Número de tarjeta</Text>
-        <TextInput
-          style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
-          placeholder="1234 5678 9012 3456"
-          placeholderTextColor={colors.text}
-          keyboardType="numeric"
-          value={cardNumber}
-          onChangeText={setCardNumber}
-        />
-      </View>
-
-      <View style={payStyles.row}>
-        <View style={[payStyles.inputContainer, { flex: 1, marginRight: 10 }]}>
-          <Text style={payStyles.label}>Expira</Text>
-          <TextInput
-            style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
-            placeholder="MM/AA"
-            placeholderTextColor={colors.text}
-            keyboardType="numeric"
-            value={expiry}
-            onChangeText={setExpiry}
-          />
-        </View>
-
-        <View style={[payStyles.inputContainer, { flex: 1 }]}>
-          <Text style={payStyles.label}>CVV</Text>
-          <TextInput
-            style={[payStyles.input, { color: colors.text, backgroundColor: colors.background }]}
-            placeholder="***"
-            placeholderTextColor={colors.text}
-            secureTextEntry
-            keyboardType="numeric"
-            value={cvv}
-            onChangeText={setCvv}
-          />
-        </View>
-      </View>
-    </View>
-
-  )
-}
-
-const payStyles = StyleSheet.create({
-  container: {
-
-  },
-  title: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 30,
-    textAlign: "center",
-  },
-  inputContainer: { marginBottom: 20 },
-  label: { marginBottom: 6, fontSize: 14, fontFamily: 'Jost_400Regular' },
-  input: {
-    backgroundColor: "#1a1a1a",
-    padding: 15,
-    fontFamily: 'Jost_400Regular',
-    borderRadius: 10,
-    color: "#fff",
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#333",
-  },
-  row: { flexDirection: "row" },
-  payButton: {
-    backgroundColor: "#8a6d0d",
-    padding: 18,
-    borderRadius: 12,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  payText: { color: "#fff", fontSize: 18, fontWeight: "600" },
-  infoContainer: {
-    marginVertical: 10
-  }
-});
 
 export default function CheckoutScreen({ navigation, route }) {
   const { colors } = useTheme();
@@ -256,27 +26,62 @@ export default function CheckoutScreen({ navigation, route }) {
   const [details, setDetails] = useState("");
   const [email, setEmail] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Tarjeta");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  const handleApplyCoupon = async () => {
+    if (!user) {
+      Alert.alert("Inicia sesión", "Debes iniciar sesión para aplicar cupones.");
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        Alert.alert("Error", "No se encontró tu perfil de usuario.");
+        return;
+      }
+
+      const userData = userSnap.data();
+      const coupons = (userData.coupons || []).filter(
+        (c) => !c.used && (!c.expiresAt || new Date(c.expiresAt) > new Date())
+      );
+
+      setAvailableCoupons(coupons);
+      setShowCouponModal(true);
+    } catch (error) {
+      console.error("Error al obtener cupones:", error);
+      Alert.alert("Error", "No se pudieron cargar los cupones.");
+    }
+  };
+
+
+
 
   const handleContinue = () => {
     // Buscar la dirección completa según el ID seleccionado
     const selectedAddress = directions.find(dir => dir.id === selected);
-
     if (!selectedAddress) {
       Alert.alert("Selecciona una dirección de entrega");
       return;
     }
-
     const shippingData = {
       address: selectedAddress,
       deliveryType,
       phone,
-      email
-
+      email,
+      appliedCoupon,
     };
 
     const paymentData = {
       method: paymentMethod,
     };
+
+
 
     navigation.navigate("Payout", {
       cartItems,
@@ -402,6 +207,49 @@ export default function CheckoutScreen({ navigation, route }) {
                 />
               </TouchableOpacity>
             ))}
+          </View>
+          {/* 🔹 Campo para aplicar cupón de descuento */}
+          <View style={{ marginBottom: 14 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontFamily: "Jost_600SemiBold",
+                marginBottom: 8,
+                color: colors.text,
+              }}
+            >
+              ¿Tienes un cupón de descuento?
+            </Text>
+
+            <TouchableOpacity
+              onPress={handleApplyCoupon}
+              style={{
+                borderWidth: 1,
+                borderColor: colors.text,
+                borderRadius: 10,
+                padding: 15,
+                backgroundColor: colors.background,
+              }}
+            >
+              <Text style={{ color: colors.text, fontFamily: "Jost_400Regular" }}>
+                {appliedCoupon
+                  ? `Cupón "${appliedCoupon.code}" aplicado (${appliedCoupon.discount}%) 🎉`
+                  : "Seleccionar cupón disponible"}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Modal de selección */}
+            <CouponSelectorModal
+              visible={showCouponModal}
+              onClose={() => setShowCouponModal(false)}
+              coupons={availableCoupons}
+              colors={colors}
+              onSelect={(coupon) => {
+                setAppliedCoupon(coupon);
+                setShowCouponModal(false);
+                Alert.alert("Cupón aplicado", `Descuento del ${coupon.discount}% activado 🎉`);
+              }}
+            />
           </View>
           <PaymentSelector selectedMethod={paymentMethod}
             onSelect={setPaymentMethod} />

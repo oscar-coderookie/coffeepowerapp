@@ -1,14 +1,12 @@
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
-import CoffeesStack from './CoffeesStack';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import CartStack from './CartStack';
 import { useTheme } from "@react-navigation/native";
 import UserAreaScreen from '../screens/UserAreaScreen';
 import FavoritesScreen from '../screens/FavouritesScreen';
-import PaymentMethods from '../screens/PaymentMethods';
 import UserSettings from '../screens/UserSettings';
+import CouponsClientScreen from '../screens/CouponsClientScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,8 +30,8 @@ const UserTabs = () => {
                         iconName = focused ? 'person-circle-sharp' : 'person-circle-outline';
                     } else if (route.name === 'Favoritos') {
                         iconName = focused ? 'star' : 'star-outline'
-                    } else if (route.name === "Pagos") {
-                         iconName = focused ? 'card' : 'card-outline'
+                    } else if (route.name === "Cupones") {
+                         iconName = focused ? 'pricetag' : 'pricetag-outline'
                     }  else if (route.name === "Ajustes") {
                          iconName = focused ? 'settings' : 'settings-outline'
                     }
@@ -44,7 +42,7 @@ const UserTabs = () => {
         >
             <Tab.Screen name="Perfil" component={UserAreaScreen} />
             <Tab.Screen name="Favoritos" component={FavoritesScreen} />
-            <Tab.Screen name="Pagos" component={PaymentMethods} />
+            <Tab.Screen name="Cupones" component={CouponsClientScreen} />
             <Tab.Screen name="Ajustes" component={UserSettings} />
 
         </Tab.Navigator>
