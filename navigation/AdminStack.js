@@ -1,13 +1,11 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import PrivacyScreen from "../screens/legal/PrivacyScreen";
-import TermsScreen from "../screens/legal/TermsScreen";
-import CookiesScreen from "../screens/legal/CookiesScreen";
-import RightsScreen from "../screens/legal/RightsScreen";
 import { useTheme } from "@react-navigation/native";
 import AdminScreen from "../screens/admin/AdminScreen";
 import InjectCouponsScreen from "../screens/admin/CouponsScreen";
+import AdminCatalogScreen from "../screens/admin/AdminCatalogScreen";
+import AdminStackNavigator from "./AdminStackNav";
 
 const Tab = createBottomTabNavigator();
 
@@ -28,12 +26,14 @@ const AdminStack = () => {
           let iconName;
           if (route.name === "Principal") iconName = "admin-panel-settings";
           else if (route.name === "Cupones") iconName = "discount";
+          else if (route.name === "Catalogo") iconName = 'playlist-add-circle'
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Principal" component={AdminScreen} />
       <Tab.Screen name="Cupones" component={InjectCouponsScreen} />
+      <Tab.Screen name="Catalogo" component={AdminStackNavigator} />
 
     </Tab.Navigator>
   );
