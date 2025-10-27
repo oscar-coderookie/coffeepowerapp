@@ -115,7 +115,7 @@ export default function EditCoffeeScreen({ route, navigation }) {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <CustomHeader title={`Editar: ${coffee.name}`} />
+            <CustomHeader title={`Editar: ${coffee.name}`} showBack={true} />
             <ScrollView contentContainerStyle={styles.content}>
                 <Text style={[styles.label, { color: colors.text }]}>Nombre:</Text>
                 <TextInput style={[styles.input, { backgroundColor: colors.background, color: colors.text, outlineColor: colors.text }]} value={name} onChangeText={setName} />

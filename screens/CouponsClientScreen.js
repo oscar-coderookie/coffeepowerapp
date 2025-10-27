@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { auth, db } from "../config/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import CustomHeader from "../components/CustomHeader";
 import logo from "../assets/icon.png";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,27 +13,39 @@ const CouponsClientScreen = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCoupons = async () => {
+    let unsubscribe; // referencia para limpiar el listener
+
+    const listenCoupons = async () => {
       try {
         const user = auth.currentUser;
         if (!user) return;
 
         const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
 
-        if (userSnap.exists()) {
-          const userData = userSnap.data();
-          setCoupons(userData.coupons || []);
-        }
+        // Escucha los cambios en tiempo real
+        unsubscribe = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setCoupons(userData.coupons || []);
+          } else {
+            console.log("No se encontró el documento del usuario.");
+          }
+          setLoading(false);
+        });
       } catch (error) {
-        console.error("Error cargando cupones:", error);
-      } finally {
+        console.error("Error escuchando cupones:", error);
         setLoading(false);
       }
     };
 
-    fetchCoupons();
+    listenCoupons();
+
+    // Limpia el listener al desmontar el componente
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
+
 
   if (loading) {
     return (
@@ -128,7 +140,7 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_600SemiBold",
     fontSize: 14,
     marginBottom: 4,
-    textTransform:'capitalize'
+    textTransform: 'capitalize'
   },
   expiry: {
     fontFamily: "Jost_400Regular",

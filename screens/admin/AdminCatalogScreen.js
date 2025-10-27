@@ -48,7 +48,7 @@ export default function AdminCatalogScreen({ navigation }) {
                         try {
                             const coffeeRef = doc(db, "coffees", coffeeId);
                             await deleteDoc(coffeeRef);
-                            Alert.alert("Café eliminado correctamente ✅");
+                            Alert.alert("Café eliminado correctamente de la base de datos✅");
                         } catch (error) {
                             console.error("Error al eliminar café:", error);
                             Alert.alert("Error", "No se pudo eliminar el café ❌");
@@ -89,7 +89,7 @@ export default function AdminCatalogScreen({ navigation }) {
 
             />
 
-            <TouchableOpacity onPress={() => navigation.navigate("AddCoffee")} style={{ alignItems: 'center', paddingVertical: 20, flexDirection: 'row', justifyContent: 'center' }}>
+            <TouchableOpacity onPress={() => navigation.navigate("AddCoffee")} style={{ alignItems: 'center', paddingVertical: 10, flexDirection: 'row', justifyContent: 'center' }}>
                 <FontAwesome name="plus-circle" size={30} color="black" />
                 <Text style={{ fontFamily: 'Jost_600SemiBold', marginLeft: 10, textTransform: 'uppercase', width: 'auto' }}>Agregar Café nuevo</Text>
             </TouchableOpacity>
@@ -104,15 +104,12 @@ const styles = StyleSheet.create({
     },
     list: {
         padding: 10,
-
-
     },
     card: {
         flexDirection: "row",
         backgroundColor: "#1a1a1a",
         borderRadius: 14,
-
-        padding: 12,
+        padding:10,
         marginBottom: 10,
         alignItems: "center",
         elevation: 2,

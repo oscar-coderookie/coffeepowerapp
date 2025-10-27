@@ -19,6 +19,7 @@ export default function CustomHeader({ title, children, showBack = false }) {
         borderBottomColor: colors.border,
         borderBottomWidth: 1,
         backgroundColor: colors.background,
+        marginBottom: 10
       }}
     >
       {/* Si showBack es true, mostramos la flecha */}

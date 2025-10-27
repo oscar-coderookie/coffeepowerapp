@@ -3,9 +3,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import AdminScreen from "../screens/admin/AdminScreen";
-import InjectCouponsScreen from "../screens/admin/CouponsScreen";
-import AdminCatalogScreen from "../screens/admin/AdminCatalogScreen";
 import AdminStackNavigator from "./AdminStackNav";
+import { DiscountsStack } from "./DiscountsStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -25,15 +24,15 @@ const AdminStack = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName;
           if (route.name === "Principal") iconName = "admin-panel-settings";
-          else if (route.name === "Cupones") iconName = "discount";
-          else if (route.name === "Catalogo") iconName = 'playlist-add-circle'
+          else if (route.name === "Descuentos") iconName = "discount";
+          else if (route.name === "Editor") iconName = 'playlist-add-circle'
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
     >
       <Tab.Screen name="Principal" component={AdminScreen} />
-      <Tab.Screen name="Cupones" component={InjectCouponsScreen} />
-      <Tab.Screen name="Catalogo" component={AdminStackNavigator} />
+      <Tab.Screen name="Descuentos" component={DiscountsStack} />
+      <Tab.Screen name="Editor" component={AdminStackNavigator} />
 
     </Tab.Navigator>
   );

@@ -92,25 +92,11 @@ export default function AdminScreen({ navigation }) {
                     { color: colors.text + "99", fontFamily: "Jost" },
                 ]}
             >
-                Desde aquí puedes gestionar cupones, descuentos y más funciones internas.
+                En este apartado puedes gestionar todo lo relacionado con la base de datos de cafés y de clientes registrados en nuestra app.
             </Text>
 
             <View style={styles.section}>
-                <ButtonGeneral
-                    marginHorizontal={10}
-                    text="Inyectar descuentos masivamente"
-                    textColor={colors.background}
-                    bckColor={colors.text}
-                    onPress={() => navigation.navigate("InjectCoupons")}
-                    
-                />
-                <ButtonGeneral
-                    text="Ver lista de cupones"
-                    marginHorizontal={10}
-                    textColor={colors.background}
-                    bckColor={colors.text}
-                    onPress={() => navigation.navigate("CouponsList")}
-                />
+           
             </View>
         </View>
     );
@@ -130,7 +116,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginTop: 8,
         lineHeight: 22,
-        marginHorizontal:10
+        marginHorizontal:10,
+        textAlign:'justify'
     },
     noAccess: { fontSize: 18, textAlign: "center", paddingHorizontal: 30 },
     section: {

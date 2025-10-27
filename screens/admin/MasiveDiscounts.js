@@ -16,11 +16,13 @@ import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../../components/CustomHeader";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import LoadingScreen from "../../components/LoadingScreen";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function InjectCouponsScreen() {
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [formattedDate, setFormattedDate] = useState("");
   const [date, setDate] = useState(new Date());
 
   // Campos del cupón
@@ -36,12 +38,17 @@ export default function InjectCouponsScreen() {
   };
 
   const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
+    // Evita cerrar el picker automáticamente
     if (selectedDate) {
       setDate(selectedDate);
-      const formattedDate = selectedDate.toISOString().split("T")[0]; // YYYY-MM-DD
-      handleChange("expiresAt", formattedDate);
     }
+  };
+
+  const handleConfirmDate = () => {
+    const formatted = date.toISOString().split("T")[0]; // YYYY-MM-DD
+    setFormattedDate(formatted);                        // 👈 guarda texto visible
+    handleChange("expiresAt", formatted);               // 👈 actualiza tu form (como ya lo hacías)
+    setShowDatePicker(false);
   };
 
   const handleSubmit = async () => {
@@ -118,93 +125,98 @@ export default function InjectCouponsScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader title="Inyectar Cupones" showBack={true} />
-
-      <Text style={[styles.subtitle, { color: colors.text }]}>
-        Crea un cupón y aplícalo automáticamente a todos los usuarios registrados.
-      </Text>
-
-      <View style={styles.formGroup}>
-        <Text style={[styles.label, { color: colors.text }]}>Código del cupón *</Text>
-        <TextInput
-          style={[styles.input, { color: colors.text, borderColor: colors.text }]}
-          placeholder="Ej: BIENVENIDO10"
-          placeholderTextColor={colors.text + "88"}
-          value={couponData.code}
-          onChangeText={(v) => handleChange("code", v)}
-          autoCapitalize="characters"
-        />
-      </View>
-
-      <View style={styles.formGroup}>
-        <Text style={[styles.label, { color: colors.text }]}>Descuento (%) *</Text>
-        <TextInput
-          style={[styles.input, { color: colors.text, borderColor: colors.text }]}
-          placeholder="Ej: 10"
-          placeholderTextColor={colors.text + "88"}
-          keyboardType="numeric"
-          value={couponData.discount}
-          onChangeText={(v) => handleChange("discount", v)}
-        />
-      </View>
-
-      <View style={styles.formGroup}>
-        <Text style={[styles.label, { color: colors.text }]}>Descripción</Text>
-        <TextInput
-          style={[styles.input, { color: colors.text, borderColor: colors.text }]}
-          placeholder="Ej: Descuento de bienvenida"
-          placeholderTextColor={colors.text + "88"}
-          value={couponData.description}
-          onChangeText={(v) => handleChange("description", v)}
-        />
-      </View>
-
-      {/* Selector de fecha */}
-      <View style={styles.formGroup}>
-        <Text style={[styles.label, { color: colors.text }]}>Fecha de expiración</Text>
-        <TouchableOpacity
-          onPress={() => setShowDatePicker(true)}
-          style={[
-            styles.input,
-            { justifyContent: "center", borderColor: colors.text },
-          ]}
-        >
-          <Text
-            style={{
-              color: couponData.expiresAt ? colors.text : colors.text + "88",
-              fontFamily: "Jost_400Regular",
-            }}
-          >
-            {couponData.expiresAt || "Selecciona una fecha"}
-          </Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display={Platform.OS === "ios" ? "spinner" : "default"}
-            onChange={handleDateChange}
-            minimumDate={new Date()}
+      <CustomHeader title="Crear descuento masivo:" showBack={true} />
+      <View style={styles.block}>
+        <Text style={[styles.subtitle, { color: colors.text }]}>
+          Crea un cupón y aplícalo automáticamente a todos los usuarios registrados en nuestra base de datos.
+        </Text>
+        <Text style={styles.title}>Formulario de Creación de descuento:</Text>
+        <View style={styles.formGroup}>
+          <Text style={[styles.label, { color: colors.text }]}>Código del cupón *</Text>
+          <TextInput
+            style={[styles.input, { color: colors.text, borderColor: colors.text }]}
+            placeholder="Ej: BIENVENIDO10"
+            placeholderTextColor={colors.text + "88"}
+            value={couponData.code}
+            onChangeText={(v) => handleChange("code", v)}
+            autoCapitalize="characters"
           />
-        )}
-      </View>
+        </View>
+        <View style={styles.formGroup}>
+          <Text style={[styles.label, { color: colors.text }]}>Descuento (%) *</Text>
+          <TextInput
+            style={[styles.input, { color: colors.text, borderColor: colors.text }]}
+            placeholder="Ej: 10"
+            placeholderTextColor={colors.text + "88"}
+            keyboardType="numeric"
+            value={couponData.discount}
+            onChangeText={(v) => handleChange("discount", v)}
+          />
+        </View>
+        <View style={styles.formGroup}>
+          <Text style={[styles.label, { color: colors.text }]}>Descripción</Text>
+          <TextInput
+            style={[styles.input, { color: colors.text, borderColor: colors.text }]}
+            placeholder="Ej: Descuento de bienvenida"
+            placeholderTextColor={colors.text + "88"}
+            value={couponData.description}
+            onChangeText={(v) => handleChange("description", v)}
+          />
+        </View>
+        {/* Selector de fecha */}
+        <View style={styles.formGroup}>
+          <Text style={[styles.label, { color: colors.text }]}>Fecha de expiración</Text>
+          {!showDatePicker && (<TouchableOpacity
+            onPress={() => setShowDatePicker(true)}
+            style={[
+              styles.input,
+              { justifyContent: "center", borderColor: colors.text },
+            ]}
+          >
+            <Text
+              style={{
+                color: colors.text,
+                fontFamily: "Jost_400Regular",
+              }}
+            >
+              {formattedDate ? formattedDate : "Selecciona una fecha"}
+            </Text>
+          </TouchableOpacity>)}
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              textColor={colors.text}
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "spinner"}
+              onChange={handleDateChange}
+              minimumDate={new Date()}
+            />
 
-      <ButtonGeneral
-        text="Inyectar a todos los usuarios"
-        textColor={colors.background}
-        bckColor={colors.text}
-        onTouch={handleSubmit}
-      />
+          )}
+          {/* Botón de confirmar con icono de chulo */}
+          {showDatePicker && (<ButtonGeneral
+            textColor={colors.background}
+            bckColor={colors.text}
+            text="confirmar fecha"
+            onTouch={handleConfirmDate} />)}
+        </View>
+
+        <ButtonGeneral
+          text="Aplicar cupón a todos los usuarios"
+          textColor={colors.background}
+          bckColor={colors.text}
+          onTouch={handleSubmit}
+        />
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 20 },
+  container: { flex: 1 },
   subtitle: {
-    fontSize: 16,
     fontFamily: "Jost_400Regular",
-    textAlign: "center",
+    textAlign: "justify",
     marginBottom: 25,
     marginTop: 10,
   },
@@ -220,4 +232,12 @@ const styles = StyleSheet.create({
     padding: 10,
     fontFamily: "Jost_400Regular",
   },
+  block: {
+    marginHorizontal: 10
+  },
+  title:{
+    fontFamily:'Jost_600SemiBold',
+    textTransform:'uppercase',
+    marginBottom: 10
+  }
 });
