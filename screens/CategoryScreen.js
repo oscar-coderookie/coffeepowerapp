@@ -12,13 +12,13 @@ import { useNavigation } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
 import FavoriteButton from "../components/FavouriteButton";
 import { useEffect, useState } from "react";
-import LoadingScreen from '../components/LoadingScreen'
-
+import LoadingScreen from '../components/LoadingScreen';
+import { MotiView } from "moti";
 
 export default function CategoryScreen({ route }) {
   const { category } = route.params;
   const navigation = useNavigation();
-
+  const [imagesLoaded, setImagesLoaded] = useState(0);
   const [coffees, setCoffees] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +50,6 @@ export default function CategoryScreen({ route }) {
       <CustomHeader
         title={category.name}
         showBack={true}
-        onBack={() => navigation.goBack()}
       />
 
       {loading ? (<LoadingScreen />) : (<View style={styles.overlay}>
@@ -63,26 +62,38 @@ export default function CategoryScreen({ route }) {
           keyExtractor={(item) => item.name.toUpperCase()}
           style={styles.flatList}
           contentContainerStyle={{ paddingBottom: 100 }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}
+          renderItem={({ item, index }) => (
+
+            <MotiView
+              from={{ opacity: 0, translateY: 30, scale: 0.95 }}
+              animate={{ opacity: 1, translateY: 0, scale: 1 }}
+              transition={{
+                delay: index * 100, // ⏱ efecto cascada
+                type: 'spring',
+                damping: 20,
+              }}
             >
-              <FavoriteButton cafe={item} />
-              <View style={styles.cardInfo}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
-                <Text style={styles.cardDesc}>{item.description}</Text>
-              </View>
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}
+              >
+                <FavoriteButton cafe={item} />
+                <View style={styles.cardInfo}>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+                  <Text style={styles.cardDesc}>{item.description}</Text>
+                </View>
 
-              <View style={styles.imageContainer}>
-                <Image
-                  resizeMode="contain"
-                  source={{ uri: item.image }}
-                  style={styles.image}
-                />
-              </View>
+                <View style={styles.imageContainer}>
+                  <Image
+                    resizeMode="contain"
+                    source={{ uri: item.image }}
+                    style={styles.image}
+                  />
+                </View>
 
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </MotiView>
+
           )}
         />
       </View>)}

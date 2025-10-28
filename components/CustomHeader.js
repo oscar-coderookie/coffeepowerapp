@@ -1,5 +1,5 @@
 // components/CustomHeader.js
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useTheme } from "@react-navigation/native";
 
@@ -19,7 +19,7 @@ export default function CustomHeader({ title, children, showBack = false }) {
         borderBottomColor: colors.border,
         borderBottomWidth: 1,
         backgroundColor: colors.background,
-        marginBottom: 10
+
       }}
     >
       {/* Si showBack es true, mostramos la flecha */}

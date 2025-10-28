@@ -1,8 +1,11 @@
-import { View, Text, StyleSheet, Image, ScrollView, Dimensions, ImageBackground, TouchableOpacity, Alert, TextInput } from "react-native";
-import { useContext, useState } from "react";
+import { View, Text, StyleSheet, Animated, Dimensions, ImageBackground, TouchableOpacity, Alert, TextInput } from "react-native";
+import { useContext, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { CartContext } from "../context/CartContext";
 import CustomHeader from "../components/CustomHeader";
+import { MotiView } from 'moti';
+import { Easing } from "react-native-reanimated";
+import LoadingScreen from "../components/LoadingScreen";
 
 const { width, height } = Dimensions.get("window");
 
@@ -10,6 +13,29 @@ export default function CoffeeDetailScreen({ route }) {
   const { coffee } = route.params;
   const { addToCart } = useContext(CartContext);
   const [quantity, setQuantity] = useState(1);
+  const [bgLoaded, setBgLoaded] = useState(false);
+  const [section2Top, setSection2Top] = useState(0);
+  // declaración recomendada (estable entre renders)
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const translateX = scrollY.interpolate({
+    inputRange: [600, 900], // ajusta según el scroll necesario
+    outputRange: [width, 0],
+    extrapolate: "clamp",
+
+  });
+
+  const translateImage = scrollY.interpolate({
+    inputRange: [800, 1500],
+    outputRange: [width, 0],
+    extrapolate: "clamp"
+  })
+
+  const opacity = scrollY.interpolate({
+    inputRange: [250, 450],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
 
   const handleAddToCart = () => {
     addToCart({ ...coffee, quantity });
@@ -26,48 +52,91 @@ export default function CoffeeDetailScreen({ route }) {
   return (
     <View style={{ flex: 1 }}>
       {/* 👇 Header con MarqueeTitle */}
-
       <CustomHeader title={coffee.name} showBack={true} />
 
 
-      <ScrollView contentContainerStyle={styles.container}>
+      <Animated.ScrollView
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+        contentContainerStyle={styles.container}>
         <ImageBackground
           source={{ uri: coffee.background }}
           resizeMode="cover"
           style={styles.background}
+          onLoadEnd={() => setBgLoaded(true)}
         >
-          <View style={styles.infoContainer}>
-            <Text style={styles.subtitle}>Perfil Sensorial:</Text>
-            {(coffee.profile ?? []).map((item, index) => (
-              <Text key={index} style={styles.desc}>
-                - {item}
-              </Text>
-            ))}
-          </View>
+
+          {!bgLoaded ? (<LoadingScreen />) : (
+            <MotiView
+              from={{ opacity: 0, translateX: -80 }}  // Empieza fuera de pantalla a la izquierda
+              animate={{ opacity: 1, translateX: 0 }} // Se desliza hacia su posición final
+              transition={{
+                type: 'timing',
+                duration: 1600, // velocidad del movimiento
+                delay: 800,    // para que no entre de inmediato
+                easing: Easing.out(Easing.exp), // suaviza la curva
+              }}
+            >
+              <View style={styles.infoContainer}>
+                <Text style={styles.subtitle}>Perfil Sensorial:</Text>
+                {(coffee.profile ?? []).map((item, index) => (
+                  <Text key={index} style={styles.desc}>
+                    - {item}
+                  </Text>
+                ))}
+              </View>
+            </MotiView>
+
+          )}
+
+
         </ImageBackground>
-
         <View style={styles.section2}>
-          <View style={styles.infoContainer}>
-            <Text style={styles.subtitle}>👅 Notas de Cata:</Text>
-            {(coffee.tasteNotes ?? []).map((item, index) => (
-              <Text key={index} style={styles.desc}>
-                - {item}
-              </Text>
-            ))}
+          <Animated.View
+            onLayout={(event) => {
+              const layout = event.nativeEvent.layout;
+              setSection2Top(layout.y);
+            }}
+            style={[
+              styles.section2,
+              {
+                transform: [{ translateX }],
+                opacity,
+              },
+            ]}
+          >
 
-            <Text style={styles.subtitle}>💖 Descripción emocional:</Text>
-            {(coffee.emotionalDescription ?? []).map((item, index) => (
-              <Text key={index} style={styles.desc}>
-                {item}
-              </Text>
-            ))}
-          </View>
+            <View style={styles.infoContainer}>
+              <Text style={styles.subtitle}>👅 Notas de Cata:</Text>
+              {(coffee.tasteNotes ?? []).map((item, index) => (
+                <Animated.Text key={index} style={styles.desc}>
+                  - {item}
+                </Animated.Text>
+              ))}
+
+              <Text style={styles.subtitle}>💖 Descripción emocional:</Text>
+              {(coffee.emotionalDescription ?? []).map((item, index) => (
+                <Text key={index} style={styles.desc}>
+                  {item}
+                </Text>
+              ))}
+            </View>
+
+          </Animated.View>
         </View>
 
-        <View style={styles.imageContainer}>
-          <Image
+        <Animated.View
+          style={[styles.imageContainer]}>
+          <Animated.Image
+
             source={{ uri: coffee.image }}
-            style={styles.package}
+            style={[styles.package, {
+              transform: [{ translateX: translateImage }],
+              opacity
+            }]}
             resizeMode="contain"
           />
 
@@ -98,8 +167,8 @@ export default function CoffeeDetailScreen({ route }) {
               <Text style={styles.cartButtonText}>Añadir al carrito</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </ScrollView>
+        </Animated.View>
+      </Animated.ScrollView>
     </View>
   );
 }
@@ -111,7 +180,7 @@ const styles = StyleSheet.create({
   section2: {
     flex: 1,
     paddingTop: 40,
-    backgroundColor:'#000000ff'
+    backgroundColor: '#000000ff'
   },
   imageContainer: {
     alignItems: "center",
@@ -149,9 +218,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   package: {
-    width: width ,
+    width: width,
     height: 400,
-    transform: [{translateX: -10}]
+    transform: [{ translateX: -20 }]
   },
   cartButtonText: {
     color: "#fff",
@@ -171,7 +240,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: 'center',
-    backgroundColor: "#1c1c1cff",
+
     borderRadius: 6,
   },
   qtyButton: {
