@@ -136,7 +136,7 @@ export default function InjectCouponsScreen() {
           <TextInput
             style={[styles.input, { color: colors.text, borderColor: colors.text }]}
             placeholder="Ej: BIENVENIDO10"
-            placeholderTextColor={colors.text + "88"}
+            placeholderTextColor={colors.text}
             value={couponData.code}
             onChangeText={(v) => handleChange("code", v)}
             autoCapitalize="characters"
@@ -147,7 +147,7 @@ export default function InjectCouponsScreen() {
           <TextInput
             style={[styles.input, { color: colors.text, borderColor: colors.text }]}
             placeholder="Ej: 10"
-            placeholderTextColor={colors.text + "88"}
+            placeholderTextColor={colors.text}
             keyboardType="numeric"
             value={couponData.discount}
             onChangeText={(v) => handleChange("discount", v)}
@@ -158,7 +158,7 @@ export default function InjectCouponsScreen() {
           <TextInput
             style={[styles.input, { color: colors.text, borderColor: colors.text }]}
             placeholder="Ej: Descuento de bienvenida"
-            placeholderTextColor={colors.text + "88"}
+            placeholderTextColor={colors.text}
             value={couponData.description}
             onChangeText={(v) => handleChange("description", v)}
           />

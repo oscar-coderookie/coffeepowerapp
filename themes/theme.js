@@ -4,11 +4,11 @@ export const LightTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: "#d4d4d4ff",
+    background:"#f2f2f2" ,
     text: "#000000",
     input: "#d8d8d8ff",
-    card: "#f2f2f2",
-    primary: "#6f4e37",
+    card: "#d6d6d6ff",
+    border: "#c2c2c2ff",
   },
 };
 
@@ -17,9 +17,9 @@ export const DarkTheme = {
   colors: {
     ...NavigationDarkTheme.colors,
     background: "#000000",
-    text: "#d4d4d4ff",
+    text: "#c7c7c7ff",
     card: "#1a1a1a",
     input: "#1a1a1a",
-    primary: "#c69c6d",
+    border: "#747474ff",
   },
 };

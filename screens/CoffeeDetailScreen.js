@@ -6,13 +6,13 @@ import CustomHeader from "../components/CustomHeader";
 import { MotiView } from 'moti';
 import { Easing } from "react-native-reanimated";
 import LoadingScreen from "../components/LoadingScreen";
+import AddToCart from "../components/AddToCart";
 
 const { width, height } = Dimensions.get("window");
 
 export default function CoffeeDetailScreen({ route }) {
   const { coffee } = route.params;
-  const { addToCart } = useContext(CartContext);
-  const [quantity, setQuantity] = useState(1);
+
   const [bgLoaded, setBgLoaded] = useState(false);
   const [section2Top, setSection2Top] = useState(0);
   // declaración recomendada (estable entre renders)
@@ -37,17 +37,9 @@ export default function CoffeeDetailScreen({ route }) {
     extrapolate: "clamp",
   });
 
-  const handleAddToCart = () => {
-    addToCart({ ...coffee, quantity });
-    Alert.alert(
-      "Añadido al carrito",
-      `${quantity} x ${coffee.name} se agregó a tu carrito`
-    );
-  };
 
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
-  const decreaseQuantity = () =>
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -140,33 +132,7 @@ export default function CoffeeDetailScreen({ route }) {
             resizeMode="contain"
           />
 
-          <View style={styles.generalContainer}>
-            <View style={styles.quantityContainer}>
-              <TouchableOpacity style={styles.qtyButton} onPress={decreaseQuantity}>
-                <Ionicons name="remove" size={20} color="#fff" />
-              </TouchableOpacity>
-
-              <TextInput
-                style={styles.qtyInput}
-                value={quantity.toString()}
-                keyboardType="numeric"
-                onChangeText={(text) => {
-                  const num = parseInt(text) || 1;
-                  setQuantity(num > 0 ? num : 1);
-                }}
-              />
-
-              <TouchableOpacity style={styles.qtyButton} onPress={increaseQuantity}>
-                <Ionicons name="add" size={20} color="#fff" />
-              </TouchableOpacity>
-            </View>
-
-            {/* 🛒 Botón de añadir */}
-            <TouchableOpacity style={styles.cartButton} onPress={handleAddToCart}>
-              <Ionicons name="cart" size={20} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.cartButtonText}>Añadir al carrito</Text>
-            </TouchableOpacity>
-          </View>
+         <AddToCart title="añadir" coffee={coffee} />
         </Animated.View>
       </Animated.ScrollView>
     </View>
@@ -222,45 +188,7 @@ const styles = StyleSheet.create({
     height: 400,
     transform: [{ translateX: -20 }]
   },
-  cartButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "Jost_600SemiBold",
-  },
-  cartButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#a88e19ff",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 10,
-    marginTop: 6,
-  },
-  quantityContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: 'center',
 
-    borderRadius: 6,
-  },
-  qtyButton: {
-    padding: 16,
-    backgroundColor: "#a88e19ff",
-    borderRadius: 10,
-    flex: 1,
-    alignItems: 'center',
-  },
-  qtyInput: {
-    width: 40,
-    margin: 10,
-    backgroundColor: "#fff",
-    color: "#000",
-    borderRadius: 10,
-    textAlign: "center",
-    fontFamily: "Jost_600SemiBold",
-    fontSize: 16,
-  },
-  generalContainer: {
+ 
 
-  }
 });

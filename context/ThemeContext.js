@@ -1,6 +1,6 @@
 // context/ThemeContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { DarkTheme, LightTheme } from "@react-navigation/native";
+import { DarkTheme, LightTheme } from "../themes/theme";
 
 const ThemeContext = createContext();
 

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { getCoffeesByTag } from '../data/CoffeesData';
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
 import FavoriteButton from "../components/FavouriteButton";
 import { useEffect, useState } from "react";
@@ -21,8 +21,7 @@ export default function CategoryScreen({ route }) {
   const [imagesLoaded, setImagesLoaded] = useState(0);
   const [coffees, setCoffees] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  loading
+  const {colors} = useTheme();
 
   useEffect(() => {
     const loadCoffees = async () => {
@@ -52,9 +51,9 @@ export default function CategoryScreen({ route }) {
         showBack={true}
       />
 
-      {loading ? (<LoadingScreen />) : (<View style={styles.overlay}>
+      {loading ? (<LoadingScreen />) : (<View style={[styles.overlay, {backgroundColor:colors.background}]}>
         {category.legend && (
-          <Text style={styles.legend}>{category.legend}</Text>
+          <Text style={[styles.legend, {color: colors.text}]}>{category.legend}</Text>
         )}
 
         <FlatList
@@ -74,13 +73,13 @@ export default function CategoryScreen({ route }) {
               }}
             >
               <TouchableOpacity
-                style={styles.card}
+                style={[styles.card, {backgroundColor:colors.card}]}
                 onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}
               >
                 <FavoriteButton cafe={item} />
                 <View style={styles.cardInfo}>
-                  <Text style={styles.cardTitle}>{item.name}</Text>
-                  <Text style={styles.cardDesc}>{item.description}</Text>
+                  <Text style={[styles.cardTitle, {color: colors.text}]}>{item.name}</Text>
+                  <Text style={[styles.cardDesc, {color:colors.text}]}>{item.description}</Text>
                 </View>
 
                 <View style={styles.imageContainer}>
@@ -103,13 +102,13 @@ export default function CategoryScreen({ route }) {
 
 const styles = StyleSheet.create({
   bg: { flex: 1, resizeMode: "cover" },
-  overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", padding: 20 },
+  overlay: { flex: 1,  paddingHorizontal: 10 },
   legend: {
     fontSize: 16,
-    color: "#ccc",
     textAlign: "center",
-    marginBottom: 20,
-    fontFamily: 'Jost_400Regular'
+    marginBottom: 10,
+    paddingTop:16,
+    fontFamily: 'Jost_600SemiBold'
   },
   flatList: {
     flexGrow: 1,
@@ -118,8 +117,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-
+    marginBottom: 10,
     borderRadius: 12,
     padding: 10,
   },
@@ -144,17 +142,17 @@ const styles = StyleSheet.create({
     marginTop: 4
   },
   imageContainer: {
-    width: 108,
-    height: 108,
-    borderRadius: 54,
+    width: 80,
+    height: 80,
+    borderRadius: 45,
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8
   },
   image: {
-    width: "200%",
-    height: "200%",
-    transform: [{ translateX: -4 }, { translateY: 10 }]
+    width: "300%",
+    height: "300%",
+    transform: [{ translateX: -4 }, { translateY: 0}]
   },
 });

@@ -53,7 +53,7 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       {/* 🔹 Logo superior */}
-      <View style={styles.logoContainer}>
+      <View style={[styles.logoContainer, {  borderBottomColor: colors.border,}]}>
         <Image source={logoMenu} style={styles.logo} resizeMode="contain" />
       </View>
 
@@ -81,7 +81,7 @@ function CustomDrawerContent(props) {
         </View>
 
         {/* 🔹 Switch de modo oscuro */}
-        <View style={styles.switchContainer}>
+        <View style={[styles.switchContainer, {  borderTopColor: colors.border,}]}>
           <Text style={[styles.switchLabel, { color: colors.text }]}>
             {isDark ? "Cambiar a Tema Light" : "Cambiar a Tema Dark"}
           </Text>
@@ -152,7 +152,7 @@ export default function DrawerNavigator() {
         headerTintColor: colors.text,
         drawerStyle: { backgroundColor: colors.background },
         drawerActiveTintColor: colors.text,
-        drawerInactiveTintColor: colors.text,
+
 
         drawerLabelStyle: {
           fontFamily: "Jost_600SemiBold",
@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#333",
     marginBottom: 10,
   },
   logo: {
@@ -272,7 +271,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: "#333",
+  
     paddingTop: 10,
   },
   switchLabel: {

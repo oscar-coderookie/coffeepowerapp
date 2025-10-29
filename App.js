@@ -19,7 +19,7 @@ import { CartProvider } from './context/CartContext';
 import { ThemeProvider, useThemeContext } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
-import { StripeProvider } from '@stripe/stripe-react-native';
+import StripeProvider from './StripeProviderWrapper';
 
 function MainApp() {
   const { theme } = useThemeContext();

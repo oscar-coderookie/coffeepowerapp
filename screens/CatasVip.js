@@ -8,17 +8,34 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
+import { MotiView } from "moti";
 import imageBck from "../assets/images/catas-movil.webp";
 import iconBasic from "../assets/images/catas-inicial.png";
 import iconIntermediate from "../assets/images/catas-intermediate.png";
 import iconVip from "../assets/images/catas-exclusive.png";
 
-const TastingOption = ({ image, title, duration, content, benefits }) => {
+const TastingOption = ({ image, title, duration, content, benefits, index }) => {
   const [showContent, setShowContent] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
 
   return (
-    <View style={styles.option}>
+    <MotiView
+      from={{
+        opacity: 0,
+        translateX: index % 2 === 0 ? -100 : 100, // izquierda/derecha alternado
+      }}
+      animate={{
+        opacity: 1,
+        translateX: 0,
+      }}
+      transition={{
+        type: "spring",
+        damping: 15,
+        stiffness: 120,
+        delay: index * 150, // cada card entra con pequeño retardo
+      }}
+      style={styles.option}
+    >
       <Image source={image} style={styles.image} resizeMode="contain" />
       <Text style={styles.subtitle}>{title}</Text>
       <Text style={styles.legend}>Duración: {duration}</Text>
@@ -31,10 +48,11 @@ const TastingOption = ({ image, title, duration, content, benefits }) => {
           {showContent ? "Ocultar Contenido" : "Ver Contenido"}
         </Text>
       </TouchableOpacity>
+
       {showContent && (
         <View style={styles.list}>
-          {content.map((item, index) => (
-            <Text key={index} style={styles.listItem}>
+          {content.map((item, i) => (
+            <Text key={i} style={styles.listItem}>
               • {item}
             </Text>
           ))}
@@ -49,80 +67,84 @@ const TastingOption = ({ image, title, duration, content, benefits }) => {
           {showBenefits ? "Ocultar Beneficios" : "Ver Beneficios"}
         </Text>
       </TouchableOpacity>
+
       {showBenefits && (
         <View style={styles.list}>
-          {benefits.map((item, index) => (
-            <Text key={index} style={styles.listItem}>
+          {benefits.map((item, i) => (
+            <Text key={i} style={styles.listItem}>
               • {item}
             </Text>
           ))}
         </View>
       )}
-    </View>
+    </MotiView>
   );
 };
 
 const CatasVip = () => {
+  const catas = [
+    {
+      image: iconBasic,
+      title: "Cata Inicial: 'Descubre el mundo del café'",
+      duration: "30-45 minutos",
+      content: [
+        "Precio: 10-15€ por persona",
+        "Presentación de 3-4 cafés de origen diferente.",
+        "Explicación breve de cada café, incluyendo su origen, proceso de producción y características organolépticas.",
+        "Degustación de cada café, con oportunidad para que los participantes compartan sus impresiones y preguntas.",
+        "Moliendas básicas: diferencias entre moliendas finas, medias y gruesas, y cómo afectan el sabor.",
+      ],
+      benefits: [
+        "Ebook 'El arte del café' (valorado en 16€).",
+        "Conocerás los conceptos básicos del café y podrás apreciar las diferencias entre orígenes.",
+      ],
+    },
+    {
+      image: iconIntermediate,
+      title: "Cata Premium: 'Explora la diversidad del café'",
+      duration: "60-120 minutos",
+      content: [
+        "Precio: 25-35€ por persona",
+        "Presentación de 5-6 cafés de alta calidad.",
+        "Degustación de cada café, con espacio para impresiones y preguntas.",
+        "Moliendas avanzadas: cono, cilindro y piedra, y su impacto en el sabor.",
+        "Análisis de diferencias entre cafés y preferencias personales.",
+      ],
+      benefits: [
+        "Ebook 'El arte del café' (valorado en 16€).",
+        "Descuento del 10% en compras de café durante el mes siguiente.",
+        "Desarrollarás tus habilidades de cata intermedia.",
+      ],
+    },
+    {
+      image: iconVip,
+      title: "Cata Exclusive: 'Experiencia gourmet de café'",
+      duration: "120-180 minutos",
+      content: [
+        "Precio: 50-75€ por persona",
+        "Presentación de 7-8 cafés exclusivos y de alta calidad.",
+        "Explicación exhaustiva de cada café: origen, proceso, notas de cata y puntuación SCA.",
+        "Degustación con interacción guiada.",
+        "Moliendas personalizadas según tu paladar.",
+        "Sesión de preguntas y respuestas con un experto en café.",
+      ],
+      benefits: [
+        "Ebook 'El arte del café' (valorado en 16€).",
+        "Descuento del 15% en compras durante el mes siguiente.",
+        "Acceso a eventos exclusivos y lanzamientos.",
+        "Inscripción a la comunidad de Mr. Coffee con beneficios VIP.",
+      ],
+    },
+  ];
+
   return (
     <ImageBackground style={styles.imageContainer} source={imageBck}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>CATAS EXCLUSIVAS:</Text>
 
-        <TastingOption
-          image={iconBasic}
-          title="Cata Inicial: 'Descubre el mundo del café'"
-          duration="30-45 minutos"
-          content={[
-            "Precio: 10-15€ por persona",
-            "Presentación de 3-4 cafés de origen diferente.",
-            "Explicación breve de cada café, incluyendo su origen, proceso de producción y características organolépticas.",
-            "Degustación de cada café, con oportunidad para que los participantes compartan sus impresiones y preguntas.",
-            "Moliendas básicas: explicación de las diferencias entre moliendas finas, medias y gruesas, y cómo afectan el sabor y la textura del café.",
-          ]}
-          benefits={[
-            "Ebook 'El arte del café' (valorado en 16 euros).",
-            "Conocerás los conceptos básicos del café y podrás apreciar las diferencias entre distintos orígenes y procesos de producción.",
-          ]}
-        />
-
-        <TastingOption
-          image={iconIntermediate}
-          title="Cata Premium: 'Explora la diversidad del café'"
-          duration="60-120 minutos"
-          content={[
-            "Precio: 25-35€ por persona",
-            "Presentación de 5-6 cafés de alta calidad.",
-            "Degustación de cada café, con oportunidad para que los participantes compartan sus impresiones y preguntas.",
-            "Moliendas avanzadas: explicación de las diferencias entre moliendas de cono, moliendas de cilindro y moliendas de piedra, y cómo afectan el sabor y la textura del café.",
-            "Análisis de las diferencias entre los cafés y discusión sobre las preferencias personales.",
-          ]}
-          benefits={[
-            "Ebook 'El arte del café' (valorado en 16 euros).",
-            "Descuento del 10% en compras de café en la tienda durante el mes siguiente.",
-            "Conocerás las características y diferencias entre distintos tipos de café y podrás desarrollar tus habilidades de cata.",
-          ]}
-        />
-
-        <TastingOption
-          image={iconVip}
-          title="Cata Exclusive: 'Experiencia gourmet de café'"
-          duration="120-180 minutos"
-          content={[
-            "Precio: 50-75€ por persona",
-            "Presentación de 7-8 cafés exclusivos y de alta calidad.",
-            "Explicación exhaustiva de cada café, incluyendo su origen, proceso de producción, características organolépticas, notas de cata y puntuación en la escala de puntos de la Specialty Coffee Association.",
-            "Degustación de cada café, con oportunidad para que los participantes compartan sus impresiones y preguntas.",
-            "Moliendas personalizadas: explicación de cómo crear moliendas personalizadas para cada tipo de café según el paladar de cada uno, y cómo afectan el sabor y la textura del café.",
-            "Sesión de preguntas y respuestas con un experto en café.",
-          ]}
-          benefits={[
-            "Ebook 'El arte del café' (valorado en 16 euros).",
-            "Descuento del 15% en compras de café en la tienda durante el mes siguiente.",
-            "Acceso exclusivo a eventos de degustación de café y lanzamientos de nuevos productos.",
-            "Conocerás las características y diferencias entre distintos tipos de café y podrás desarrollar tus habilidades de cata de manera avanzada.",
-            "Te inscribirás automáticamente en la comunidad de Mr. Coffee con beneficios exclusivos adicionales.",
-          ]}
-        />
+        {catas.map((cata, index) => (
+          <TastingOption key={index} {...cata} index={index} />
+        ))}
       </ScrollView>
     </ImageBackground>
   );
@@ -144,7 +166,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginBottom: 16,
     textAlign: "center",
-    fontFamily: 'Jost_700Bold'
+    fontFamily: 'Jost_700Bold',
+    textShadowColor: "rgba(0, 0, 0, 0.6)", // color y opacidad de la sombra
+    textShadowOffset: { width: 2, height: 2 }, // desplazamiento
+    textShadowRadius: 6, // difuminado
   },
   option: {
     backgroundColor: "rgba(0,0,0,0.6)",
@@ -183,7 +208,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     fontFamily: 'Jost_600SemiBold',
-    textTransform:'uppercase'
+    textTransform: 'uppercase'
   },
   list: {
     marginTop: 8,

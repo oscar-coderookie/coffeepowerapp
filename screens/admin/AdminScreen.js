@@ -89,7 +89,7 @@ export default function AdminScreen({ navigation }) {
             <Text
                 style={[
                     styles.subtitle,
-                    { color: colors.text + "99", fontFamily: "Jost" },
+                    { color: colors.text, fontFamily: "Jost" },
                 ]}
             >
                 En este apartado puedes gestionar todo lo relacionado con la base de datos de cafés y de clientes registrados en nuestra app.

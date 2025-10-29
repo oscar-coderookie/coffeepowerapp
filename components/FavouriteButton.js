@@ -88,7 +88,7 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
   };
 
   return (
-    <TouchableOpacity onPress={toggleFavorite} disabled={loading}>
+    <TouchableOpacity style={{marginLeft: 10}} onPress={toggleFavorite} disabled={loading}>
       {loading ? (
         <ActivityIndicator size="small" color={color} />
       ) : (

@@ -4,16 +4,60 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { AddEraseBtn } from "../components/AddEraseBtn";
 import { useNavigation, useTheme } from "@react-navigation/native";
+import { MotiView } from 'moti';
 import PriceTag from "../components/PriceTag";
 import ButtonGeneral from "../components/ButtonGeneral";
 import CustomHeader from "../components/CustomHeader";
+import LoadingScreen from "../components/LoadingScreen";
+import { Easing } from "react-native-reanimated";
 
 export default function ShopCart() {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
   const { cartItems, increaseQuantity, decreaseQuantity } = useContext(CartContext);
+  const [loading, setLoading] = useState(true); // 👈 estado para controlar la carga
+  const [imagesLoaded, setImagesLoaded] = useState(0); // 👈 contador de imágenes cargadas
 
+
+  // Simular la carga del carrito (cuando viene de Firestore o context)
+  useEffect(() => {
+    const loadImages = async () => {
+      if (!cartItems || cartItems.length === 0) {
+        setLoading(false);
+        return;
+      }
+
+      // Obtener URLs de imágenes válidas
+      const imageUrls = cartItems
+        .filter((item) => !!item.image)
+        .map((item) => item.image);
+
+      if (imageUrls.length === 0) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Prefetch intenta descargar las imágenes a caché
+        await Promise.all(imageUrls.map((url) => Image.prefetch(url)));
+
+        // Pequeño delay visual (opcional)
+        setTimeout(() => setLoading(false), 300);
+      } catch (error) {
+        console.warn("Error precargando imágenes:", error);
+        // Apagar loader igual aunque haya error
+        setLoading(false);
+      }
+    };
+
+    // Timeout de seguridad (por si alguna imagen nunca responde)
+    const timeout = setTimeout(() => setLoading(false), 4000);
+
+    loadImages();
+
+    return () => clearTimeout(timeout);
+  }, [cartItems]);
 
 
   const handleCheckout = () => {
@@ -29,19 +73,31 @@ export default function ShopCart() {
       Alert.alert("Carrito vacío", "Agrega productos antes de continuar 🚀");
       return;
     }
-    navigation.navigate("Checkout",{ cartItems });
+    navigation.navigate("Checkout", { cartItems });
   };
 
   const isVerifiedOrGuest = !user || user?.emailVerified === true;
   const totalCoffees = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
 
-  const renderItem = ({ item }) => (
-    
-    <View style={styles.mainContainer}>
+  const renderItem = ({ item, index }) => (
+
+    <MotiView
+      from={{ opacity: 0, translateY: 40, scale: 0.85 }}
+      animate={{ opacity: 1, translateY: 0, scale: 1 }}
+      transition={{
+        type: 'timing',
+        duration: 1200,
+        delay: index * 220,
+        easing: Easing.out(Easing.cubic), // aparición escalonada
+      }}
+      style={[styles.mainContainer, {backgroundColor: "#0e0e0eff"}]}>
       <View style={styles.itemContainer}>
         {item.image ? (
-          <Image resizeMode="contain" source={{ uri: item.image }} style={styles.coffeeImage} />
+          <Image resizeMode="contain"
+            source={{ uri: item.image }}
+            style={styles.coffeeImage}
+          />
         ) : (
           <View style={[styles.coffeeImage, { justifyContent: "center", alignItems: "center" }]}>
             <Text style={{ color: "#999" }}>Sin imagen</Text>
@@ -62,13 +118,18 @@ export default function ShopCart() {
         </View>
         <PriceTag price={(Number(item.price) || 0) * (Number(item.quantity) || 0)} currency="€" />
       </View>
-    </View>
-    
+    </MotiView>
+
   );
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
 
   return (
     <View style={styles.container}>
-      <CustomHeader title={user ? "Resumen de tu Compra:" : "Carrito de compra (INVITADO)"} showBack={false}/>
+      <CustomHeader title={user ? "Resumen de tu Compra:" : "Carrito de compra (INVITADO)"} showBack={false} />
 
       {user && !isVerifiedOrGuest && (
         <View style={{ backgroundColor: "#b22222", padding: 10 }}>
@@ -110,14 +171,14 @@ export default function ShopCart() {
             <Text style={{ color: colors.text }}>{totalCoffees} Productos</Text>
             <Text style={{ color: colors.text }}>{totalPrice} €</Text>
           </View>
-        
-          <ButtonGeneral 
-          text='☕ Iniciar Pedido ☕' 
-          onTouch={handleCheckout} 
-          textColor={colors.background} 
-          bckColor={colors.text} 
-          marginHorizontal={10}
-          disable={!isVerifiedOrGuest} />
+
+          <ButtonGeneral
+            text='☕ Iniciar Pedido ☕'
+            onTouch={handleCheckout}
+            textColor={colors.background}
+            bckColor={colors.text}
+            marginHorizontal={10}
+            disable={!isVerifiedOrGuest} />
         </>
       )}
     </View>
@@ -128,7 +189,15 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center" },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyText: { fontSize: 18, textAlign: "center", width: "80%" },
-  mainContainer: { backgroundColor: "#1a1a1a", marginBottom: 10, borderRadius: 10, marginHorizontal: 10 },
+  mainContainer: {
+    marginBottom: 10, 
+    borderRadius: 10, 
+    marginHorizontal: 10, 
+    shadowColor: '#b98e43', // dorado cálido
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    marginBottom: 12,
+  },
   itemContainer: { alignItems: "center", justifyContent: "flex-start", flexDirection: "row", marginBottom: 15, borderRadius: 10, flex: 1 },
   coffeeImage: { width: 120, height: 120, marginRight: 10, borderRadius: 10 },
   name: { color: "#fff", fontSize: 14, fontFamily: "Jost_600SemiBold", textAlign: "center", textTransform: "capitalize" },
