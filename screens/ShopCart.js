@@ -10,6 +10,7 @@ import ButtonGeneral from "../components/ButtonGeneral";
 import CustomHeader from "../components/CustomHeader";
 import LoadingScreen from "../components/LoadingScreen";
 import { Easing } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ShopCart() {
   const { colors } = useTheme();
@@ -91,7 +92,7 @@ export default function ShopCart() {
         delay: index * 220,
         easing: Easing.out(Easing.cubic), // aparición escalonada
       }}
-      style={[styles.mainContainer, {backgroundColor: "#0e0e0eff"}]}>
+      style={[styles.mainContainer, { backgroundColor: "#0e0e0eff" }]}>
       <View style={styles.itemContainer}>
         {item.image ? (
           <Image resizeMode="contain"
@@ -128,71 +129,78 @@ export default function ShopCart() {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['bottom']} // ✅ quitamos el top
+    >
       <CustomHeader title={user ? "Resumen de tu Compra:" : "Carrito de compra (INVITADO)"} showBack={false} />
+      <View style={{ justifyContent: 'flex-start', flex: 1 }}>
 
-      {user && !isVerifiedOrGuest && (
-        <View style={{ backgroundColor: "#b22222", padding: 10 }}>
-          <Text style={{ color: "#fff", textAlign: "center", fontFamily: "Jost_600SemiBold" }}>
-            ⚠️ Verifica tu correo electrónico para habilitar las compras.
-          </Text>
-        </View>
-      )}
 
-      {!cartItems || cartItems.length === 0 ? (
-        <View style={[styles.emptyContainer, { backgroundColor: colors.background }]}>
-          <Text style={[styles.emptyText, { color: colors.text }]}>Tu carrito está vacío ☕</Text>
-          {!user && (
-            <TouchableOpacity
-              style={styles.login}
-              onPress={() => navigation.navigate("Área personal", { screen: "Login" })}>
-              <Text style={styles.loginText}>Clic aquí para iniciar sesión</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={cartItems}
-            keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-            renderItem={renderItem}
-            contentContainerStyle={{ paddingBottom: 20, paddingTop: 10 }}
-          />
-
-          <View style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingHorizontal: 20,
-            paddingVertical: 14,
-            borderTopColor: colors.text,
-            borderTopWidth: 1,
-          }}>
-            <Text style={{ color: colors.text }}>Total:</Text>
-            <Text style={{ color: colors.text }}>{totalCoffees} Productos</Text>
-            <Text style={{ color: colors.text }}>{totalPrice} €</Text>
+        {user && !isVerifiedOrGuest && (
+          <View style={{ backgroundColor: "#b22222", padding: 10 }}>
+            <Text style={{ color: "#fff", textAlign: "center", fontFamily: "Jost_600SemiBold" }}>
+              ⚠️ Verifica tu correo electrónico para habilitar las compras.
+            </Text>
           </View>
+        )}
 
-          <ButtonGeneral
-            text='☕ Iniciar Pedido ☕'
-            onTouch={handleCheckout}
-            textColor={colors.background}
-            bckColor={colors.text}
-            marginHorizontal={10}
-            disable={!isVerifiedOrGuest} />
-        </>
-      )}
-    </View>
+        {!cartItems || cartItems.length === 0 ? (
+          <View style={[styles.emptyContainer, { backgroundColor: colors.background }]}>
+            <Text style={[styles.emptyText, { color: colors.text }]}>Tu carrito está vacío ☕</Text>
+            {!user && (
+              <TouchableOpacity
+                style={styles.login}
+                onPress={() => navigation.navigate("Área personal", { screen: "Login" })}>
+                <Text style={styles.loginText}>Clic aquí para iniciar sesión</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ) : (
+          <>
+            <FlatList
+              data={cartItems}
+              keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+              renderItem={renderItem}
+              contentContainerStyle={{ paddingBottom: 20, paddingTop: 10 }}
+            />
+
+            <View style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingHorizontal: 20,
+              paddingVertical: 14,
+              borderTopColor: colors.text,
+              borderTopWidth: 1,
+            }}>
+              <Text style={{ color: colors.text }}>Total:</Text>
+              <Text style={{ color: colors.text }}>{totalCoffees} Productos</Text>
+              <Text style={{ color: colors.text }}>{totalPrice} €</Text>
+            </View>
+
+            <ButtonGeneral
+              text='☕ Iniciar Pedido ☕'
+              onTouch={handleCheckout}
+              textColor={colors.background}
+              bckColor={colors.text}
+              marginHorizontal={10}
+              disable={!isVerifiedOrGuest} />
+          </>
+        )}
+      </View>
+    </SafeAreaView>
+
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center" },
+  container: { flex: 1, justifyContent: 'center', },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   emptyText: { fontSize: 18, textAlign: "center", width: "80%" },
   mainContainer: {
-    marginBottom: 10, 
-    borderRadius: 10, 
-    marginHorizontal: 10, 
+    marginBottom: 10,
+    borderRadius: 10,
+    marginHorizontal: 10,
     shadowColor: '#b98e43', // dorado cálido
     shadowOpacity: 0.2,
     shadowRadius: 8,

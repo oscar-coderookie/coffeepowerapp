@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontFamily: "Jost_600SemiBold",
     color: "#fff",
     textTransform: "uppercase",

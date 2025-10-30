@@ -2,11 +2,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useContext } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { AuthContext } from "../context/AuthContext";
-
-import RegisterScreen from "../screens/RegisterScreen";
-import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/user/RegisterScreen";
+import LoginScreen from "../screens/user/LoginScreen";
 import UserTabs from "./UserTabs";
-import ForgotPasswordScreen from "../screens/ForgotPassword";
+import ForgotPasswordScreen from "../screens/user/ForgotPassword";
 
 const Stack = createNativeStackNavigator();
 

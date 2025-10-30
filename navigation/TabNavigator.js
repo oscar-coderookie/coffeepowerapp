@@ -16,7 +16,7 @@ const Tabs = () => {
 
             screenOptions={({ route }) => ({
                 tabBarInactiveBackgroundColor: colors.background,
-                tabBarActiveTintColor: '#a88e19ff',
+                tabBarActiveTintColor: colors.gold,
                 headerShown: false,
                 tabBarInactiveTintColor: colors.text,
                 tabBarStyle: { borderTopWidth: 0, height: 90, backgroundColor: colors.background },

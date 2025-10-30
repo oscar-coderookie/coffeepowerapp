@@ -3,8 +3,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../config/firebase";
-import { AuthContext } from "../context/AuthContext";
+import { auth } from "../../config/firebase";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");

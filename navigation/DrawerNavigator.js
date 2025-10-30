@@ -5,7 +5,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useThemeContext } from "../context/ThemeContext";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import Tabs from "./TabNavigator";
 import AboutUsTabs from "./AboutUsTabs";
 import EventsTabs from "./EventsTabs";
@@ -19,11 +19,13 @@ import icon3 from "../assets/icons/menu-3.png";
 import icon4 from "../assets/icons/menu-4.png";
 import icon5 from "../assets/icons/menu-btn2.png";
 import LegalStack from "./LegalStack";
-import AdminScreen from "../screens/admin/AdminScreen";
-import LoadingScreen from "../components/LoadingScreen";
-import { doc,getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
-import AdminStack from "./AdminStack";
+import AdminTabs from "./AdminTabs";
+import ShopCart from "../screens/ShopCart";
+import OurCoffees from "../screens/OurCoffees";
+import CoffeesStack from "./CoffeesStack";
+import CartStack from "./CartStack";
 
 const Drawer = createDrawerNavigator();
 
@@ -53,7 +55,7 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       {/* 🔹 Logo superior */}
-      <View style={[styles.logoContainer, {  borderBottomColor: colors.border,}]}>
+      <View style={[styles.logoContainer, { borderBottomColor: colors.border, }]}>
         <Image source={logoMenu} style={styles.logo} resizeMode="contain" />
       </View>
 
@@ -81,7 +83,7 @@ function CustomDrawerContent(props) {
         </View>
 
         {/* 🔹 Switch de modo oscuro */}
-        <View style={[styles.switchContainer, {  borderTopColor: colors.border,}]}>
+        <View style={[styles.switchContainer, { borderTopColor: colors.border, }]}>
           <Text style={[styles.switchLabel, { color: colors.text }]}>
             {isDark ? "Cambiar a Tema Light" : "Cambiar a Tema Dark"}
           </Text>
@@ -101,45 +103,46 @@ export default function DrawerNavigator() {
   const { colors } = useTheme();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      console.log("❌ No hay usuario logueado");
-      setIsAdmin(false);
-      setLoading(false);
-      return;
-    }
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        console.log("❌ No hay usuario logueado");
+        setIsAdmin(false);
+        setLoading(false);
+        return;
+      }
 
-    try {
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
+      try {
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
 
-      if (snap.exists()) {
-        const data = snap.data();
+        if (snap.exists()) {
+          const data = snap.data();
 
 
-        if (data.isAdmin) {
- 
-          setIsAdmin(true);
+          if (data.isAdmin) {
+
+            setIsAdmin(true);
+          } else {
+
+            setIsAdmin(false);
+          }
         } else {
-   
+
           setIsAdmin(false);
         }
-      } else {
-   
-        setIsAdmin(false);
+      } catch (error) {
+        console.error("🔥 Error verificando admin:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("🔥 Error verificando admin:", error);
-    } finally {
-      setLoading(false);
-    }
-  });
+    });
 
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, []);
 
 
   return (
@@ -152,27 +155,30 @@ export default function DrawerNavigator() {
         headerTintColor: colors.text,
         drawerStyle: { backgroundColor: colors.background },
         drawerActiveTintColor: colors.text,
-
-
         drawerLabelStyle: {
           fontFamily: "Jost_600SemiBold",
           textTransform: "uppercase",
           letterSpacing: 1,
         },
-        headerTitle: "",
+        headerTitle: () => (
+          <Image
+            source={logo}
+            style={{ width: 102.5, height: 37.5, resizeMode: "contain" }}
+          />
+        ),
         headerRight: () => (
-          <TouchableOpacity>
-            <Image
-              source={logo}
-              style={{ width: 102.5, height: 37.5, marginRight: 8 }}
-            />
+          <TouchableOpacity
+            style={{ marginRight: 15 }}
+            onPress={() => navigation.navigate("CartScreen")} // 👈 ajusta al nombre de tu pantalla
+          >
+            <Ionicons name="cart" size={26} color={colors.text} />
           </TouchableOpacity>
         ),
       }}
     >
       <Drawer.Screen
         name="Nuestros Cafés"
-        component={Tabs}
+        component={CoffeesStack}
         options={{
           drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
         }}
@@ -215,11 +221,18 @@ export default function DrawerNavigator() {
           drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
         }}
       />
+      <Drawer.Screen
+        name="CartScreen"
+        component={CartStack}
+        options={{
+          drawerItemStyle: { display: 'none' }, // 👈 Esto lo oculta del menú lateral
+        }}
+      />
       {/* 🔒 Pantalla visible solo si es admin */}
       {isAdmin && (
         <Drawer.Screen
           name="Panel de Administración"
-          component={AdminStack}
+          component={AdminTabs}
           options={{
             drawerIcon: ({ size }) => <MaterialIcons name="admin-panel-settings" size={size} color={colors.text} />,
           }}
@@ -271,7 +284,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderTopWidth: 1,
-  
+
     paddingTop: 10,
   },
   switchLabel: {

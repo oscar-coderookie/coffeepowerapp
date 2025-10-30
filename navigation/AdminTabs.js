@@ -8,14 +8,14 @@ import { DiscountsStack } from "./DiscountsStack";
 
 const Tab = createBottomTabNavigator();
 
-const AdminStack = () => {
+const AdminTabs = () => {
   const {colors} = useTheme()
   return (
     <Tab.Navigator
       initialRouteName="Principal"
       screenOptions={({ route }) => ({
         tabBarInactiveBackgroundColor: colors.background,
-        tabBarActiveTintColor: '#a88e19ff',
+        tabBarActiveTintColor: colors.gold,
         headerShown: false,
         tabBarInactiveTintColor: colors.text,
         tabBarStyle: { borderTopWidth: 0, height: 90, backgroundColor: colors.background },
@@ -38,4 +38,4 @@ const AdminStack = () => {
   );
 };
 
-export default AdminStack;
+export default AdminTabs;

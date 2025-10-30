@@ -9,6 +9,7 @@ export const LightTheme = {
     input: "#d8d8d8ff",
     card: "#d6d6d6ff",
     border: "#c2c2c2ff",
+    gold: "#ad8a1f"
   },
 };
 
@@ -21,5 +22,6 @@ export const DarkTheme = {
     card: "#1a1a1a",
     input: "#1a1a1a",
     border: "#747474ff",
+    gold: "#ad8a1f"
   },
 };

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { auth, db } from "../config/firebase";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
-import CustomHeader from "../components/CustomHeader";
-import logo from "../assets/icon.png";
+import { auth, db } from "../../config/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import CustomHeader from "../../components/CustomHeader";
+import logo from "../../assets/icon.png";
 import { LinearGradient } from "expo-linear-gradient";
+import { MotiView } from "moti";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const CouponsClientScreen = () => {
   const { colors } = useTheme();
@@ -13,7 +15,7 @@ const CouponsClientScreen = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let unsubscribe; // referencia para limpiar el listener
+    let unsubscribe;
 
     const listenCoupons = async () => {
       try {
@@ -22,7 +24,6 @@ const CouponsClientScreen = () => {
 
         const userRef = doc(db, "users", user.uid);
 
-        // Escucha los cambios en tiempo real
         unsubscribe = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
             const userData = docSnap.data();
@@ -39,27 +40,17 @@ const CouponsClientScreen = () => {
     };
 
     listenCoupons();
-
-    // Limpia el listener al desmontar el componente
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
+    return () => unsubscribe && unsubscribe();
   }, []);
 
+  // 🔹 Pantalla de carga
+  if (loading) return <LoadingScreen />;
 
-  if (loading) {
-    return (
-      <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <Text style={[styles.text, { color: colors.text }]}>
-          Cargando cupones...
-        </Text>
-      </View>
-    );
-  }
-
+  // 🔹 Estado vacío
   if (coupons.length === 0) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <CustomHeader title="Mis Cupones" showBack={false} />
         <Text style={[styles.text, { color: colors.text }]}>
           Aún no tienes descuentos activos ☕
         </Text>
@@ -67,6 +58,7 @@ const CouponsClientScreen = () => {
     );
   }
 
+  // 🔹 Lista de cupones con animación en cascada
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader title="Mis Cupones" showBack={false} />
@@ -74,38 +66,44 @@ const CouponsClientScreen = () => {
       <FlatList
         data={coupons}
         keyExtractor={(item, index) => `${item.code}-${index}`}
-        renderItem={({ item }) => (
-          <LinearGradient
-            colors={["#e4c86dff", "#998030ff", "#e4c86dff", "#998030ff"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.card}
-          >
-            <View>
-              <Text style={styles.code}>{item.code}</Text>
-              <Text style={styles.discount}>-{item.discount}% de descuento</Text>
-              {item.description ? (
-                <Text style={styles.description}>{item.description}</Text>
-              ) : null}
-              {item.expiresAt ? (
-                <Text style={styles.expiry}>
-                  Caduca: {item.expiresAt}
-                </Text>
-              ) : null}
-              {item.used && (
-                <Text style={styles.used}>(Cupón ya utilizado)</Text>
-              )}
-            </View>
-
-            <View>
-              <Image
-                source={logo}
-                style={{ width: 100, height: 100, marginLeft: 30 }}
-              />
-            </View>
-          </LinearGradient>
-        )}
         contentContainerStyle={{ padding: 10 }}
+        renderItem={({ item, index }) => (
+          <MotiView
+            from={{ opacity: 0, translateX: -40 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            transition={{
+              type: "timing",
+              duration: 900,
+              delay: index * 120, // Efecto cascada
+            }}
+          >
+            <LinearGradient
+              colors={["#e4c86dff", "#998030ff", "#e4c86dff", "#998030ff"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.card}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={styles.code}>{item.code}</Text>
+                <Text style={styles.discount}>-{item.discount}% de descuento</Text>
+
+                {item.description ? (
+                  <Text style={styles.description}>{item.description}</Text>
+                ) : null}
+
+                {item.expiresAt ? (
+                  <Text style={styles.expiry}>Caduca: {item.expiresAt}</Text>
+                ) : null}
+
+                {item.used && (
+                  <Text style={styles.used}>(Cupón ya utilizado)</Text>
+                )}
+              </View>
+
+              <Image source={logo} style={styles.logo} />
+            </LinearGradient>
+          </MotiView>
+        )}
       />
     </View>
   );
@@ -119,10 +117,22 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
+    justifyContent: "space-between",
+    borderRadius: 12,
     padding: 18,
     marginBottom: 15,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+  },
+
+  logo: {
+    width: 80,
+    height: 80,
+    marginLeft: 20,
+    opacity: 0.9,
   },
 
   code: {
@@ -140,7 +150,7 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_600SemiBold",
     fontSize: 14,
     marginBottom: 4,
-    textTransform: 'capitalize'
+    textTransform: "capitalize",
   },
   expiry: {
     fontFamily: "Jost_400Regular",

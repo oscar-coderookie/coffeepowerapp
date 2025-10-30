@@ -3,10 +3,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from "@react-navigation/native";
-import UserAreaScreen from '../screens/UserAreaScreen';
-import FavoritesScreen from '../screens/FavouritesScreen';
-import UserSettings from '../screens/UserSettings';
-import CouponsClientScreen from '../screens/CouponsClientScreen';
+import UserAreaScreen from '../screens/user/UserAreaScreen';
+import FavoritesScreen from '../screens/user/FavouritesScreen';
+import UserSettings from '../screens/user/UserSettings';
+import CouponsClientScreen from '../screens/user/CouponsClientScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,7 +18,7 @@ const UserTabs = () => {
 
             screenOptions={({ route }) => ({
                 tabBarInactiveBackgroundColor: colors.background,
-                tabBarActiveTintColor: '#a88e19ff',
+                tabBarActiveTintColor: colors.gold,
                 headerShown: false,
                 tabBarInactiveTintColor: colors.text,
                 tabBarStyle: { borderTopWidth: 0, height: 90, backgroundColor: colors.background },
