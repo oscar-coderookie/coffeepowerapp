@@ -114,10 +114,10 @@ export default function CheckoutScreen({ navigation, route }) {
   }, []);
 
   return (
-      <SafeAreaView
-          style={[styles.container]}
-          edges={['bottom']} // ✅ quitamos el top
-        >
+    <SafeAreaView
+      style={[styles.container]}
+      edges={['bottom']} // ✅ quitamos el top
+    >
       <CustomHeader title="Datos de Envío y pago" showBack={true} />
 
       {user ? (
@@ -264,8 +264,8 @@ export default function CheckoutScreen({ navigation, route }) {
             <ButtonGeneral
               onTouch={handleContinue}
               text="Continuar al pago"
-              textColor={colors.background}
-              bckColor={colors.text}
+              textColor="#000000ff"
+              bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
             />
           </Animated.View>
         </ScrollView>
@@ -277,7 +277,7 @@ export default function CheckoutScreen({ navigation, route }) {
             </Text>
           </Animated.View>
 
-          {[ 
+          {[
             { placeholder: "Nombre completo", value: name, onChange: setName },
             { placeholder: "Dirección de entrega", value: address, onChange: setAddress },
             { placeholder: "Detalles adicionales (Apto, piso...)", value: details, onChange: setDetails },

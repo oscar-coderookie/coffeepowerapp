@@ -5,6 +5,7 @@ import { useTheme } from "@react-navigation/native";
 import AdminScreen from "../screens/admin/AdminScreen";
 import AdminStackNavigator from "./AdminStackNav";
 import { DiscountsStack } from "./DiscountsStack";
+import AdminUsersStack from "./AdminUsersStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +27,7 @@ const AdminTabs = () => {
           if (route.name === "Principal") iconName = "admin-panel-settings";
           else if (route.name === "Descuentos") iconName = "discount";
           else if (route.name === "Editor") iconName = 'playlist-add-circle'
+           else if (route.name === "Usuarios") iconName = 'supervised-user-circle'
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
@@ -33,6 +35,7 @@ const AdminTabs = () => {
       <Tab.Screen name="Principal" component={AdminScreen} />
       <Tab.Screen name="Descuentos" component={DiscountsStack} />
       <Tab.Screen name="Editor" component={AdminStackNavigator} />
+      <Tab.Screen name="Usuarios" component={AdminUsersStack} />
 
     </Tab.Navigator>
   );

@@ -13,6 +13,15 @@ import { FavoritesContext } from "../../context/FavoritesContext";
 import { MotiView } from "moti";
 import LoadingScreen from "../../components/LoadingScreen";
 
+async function prefetchImages(favorites) {
+  try {
+    const promises = favorites.map((item) => Image.prefetch(item.image));
+    await Promise.all(promises);
+  } catch (error) {
+    console.warn("Error prefetching images:", error);
+  }
+}
+
 export default function FavoritesScreen() {
   const { favorites } = useContext(FavoritesContext);
   const { colors } = useTheme();
@@ -20,13 +29,12 @@ export default function FavoritesScreen() {
 
   // Esperamos a que favorites esté definido (puede venir de async)
   useEffect(() => {
-    // Si favorites es null/undefined lo consideramos cargando.
-    if (favorites === undefined || favorites === null) {
-      setLoading(true);
-      return;
-    }
-    // Cuando ya está definido (aunque sea []), quitamos loading
-    setLoading(false);
+    const loadData = async () => {
+      if (!favorites) return;
+      await prefetchImages(favorites); // ⬅ prefetch de imágenes
+      setLoading(false);
+    };
+    loadData();
   }, [favorites]);
 
   if (loading) return <LoadingScreen />;

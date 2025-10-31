@@ -2,8 +2,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Image, StyleSheet } from 'react-native';
-import PrivateMeeting from '../screens/PrivateMeeting'
-import CatasVip from '../screens/CatasVip';
+import PrivateMeeting from '../screens/events/PrivateMeeting'
+import CatasVip from '../screens/events/CatasVip';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';

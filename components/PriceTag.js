@@ -20,9 +20,11 @@ export default function PriceTag({ price , currency = "€" }) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    marginRight:10,
-    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    borderTopStartRadius:0,
+    borderBottomStartRadius:0,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,

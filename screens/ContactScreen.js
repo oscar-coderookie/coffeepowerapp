@@ -1,63 +1,66 @@
+import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity } from "react-native";
-import bckImage from '../assets/images/contacto-movil.png';
-import btnEmail from '../assets/icons/email.png';
-import btnInsta from '../assets/icons/insta.png';
-import btnUbi from '../assets/icons/ubi.png';
-import WhatsappBtn from '../assets/icons/whatsapp.png';
+import { MotiView } from "moti";
+import bckImage from "../assets/images/contacto-movil.png";
+import btnEmail from "../assets/icons/email.png";
+import btnInsta from "../assets/icons/insta.png";
+import btnUbi from "../assets/icons/ubi.png";
+import WhatsappBtn from "../assets/icons/whatsapp.png";
+import LoadingScreen from "../components/LoadingScreen";
 
-const EmailButton = () => {
-    return (
-        <TouchableOpacity style={styles.button}>
-            <Image source={btnEmail} style={styles.icon} />
-            <Text style={styles.text}>info@coffeepower.es</Text>
-        </TouchableOpacity>
-    )
-};
-const InstagramButton = () => {
-    return (
-        <TouchableOpacity style={styles.button}>
-            <Image source={btnInsta} style={styles.icon} />
-            <Text style={styles.text}>@coffeepower.es</Text>
-        </TouchableOpacity>
-    )
-};
-const UbicationButton = () => {
-    return (
-        <TouchableOpacity style={styles.button}>
-            <Image source={btnUbi} style={styles.icon} />
-            <Text style={styles.text}>Calle Comedias, 7 Antequera Málaga - 29200</Text>
-        </TouchableOpacity>
-    )
-}
-const WppButton = () => {
-    return (
-        <TouchableOpacity style={styles.button}>
-            <Image source={WhatsappBtn} style={styles.icon} />
-            <Text style={styles.text}>+34 620 13 21 31</Text>
-        </TouchableOpacity>
-    )
-};
+const AnimatedButton = ({ source, text, delay }) => (
+  <MotiView
+    from={{ opacity: 0, translateX: -100 }} // 👈 entra desde la izquierda
+    animate={{ opacity: 1, translateX: 0 }}
+    transition={{ type: "timing", duration: 600, delay }}
+  >
+    <TouchableOpacity style={styles.button}>
+      <Image source={source} style={styles.icon} />
+      <Text style={styles.text}>{text}</Text>
+    </TouchableOpacity>
+  </MotiView>
+);
 
 const ContactScreen = () => {
-    return (
-        <ImageBackground
-            style={styles.container}
-            source={bckImage}
-            imageStyle={{ width: '100%' }}
-            resizeMode="contain"
-        >
-            <View style={styles.overlay}>
-                <Text style={styles.legend}>Encuéntranos por cualquiera de estos medios:</Text>
-                <EmailButton />
-                <InstagramButton />
-                <WppButton />
-                <UbicationButton />
-            </View>
-        </ImageBackground>
-    )
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <>
+      {loading && <LoadingScreen />}
+      <ImageBackground
+        style={styles.container}
+        source={bckImage}
+        imageStyle={{ width: "100%", height: "100%" }}
+        resizeMode="cover"
+        onLoadEnd={() => setLoading(false)} // 👈 quita el loader cuando la imagen está lista
+      >
+        {!loading && (
+          <View style={styles.overlay}>
+            <MotiView
+              from={{ opacity: 0, translateY: -10 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ duration: 800 }}
+            >
+              <Text style={styles.legend}>Encuéntranos por cualquiera de estos medios:</Text>
+            </MotiView>
+
+            <AnimatedButton source={btnEmail} text="info@coffeepower.es" delay={300} />
+            <AnimatedButton source={btnInsta} text="@coffeepower.es" delay={600} />
+            <AnimatedButton source={WhatsappBtn} text="+34 620 13 21 31" delay={900} />
+            <AnimatedButton
+              source={btnUbi}
+              text="Calle Comedias, 7 Antequera Málaga - 29200"
+              delay={1200}
+            />
+          </View>
+        )}
+      </ImageBackground>
+    </>
+  );
 };
 
 export default ContactScreen;
+
 
 const styles = StyleSheet.create({
     container: {
@@ -79,8 +82,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         width: '80%',
         fontFamily: 'Jost_600SemiBold',
-        textAlign: 'center'
-
+        textAlign: 'left'
     },
     icon: {
         width: 100,
@@ -96,4 +98,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 10
     }
-})
+});

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Text, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
 import { CartContext } from "../context/CartContext";
 import { Ionicons } from "@expo/vector-icons"; // ✅ import Ionicons
+import PriceTag from "./PriceTag";
 
 export const AddEraseBtn = ({ id, quantity }) => {
   const { increaseQuantity, decreaseQuantity, removeFromCart } = useContext(CartContext);
@@ -44,6 +45,7 @@ export const AddEraseBtn = ({ id, quantity }) => {
       <TouchableOpacity style={styles.qtyButton} onPress={handleIncrease}>
         <Text style={styles.qtyText}>+</Text>
       </TouchableOpacity>
+  
     </View>
   );
 };
@@ -54,8 +56,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#2a2a2a",
     borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    borderBottomEndRadius:0,
+    borderTopEndRadius:0,
     marginTop: 10,
     alignSelf: "center",
   },

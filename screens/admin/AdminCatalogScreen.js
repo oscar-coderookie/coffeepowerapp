@@ -160,8 +160,8 @@ export default function AdminCatalogScreen({ navigation }) {
                 onPress={() => navigation.navigate("AddCoffee")}
                 style={styles.addButton}
             >
-                <FontAwesome name="plus-circle" size={30} color="black" />
-                <Text style={styles.addText}>Agregar Café nuevo</Text>
+                <FontAwesome name="plus-circle" size={30} color={colors.text} />
+                <Text style={[styles.addText,{color:colors.text}]}>Agregar Café nuevo</Text>
             </TouchableOpacity>
         </View>
     );

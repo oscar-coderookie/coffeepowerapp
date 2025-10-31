@@ -11,8 +11,8 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 import emailjs from "@emailjs/browser";
 import PhoneInput from "react-native-phone-number-input";
 import { Picker } from "@react-native-picker/picker";
-import CustomHeader from "../components/CustomHeader";
-import ButtonGeneral from "../components/ButtonGeneral";
+import CustomHeader from "../../components/CustomHeader";
+import ButtonGeneral from "../../components/ButtonGeneral";
 import { MotiView } from "moti"; // 👈 importamos Moti
 
 export default function PrivateMeeting() {

@@ -46,7 +46,8 @@ export const CartProvider = ({ children }) => {
         name: item.name,
         image: item.image,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
+        description: item.description
       }));
       await updateDoc(doc(db, "users", user.uid), { cart: simplifiedCart });
     } else {

@@ -15,22 +15,45 @@ import { useEffect, useState } from "react";
 import LoadingScreen from '../components/LoadingScreen';
 import { MotiView } from "moti";
 
+async function prefetchImages(items) {
+  try {
+    const promises = items.map((item) => Image.prefetch(item.image));
+    await Promise.all(promises);
+  } catch (error) {
+    console.warn("Error prefetching images:", error);
+  }
+}
+
 export default function CategoryScreen({ route }) {
   const { category } = route.params;
   const navigation = useNavigation();
-  const [imagesLoaded, setImagesLoaded] = useState(0);
   const [coffees, setCoffees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {colors} = useTheme();
+  const { colors } = useTheme();
 
   useEffect(() => {
     const loadCoffees = async () => {
-      const data = await getCoffeesByTag(category.key);
-      setCoffees(data);
-      setLoading(false);
+      try {
+        // 🔹 1. Cargar los datos
+        const data = await getCoffeesByTag(category.key);
+        setCoffees(data);
+
+        // 🔹 2. Prefetch de imágenes (antes de mostrar pantalla)
+        await prefetchImages(data);
+
+        // 🔹 3. Desactivar pantalla de carga solo cuando todo esté listo
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading coffees:", error);
+        setLoading(false);
+      }
     };
+
     loadCoffees();
   }, [category.key]);
+
+  // 🔹 Mostrar pantalla de carga personalizada mientras carga
+  if (loading) return <LoadingScreen />;
 
   return (
     <LinearGradient
@@ -51,9 +74,9 @@ export default function CategoryScreen({ route }) {
         showBack={true}
       />
 
-      {loading ? (<LoadingScreen />) : (<View style={[styles.overlay, {backgroundColor:colors.background}]}>
+      {loading ? (<LoadingScreen />) : (<View style={[styles.overlay, { backgroundColor: colors.background }]}>
         {category.legend && (
-          <Text style={[styles.legend, {color: colors.text}]}>{category.legend}</Text>
+          <Text style={[styles.legend, { color: colors.text }]}>{category.legend}</Text>
         )}
 
         <FlatList
@@ -73,13 +96,13 @@ export default function CategoryScreen({ route }) {
               }}
             >
               <TouchableOpacity
-                style={[styles.card, {backgroundColor:colors.card}]}
+                style={[styles.card, { backgroundColor: colors.card }]}
                 onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}
               >
                 <FavoriteButton cafe={item} />
                 <View style={styles.cardInfo}>
-                  <Text style={[styles.cardTitle, {color: colors.text}]}>{item.name}</Text>
-                  <Text style={[styles.cardDesc, {color:colors.text}]}>{item.description}</Text>
+                  <Text style={[styles.cardTitle, { color: colors.text }]}>{item.name}</Text>
+                  <Text style={[styles.cardDesc, { color: colors.text }]}>{item.description}</Text>
                 </View>
 
                 <View style={styles.imageContainer}>
@@ -102,12 +125,12 @@ export default function CategoryScreen({ route }) {
 
 const styles = StyleSheet.create({
   bg: { flex: 1, resizeMode: "cover" },
-  overlay: { flex: 1,  paddingHorizontal: 10 },
+  overlay: { flex: 1, paddingHorizontal: 10 },
   legend: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 10,
-    paddingTop:16,
+    paddingTop: 16,
     fontFamily: 'Jost_600SemiBold'
   },
   flatList: {
@@ -153,6 +176,6 @@ const styles = StyleSheet.create({
   image: {
     width: "300%",
     height: "300%",
-    transform: [{ translateX: -4 }, { translateY: 0}]
+    transform: [{ translateX: -4 }, { translateY: 0 }]
   },
 });

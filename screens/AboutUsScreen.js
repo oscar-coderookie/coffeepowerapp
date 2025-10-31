@@ -30,7 +30,7 @@ const AboutUsScreen = () => {
         extrapolate: "clamp",
 
     });
-     const translate4 = scrollY.interpolate({
+    const translate4 = scrollY.interpolate({
         inputRange: [1200, 1700], // ajusta según el scroll necesario
         outputRange: [width, 0],
         extrapolate: "clamp",
@@ -53,16 +53,40 @@ const AboutUsScreen = () => {
             )}
             scrollEventThrottle={16}>
             <VideoPlayer />
-            <View style={styles.container}>
-                <ImageBackground resizeMode="cover" source={aboutUsImgMovil} style={styles.image}>
-                    <Text style={styles.section}>
-                        ¿Quiénes Somos?
-                    </Text>
+
+            <Animated.View
+                style={[
+                    styles.heroContainer,
+                    {
+                        opacity: scrollY.interpolate({
+                            inputRange: [0, 300],
+                            outputRange: [0, 1],
+                            extrapolate: "clamp",
+                        }),
+                        transform: [
+                            {
+                                translateY: scrollY.interpolate({
+                                    inputRange: [0, 300],
+                                    outputRange: [50, 0],
+                                    extrapolate: "clamp",
+                                }),
+                            },
+                        ],
+                    },
+                ]}
+            >
+                <ImageBackground
+                    resizeMode="cover"
+                    source={aboutUsImgMovil}
+                    style={styles.heroImage}
+                >
+                    <View style={styles.overlay} />
+                    <Text style={styles.heroTitle}>¿Quiénes Somos?</Text>
                 </ImageBackground>
-            </View>
+            </Animated.View>
             <View style={styles.bio}>
                 <Animated.Text style={[styles.paragraph, {
-                    transform: [{ translateX:translateX }],
+                    transform: [{ translateX: translateX }],
                     opacity,
                 },]}>
                     Somos una empresa familiar que nace de la pasión profunda por el café y la nutrición.
@@ -85,9 +109,9 @@ const AboutUsScreen = () => {
                 </Animated.Text>
 
                 <Animated.Text style={[styles.paragraph, {
-                        transform: [{ translateX: translate3 }],
-                        opacity,
-                    }]}>
+                    transform: [{ translateX: translate3 }],
+                    opacity,
+                }]}>
                     En Coffee Power estamos constantemente innovando y explorando nuevos ratios y métodos de
                     extracción. Actualmente, trabajamos en una técnica revolucionaria y única que llevará la
                     experiencia del café a un nivel nunca antes visto, con la visión de convertirla en una
@@ -95,10 +119,10 @@ const AboutUsScreen = () => {
                     (Francia, 1929).
                 </Animated.Text>
 
-                <Animated.Text style={[styles.paragraph,{
-                        transform: [{ translateX: translate4 }],
-                        opacity,
-                    }]}>
+                <Animated.Text style={[styles.paragraph, {
+                    transform: [{ translateX: translate4 }],
+                    opacity,
+                }]}>
                     Cada sorbo de Coffee Power te transporta a un universo sensorial único e irrepetible,
                     fruto de una dedicación absoluta y un compromiso inquebrantable con la calidad. Porque
                     Coffee Power no es solo café: es nuestra pasión convertida en arte por un artista que
@@ -156,5 +180,35 @@ const styles = StyleSheet.create({
         fontFamily: 'Jost_600SemiBold',
         textAlign: 'center',
         backgroundColor: '#00000071',
-    }
+    },
+    heroContainer: {
+  height: screenHeight, // ocupa toda la altura visible
+  width: "100%",
+},
+
+heroImage: {
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  height: "100%",
+},
+
+overlay: {
+  ...StyleSheet.absoluteFillObject,
+  backgroundColor: "rgba(0,0,0,0.4)", // oscurece el fondo para mejor contraste
+},
+
+heroTitle: {
+  color: "#D4AF37", // dorado elegante
+  fontSize: 40,
+  textAlign: "center",
+  fontFamily: "Jost_600SemiBold",
+  textShadowColor: "rgba(0,0,0,0.7)",
+  textShadowOffset: { width: 2, height: 2 },
+  textShadowRadius: 6,
+  backgroundColor: "rgba(0,0,0,0.25)",
+  paddingHorizontal: 20,
+  borderRadius: 10,
+},
 });

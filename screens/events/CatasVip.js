@@ -9,10 +9,10 @@ import {
   ImageBackground,
 } from "react-native";
 import { MotiView } from "moti";
-import imageBck from "../assets/images/catas-movil.webp";
-import iconBasic from "../assets/images/catas-inicial.png";
-import iconIntermediate from "../assets/images/catas-intermediate.png";
-import iconVip from "../assets/images/catas-exclusive.png";
+import imageBck from "../../assets/images/catas-movil.webp";
+import iconBasic from "../../assets/images/catas-inicial.png";
+import iconIntermediate from "../../assets/images/catas-intermediate.png";
+import iconVip from "../../assets/images/catas-exclusive.png";
 
 const TastingOption = ({ image, title, duration, content, benefits, index }) => {
   const [showContent, setShowContent] = useState(false);

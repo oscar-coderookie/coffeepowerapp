@@ -96,11 +96,11 @@ export default function PayoutScreen({ navigation, route }) {
 
   return (
     <SafeAreaView
-              style={[styles.container]}
-              edges={['bottom']} // ✅ quitamos el top
-            >
+      style={[styles.container]}
+      edges={['bottom']} // ✅ quitamos el top
+    >
       <CustomHeader title="Completar orden" showBack={true} />
-      <ScrollView contentContainerStyle={{ paddingBottom: 30, marginHorizontal:10 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 30, marginHorizontal: 10 }}>
         {/* 🟤 BLOQUE 1 - Resumen */}
         <Animated.View style={[style1]}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Resumen del pedido</Text>
@@ -181,8 +181,8 @@ export default function PayoutScreen({ navigation, route }) {
 
           <ButtonGeneral
             text="Finalizar Pedido"
-            textColor={colors.background}
-            bckColor={colors.text}
+            textColor="#000000ff"
+            bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
             onPress={handleFinish}
           />
         </Animated.View>
@@ -192,7 +192,7 @@ export default function PayoutScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: {  },
+  container: {},
   sectionTitle: {
     fontFamily: "Jost_600SemiBold",
     fontSize: 18,
