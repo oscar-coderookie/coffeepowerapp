@@ -265,6 +265,7 @@ export default function CheckoutScreen({ navigation, route }) {
               onTouch={handleContinue}
               text="Continuar al pago"
               textColor="#000000ff"
+              borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
               bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
             />
           </Animated.View>

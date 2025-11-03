@@ -78,22 +78,25 @@ const UserSettings = () => {
             {
               key: "delete",
               text: "Eliminar cuenta",
-              color: "red",
+              borderColor: [ "#fd8787ff", "#ff0000ff", "#fd8787ff", "#ff0000ff","#fd8787ff"],
+              color: ["#ff0000ff", "#fd8787ff", "#ff0000ff", "#fd8787ff", "#ff0000ff"],
               textColor: "white",
               onTouch: () => setModalVisible(true),
             },
             {
               key: "changePass",
               text: showChangePassword ? "Cancelar" : "Cambiar contraseña",
-              color: colors.text,
-              textColor: colors.background,
+              borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
+              color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
+              textColor: "white",
               onTouch: () => setShowChangePassword(!showChangePassword),
             },
             {
               key: "changeEmail",
               text: showChange2Email ? "Cancelar" : "Cambiar correo registrado",
-              color: colors.text,
-              textColor: colors.background,
+              borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
+              color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
+              textColor:"white",
               onTouch: () => setShowChange2Email(!showChange2Email),
             },
           ].map((btn, index) => (
@@ -114,6 +117,7 @@ const UserSettings = () => {
                 bckColor={btn.color}
                 marginHorizontal={10}
                 textColor={btn.textColor}
+                borderColors={btn.borderColor}
               />
             </MotiView>
           ))}

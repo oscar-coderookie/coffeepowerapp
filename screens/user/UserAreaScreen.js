@@ -172,10 +172,11 @@ export default function UserAreaScreen({ navigation }) {
             ))}
 
             <ButtonGeneral
-              bckColor={colors.text}
+              bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
               text="+ Añadir dirección"
-              textColor={colors.background}
+              textColor="white"
               onTouch={handleAddAddress}
+              borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
             />
 
             <WhatsappBlock />
@@ -197,11 +198,14 @@ export default function UserAreaScreen({ navigation }) {
         </ScrollView>
 
         <ButtonGeneral
-          bckColor={colors.text}
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
           text="Ir a tu carrito"
-          textColor={colors.background}
+          textColor="white"
           onTouch={() => navigation.navigate("Nuestros Cafés", { screen: "Carrito" })}
           marginHorizontal={10}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+
+
         />
       </KeyboardAvoidingView>
     </View>

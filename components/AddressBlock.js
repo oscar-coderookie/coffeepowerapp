@@ -8,6 +8,7 @@ import { db, auth } from "../config/firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useTheme } from "@react-navigation/native";
 import ComunidadProvinciaPicker from "./ComunityInput";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function AddressBlock({ addressId,
   initialData = {},
@@ -78,7 +79,11 @@ export default function AddressBlock({ addressId,
   };
 
   return (
-    <View style={[styles.addressBox, { backgroundColor: isEditing ? colors.background : colors.text }]}>
+    <LinearGradient
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      colors={isEditing ? ["#fff", "#fff"]:["#000000ff", "#363636ff", "#000000ff", "#363636ff", "#000000ff"]}
+      style={[styles.addressBox]}>
       {isEditing ? (
         <View style={{ width: "100%", }}>
           <View style={{ flexDirection: "column", gap: 10 }}>
@@ -156,7 +161,7 @@ export default function AddressBlock({ addressId,
           </TouchableOpacity>
         </View>
       ) : (
-        <View style={{ backgroundColor: colors.text }}>
+        <View>
           <Text style={styles.addressTitle}>📍 Dirección de entrega</Text>
           {Object.entries(address)
             .filter(([key]) => key !== "id")
@@ -186,8 +191,9 @@ export default function AddressBlock({ addressId,
             </TouchableOpacity>
           </View>
         </View>
-      )}
-    </View>
+      )
+      }
+    </LinearGradient >
   );
 }
 

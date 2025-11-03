@@ -88,8 +88,9 @@ export default function PersonalDiscounts({ navigation }) {
         <TextInput placeholderTextColor={colors.text} onChangeText={handleInputMail} value={clientEmail} style={[styles.input, { outlineColor: colors.text, color: colors.text }]} placeholder='introduce aquí la direccion de correo' />
         <ButtonGeneral
           text="buscar cliente"
-          textColor={colors.background}
-          bckColor={colors.text}
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
           onTouch={searchClientByEmail}
 
         />
@@ -107,7 +108,12 @@ export default function PersonalDiscounts({ navigation }) {
                 <Image resizeMode='cover' source={{ uri: clientData.avatar }} style={{ width: 60, height: 60, borderRadius: 60 }} />
               </View>
             </View>
-            <ButtonGeneral text="aplicar descuento" textColor={colors.background} bckColor={colors.text} onTouch={() => navigation.navigate("Descuentos Personales2", { clientData })} />
+            <ButtonGeneral
+              text="aplicar descuento"
+              textColor="white"
+              bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+              borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+              onTouch={() => navigation.navigate("Descuentos Personales2", { clientData })} />
           </>
 
         )}

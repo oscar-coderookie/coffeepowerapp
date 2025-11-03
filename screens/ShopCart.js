@@ -102,8 +102,8 @@ export default function ShopCart() {
 
     >
       <LinearGradient
-        colors={["#000000ff", "#080808ff","#252525ff","#1a1a1aff", "#000000ff","#131313ff","#363636ff","#1a1a1aff", "#000000ff"]} // dorado metálico
-        start={{ x: 0, y: 0}}
+        colors={["#000000ff", "#080808ff", "#252525ff", "#1a1a1aff", "#000000ff", "#131313ff", "#363636ff", "#1a1a1aff", "#000000ff"]} // dorado metálico
+        start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.cardContainer}
       >
@@ -232,11 +232,11 @@ export default function ShopCart() {
               style={styles.totalBox}
             >
               <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <Text style={[styles.totalLabel,{color:colors.text}]}>Total de cafés:</Text>
+                <Text style={[styles.totalLabel, { color: colors.text }]}>Total de cafés:</Text>
                 <Text style={styles.totalPrice}>{totalCoffees}</Text>
               </View>
               <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 6 }}>
-                <Text style={[styles.totalLabel,{color:colors.text}]}>Importe total:</Text>
+                <Text style={[styles.totalLabel, { color: colors.text }]}>Importe total:</Text>
                 <Text style={styles.totalPrice}>{totalPrice.toFixed(2)} €</Text>
               </View>
             </MotiView>
@@ -245,8 +245,8 @@ export default function ShopCart() {
               text="☕ facturacíon y envío ☕"
               onTouch={handleCheckout}
               textColor="#000000ff"
-              bckColor={[colors.gold, colors.goldSecondary, colors.gold,colors.goldSecondary, colors.gold]} 
-
+              borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
+              bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
               disable={!isVerifiedOrGuest}
             />
           </View>
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_600SemiBold",
   },
   totalBox: {
-   
+
     marginVertical: 6,
     padding: 10,
 

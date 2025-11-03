@@ -12,6 +12,7 @@ import FavouriteButton from "../../components/FavouriteButton";
 import { FavoritesContext } from "../../context/FavoritesContext";
 import { MotiView } from "moti";
 import LoadingScreen from "../../components/LoadingScreen";
+import { LinearGradient } from "expo-linear-gradient";
 
 async function prefetchImages(favorites) {
   try {
@@ -42,46 +43,56 @@ export default function FavoritesScreen() {
   if (!favorites || favorites.length === 0) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <CustomHeader title="Tus Favoritos" />
-        <Text style={[styles.text, { color: colors.text }]}>⭐ Aún no tienes favoritos ⭐</Text>
+        <CustomHeader title="Mis Favoritos" />
+        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+          <Text style={[styles.text, { color: colors.text }]}>⭐ Aún no tienes favoritos ⭐</Text>
+        </View>
+
       </View>
     );
   }
 
   return (
-    <View style={[styles.containerList, { backgroundColor: colors.background, marginHorizontal: 10 }]}>
-      <CustomHeader title="Tus Favoritos" />
-      <Text style={{ fontFamily: "Jost_400Regular", textAlign: "center", marginTop: 10, color: colors.text }}>
-        Aquí podréis gestionar vuestros favoritos, agregar o eliminar:
-      </Text>
+    <View style={[styles.containerList, { backgroundColor: colors.background }]}>
+      <CustomHeader title="Mis Favoritos" />
+      <View style={{ marginHorizontal: 10 }}>
+        <Text style={{ fontFamily: "Jost_400Regular", textAlign: "center", marginTop: 10, color: colors.text }}>
+          Aquí podréis gestionar vuestros favoritos, agregar o eliminar:
+        </Text>
 
-      <FlatList
-        style={{ marginTop: 20 }}
-        data={favorites}
-        extraData={favorites}
-        keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
-        renderItem={({ item, index }) => (
-          <MotiView
-            from={{ opacity: 0, translateX: -30 }}
-            animate={{ opacity: 1, translateX: 0 }}
-            transition={{
-              type: "timing",
-              duration: 420,
-              delay: index * 120, // <-- escalonado por índice
-            }}
-            style={{ marginBottom: 12 }}
-          >
-            <View style={[styles.card, { backgroundColor: "black" }]}>
-              <Image resizeMode="contain" source={{ uri: item.image }} style={styles.image} />
-              <View style={styles.info}>
-                <Text style={styles.name}>{item.nombre}</Text>
-                <Text style={styles.desc}>{item.descripcion}</Text>
-              </View>
-              <FavouriteButton cafe={item} />
-            </View>
-          </MotiView>
-        )}
-      />
+        <FlatList
+          style={{ marginTop: 20 }}
+          data={favorites}
+          extraData={favorites}
+          keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+          renderItem={({ item, index }) => (
+            <MotiView
+              from={{ opacity: 0, translateX: -30 }}
+              animate={{ opacity: 1, translateX: 0 }}
+              transition={{
+                type: "timing",
+                duration: 420,
+                delay: index * 120, // <-- escalonado por índice
+              }}
+              style={{ marginBottom: 12 }}
+            >
+              <LinearGradient
+                colors={["#000000ff", "#2b2b2bff", "#000000ff","#303030ff","#000000ff"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.card]}>
+                <Image resizeMode="contain" source={{ uri: item.image }} style={styles.image} />
+                <View style={styles.info}>
+                  <Text style={styles.name}>{item.nombre}</Text>
+                  <Text style={styles.desc}>{item.descripcion}</Text>
+                </View>
+                <FavouriteButton cafe={item} />
+              </LinearGradient>
+            </MotiView>
+          )}
+        />
+      </View>
+
     </View>
   );
 }
@@ -89,8 +100,7 @@ export default function FavoritesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+
   },
   containerList: {
     flex: 1,

@@ -13,10 +13,13 @@ import imageBck from "../../assets/images/catas-movil.webp";
 import iconBasic from "../../assets/images/catas-inicial.png";
 import iconIntermediate from "../../assets/images/catas-intermediate.png";
 import iconVip from "../../assets/images/catas-exclusive.png";
+import ButtonGeneral from "../../components/ButtonGeneral";
+import { useTheme } from "@react-navigation/native";
 
 const TastingOption = ({ image, title, duration, content, benefits, index }) => {
   const [showContent, setShowContent] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
+  const { colors } = useTheme();
 
   return (
     <MotiView
@@ -40,15 +43,15 @@ const TastingOption = ({ image, title, duration, content, benefits, index }) => 
       <Text style={styles.subtitle}>{title}</Text>
       <Text style={styles.legend}>Duración: {duration}</Text>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setShowContent(!showContent)}
-      >
-        <Text style={styles.buttonText}>
-          {showContent ? "Ocultar Contenido" : "Ver Contenido"}
-        </Text>
-      </TouchableOpacity>
+  
 
+      <ButtonGeneral
+        onTouch={() => setShowContent(!showContent)}
+        text={showContent ? "Ocultar Contenido" : "Ver Contenido"}
+        textColor="#000000ff"
+        borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
+        bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
+      />
       {showContent && (
         <View style={styles.list}>
           {content.map((item, i) => (
@@ -59,14 +62,13 @@ const TastingOption = ({ image, title, duration, content, benefits, index }) => 
         </View>
       )}
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setShowBenefits(!showBenefits)}
-      >
-        <Text style={styles.buttonText}>
-          {showBenefits ? "Ocultar Beneficios" : "Ver Beneficios"}
-        </Text>
-      </TouchableOpacity>
+      <ButtonGeneral
+        onTouch={() => setShowBenefits(!showBenefits)}
+        text={showBenefits ? "Ocultar Beneficios" : "Ver Beneficios"}
+        textColor="#000000ff"
+        borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
+        bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
+      />
 
       {showBenefits && (
         <View style={styles.list}>

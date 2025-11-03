@@ -13,15 +13,18 @@ export default function MainDiscounts({ navigation }) {
         <Text style={[styles.text, { color: colors.text }]}>
           En esta pantalla podrás gestionar todo lo relacionado con los cupones y campañas de descuento que le enviaís a vuestros clientes:
         </Text>
-        <ButtonGeneral 
-        text="Crear descuento masivo" 
-        bckColor={colors.text} 
-        textColor={colors.background} 
-        onTouch={()=> navigation.navigate("Descuentos Masivos")}/>
-        <ButtonGeneral 
-        text="Crear descuento Personal" 
-        bckColor={colors.text} 
-        textColor={colors.background} onTouch={()=> navigation.navigate("Descuentos Personales")}/>
+        <ButtonGeneral
+          text="Crear descuento masivo"
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+          onTouch={() => navigation.navigate("Descuentos Masivos")} />
+        <ButtonGeneral
+          text="Crear descuento Personal"
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+          onTouch={() => navigation.navigate("Descuentos Personales")} />
       </View>
 
     </View>

@@ -8,7 +8,7 @@ import { db } from "../../../config/firebase";
 import DateTimePicker from "@react-native-community/datetimepicker"; // 👈 No olvides este
 
 export default function Step1({ navigation, route }) {
-    
+
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [formattedDate, setFormattedDate] = useState("");
     const [date, setDate] = useState(new Date());
@@ -130,17 +130,19 @@ export default function Step1({ navigation, route }) {
                     )}
                     {/* Botón de confirmar con icono de chulo */}
                     {showDatePicker && (<ButtonGeneral
-                        textColor={colors.background}
-                        bckColor={colors.text}
+                        textColor="white"
+                        bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+                        borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
                         text="confirmar fecha"
                         onTouch={handleConfirmDate} />)}
                 </View>
 
                 <ButtonGeneral
                     text="Aplicar cupón"
-                    textColor={colors.background}
-                    bckColor={colors.text}
+                    borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
                     onTouch={handleApplyCoupon}
+                    textColor="white"
+                    bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
                 />
             </View>
         </View>

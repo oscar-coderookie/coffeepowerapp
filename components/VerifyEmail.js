@@ -9,6 +9,7 @@ import {
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useTheme } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ButtonGeneral from "./ButtonGeneral";
 
 const VerifyEmailBlock = () => {
   const { colors } = useTheme();
@@ -125,26 +126,32 @@ const VerifyEmailBlock = () => {
       </Text>
 
       {!isVerified && (
-        <TouchableOpacity
-          onPress={handleSendVerification}
-          style={{
-            backgroundColor: colors.text,
-            padding: 12,
-            borderRadius: 8,
-            marginTop: 6,
-          }}
-          disabled={sending}
-        >
-          <Text
-            style={{
-              color: colors.background,
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-          >
-            {sending ? "Enviando..." : "Enviar enlace de verificación"}
-          </Text>
-        </TouchableOpacity>
+        // <TouchableOpacity
+        //   onPress={handleSendVerification}
+        //   style={{
+        //     backgroundColor: colors.text,
+        //     padding: 12,
+        //     borderRadius: 8,
+        //     marginTop: 6,
+        //   }}
+        //   disabled={sending}
+        // >
+        //   <Text
+        //     style={{
+        //       color: colors.background,
+        //       textAlign: "center",
+        //       fontWeight: "bold",
+        //     }}
+        //   >
+        //     {sending ? "Enviando..." : "Enviar enlace de verificación"}
+        //   </Text>
+        // </TouchableOpacity>
+        <ButtonGeneral
+          textColor="black"
+          onTouch={handleSendVerification}
+          text={sending ? "Enviando..." : "Enviar enlace de verificación"}
+          bckColor={["#218b00ff", "#3cfd01ff", "#218b00ff", "#3cff00ff", "#218b00ff"]}
+          borderColors={["#3cfd01ff", "#218b00ff", "#3cff00ff","#218b00ff", "#3cff00ff"]} />
       )}
     </View>
   );

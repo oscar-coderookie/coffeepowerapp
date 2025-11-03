@@ -1,221 +1,185 @@
-import React, { useRef, useState } from "react";
+import { useTheme } from "@react-navigation/native";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
+  StyleSheet,
   Alert,
-  ScrollView,
-  ActivityIndicator,
 } from "react-native";
-import { useNavigation, useTheme } from "@react-navigation/native";
-import emailjs from "@emailjs/browser";
-import PhoneInput from "react-native-phone-number-input";
-import { Picker } from "@react-native-picker/picker";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../../config/firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import ButtonGeneral from "../../components/ButtonGeneral";
+import CustomHeader from "../../components/CustomHeader";
 
-export default function PrivateMeeting() {
+export default function RegisterScreen({ navigation }) {
   const { colors } = useTheme();
-  const navigation = useNavigation();
-  const phoneInput = useRef(null);
 
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [motivo, setMotivo] = useState("cumpleaños");
-  const [descripcion, setDescripcion] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const enviarFormulario = () => {
-    if (!name || !phone || !email) {
-      Alert.alert("Error", "Por favor completa todos los campos obligatorios.");
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      Alert.alert("Error", "Por favor completa todos los campos");
       return;
     }
 
-    const templateParams = {
-      name,
-      telefono: phone,
-      email,
-      motivo,
-      descripcion,
-    };
-
     setLoading(true);
-    emailjs
-      .send(
-        process.env.EXPO_PUBLIC_EMAILJS_SERVICE_ID,
-        process.env.EXPO_PUBLIC_EMAILJS_TEMPLATE_ID,
-        templateParams,
-        process.env.EXPO_PUBLIC_EMAILJS_PUBLIC_KEY
-      )
-      .then(
-        (result) => {
-          setLoading(false);
-          Alert.alert("Éxito", "Formulario enviado correctamente.");
-          navigation.navigate("Confirmacion");
+
+    try {
+      // Crear usuario en Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Crear documento en Firestore
+      const userRef = doc(db, "users", user.uid);
+
+      await setDoc(userRef, {
+        name,
+        email,
+        verified: false,
+        isAdmin: false,
+        avatar: "",
+        phone: {
+          codigo: "34",
+          numero: "",
         },
-        (error) => {
-          setLoading(false);
-          console.log(error.text);
-          Alert.alert("Error", "Hubo un problema al enviar el formulario.");
-        }
+        cart: [],
+        coupons: [],
+        favorites: [],
+        createdAt: serverTimestamp(),
+      });
+
+      Alert.alert(
+        "Registro exitoso",
+        "Tu cuenta ha sido creada. Revisa tu correo para verificarla antes de iniciar sesión."
       );
+
+      navigation.replace("Login");
+    } catch (error) {
+      console.log("Error registro:", error);
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Reunión privada</Text>
-      <Text
-        style={{
-          color: colors.text,
-          fontFamily: "Jost_400Regular",
-          marginBottom: 20,
-          textAlign: "center",
-          opacity: 0.8,
-        }}
-      >
-        Introduce tus datos para solicitar tu reunión personalizada:
-      </Text>
-
-      {/* Nombre */}
-      <TextInput
-        placeholder="Nombre completo"
-        value={name}
-        onChangeText={setName}
-        style={[styles.input, { borderColor: colors.text, color: colors.text }]}
-        placeholderTextColor={colors.text}
-      />
-
-      {/* Teléfono */}
-      <View
-        style={[
-          styles.phoneContainer,
-          { borderColor: colors.text, borderWidth: 1, borderRadius: 8, paddingHorizontal: 5 },
-        ]}
-      >
-        <PhoneInput
-          ref={phoneInput}
-          defaultCode="CO"
-          layout="first"
-          value={phone}
-          onChangeFormattedText={(text) => setPhone(text)}
-          containerStyle={{ backgroundColor: "transparent" }}
-          textContainerStyle={{
-            backgroundColor: "transparent",
-            paddingVertical: 0,
-          }}
-          textInputStyle={{ color: colors.text, fontFamily: "Jost_400Regular" }}
+    <View style={styles.container}>
+      <CustomHeader title="registro:" />
+      <View style={{ marginHorizontal: 10, marginTop: 20 }}>
+        <Text style={{fontFamily:'Jost_400Regular', textAlign:'justify', marginBottom:10}}>Diligencia todos los campos para efectuar el registro en nuestra app:</Text>
+        <TextInput
+          placeholder="Nombre completo"
+          value={name}
+          onChangeText={setName}
+          style={[
+            styles.input,
+            { borderColor: colors.text, color: colors.text },
+          ]}
+          placeholderTextColor={colors.text}
         />
-      </View>
 
-      {/* Email */}
-      <TextInput
-        placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        style={[styles.input, { borderColor: colors.text, color: colors.text }]}
-        placeholderTextColor={colors.text}
-      />
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={[
+            styles.input,
+            { borderColor: colors.text, color: colors.text },
+          ]}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          placeholderTextColor={colors.text}
+        />
 
-      {/* Motivo */}
-      <View
-        style={[
-          styles.pickerContainer,
-          { borderColor: colors.text, borderWidth: 1, borderRadius: 8 },
-        ]}
-      >
-        <Picker
-          selectedValue={motivo}
-          dropdownIconColor={colors.text}
-          onValueChange={(itemValue) => setMotivo(itemValue)}
-          style={{ color: colors.text }}
-        >
-          <Picker.Item label="Cumpleaños" value="cumpleaños" />
-          <Picker.Item label="Conmemoración" value="conmemoración" />
-          <Picker.Item label="Otro" value="otro" />
-        </Picker>
-      </View>
-
-      {/* Descripción */}
-      <TextInput
-        placeholder="Danos una breve descripción de tu requerimiento..."
-        value={descripcion}
-        onChangeText={setDescripcion}
-        multiline
-        style={[
-          styles.textarea,
-          { borderColor: colors.text, color: colors.text, textAlignVertical: "top" },
-        ]}
-        placeholderTextColor={colors.text}
-      />
-
-      {/* Botón */}
-      <TouchableOpacity
-        style={[
-          styles.button,
-          { backgroundColor: loading ? "#999" : colors.text },
-        ]}
-        onPress={enviarFormulario}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color={colors.background} />
-        ) : (
-          <Text
-            style={{
-              color: colors.background,
-              textAlign: "center",
-              fontFamily: "Jost_600SemiBold",
-              textTransform: "uppercase",
-            }}
+        <View style={styles.passwordContainer}>
+          <TextInput
+            placeholder="Contraseña"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            style={[
+              styles.input,
+              {
+                flex: 1,
+                borderColor: colors.text,
+                color: colors.text,
+              },
+            ]}
+            placeholderTextColor={colors.text}
+          />
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.showButton}
           >
-            Enviar
-          </Text>
-        )}
-      </TouchableOpacity>
-    </ScrollView>
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={22}
+              color={colors.text}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <ButtonGeneral
+          text={loading ? "Creando cuenta..." : "Registrarse"}
+          textColor="white"
+          bckColor={[
+            "#000000ff",
+            "#535353ff",
+            "#000000ff",
+            "#6b6b6bff",
+            "#000000ff",
+          ]}
+          borderColors={[
+            "#535353ff",
+            "#000000ff",
+            "#535353ff",
+            "#000000ff",
+            "#535353ff",
+          ]}
+          onTouch={handleRegister}
+          disabled={loading}
+        />
+
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.link}>¿Ya tienes cuenta? Inicia sesión</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
-const styles = {
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    paddingBottom: 40,
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: "Jost_600SemiBold",
-    marginBottom: 15,
-    textAlign: "center",
-    textTransform: "uppercase",
-  },
+const styles = StyleSheet.create({
+  container: { flex: 1 },
   input: {
+    fontFamily: "Jost_400Regular",
     borderWidth: 1,
-    borderRadius: 8,
     padding: 10,
-    marginBottom: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  showButton: {
+    position: "absolute",
+    right: 10,
+    bottom: 20
+  },
+  link: {
+    marginTop: 15,
+    textAlign: "center",
+    color: "#0066cc",
     fontFamily: "Jost_400Regular",
   },
-  textarea: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    height: 100,
-    marginBottom: 20,
-    fontFamily: "Jost_400Regular",
-  },
-  phoneContainer: {
-    marginBottom: 15,
-  },
-  pickerContainer: {
-    marginBottom: 15,
-  },
-  button: {
-    padding: 15,
-    borderRadius: 8,
-  },
-};
+});

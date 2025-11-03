@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "reac
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { useTheme } from "@react-navigation/native";
+import CustomHeader from "../../components/CustomHeader";
+import ButtonGeneral from "../../components/ButtonGeneral";
 
 export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -25,25 +27,30 @@ export default function ForgotPasswordScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, {color: colors.text}]}>Recuperar contraseña</Text>
-      <TextInput
-        placeholder="Correo electrónico"
-        value={email}
-        onChangeText={setEmail}
-        style={[styles.input, { borderColor: colors.text, color: colors.text }]}
-        placeholderTextColor={colors.text}
-      />
-      <TouchableOpacity style={[styles.button,{backgroundColor: colors.text}]} onPress={handleReset}>
-        <Text style={[styles.buttonText, {color:colors.background}]}>Enviar enlace</Text>
-      </TouchableOpacity>
+      <CustomHeader title="recuperar contraseña" showBack />
+      <View style={{ marginHorizontal: 10, marginTop: 20 }}>
+        <Text style={{fontFamily:'Jost_400Regular', marginBottom:10, textAlign:'justify'}}>Aqui podras restablecer tu contraseña en caso de olvido, introduce el correo registrado en la app; y te enviaremos un enlace para reestablecer la contraseña:</Text>
+        <TextInput
+          placeholder="Correo electrónico"
+          value={email}
+          onChangeText={setEmail}
+          style={[styles.input, { borderColor: colors.text, color: colors.text }]}
+          placeholderTextColor={colors.text}
+        />
+
+        <ButtonGeneral
+          text="Enviar enlace"
+          onTouch={handleReset}
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]} />
+      </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "flex-start", padding: 20, marginTop: 160},
-  title: { fontSize: 22, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
-  input: { borderWidth: 1, padding: 10, borderRadius: 8, marginBottom: 15 },
-  button: { backgroundColor: "tomato", padding: 15, borderRadius: 8 },
-  buttonText: { textAlign: "center", fontWeight: "bold" },
+  container: { flex: 1 },
+  input: { borderWidth: 1, padding: 10, borderRadius: 120, marginBottom: 15, fontFamily:'Jost_400Regular' },
 });

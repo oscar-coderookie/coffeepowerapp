@@ -13,6 +13,7 @@ import { db, auth } from "../config/firebase";
 import Icon from "react-native-vector-icons/FontAwesome";
 import CountryPicker from "react-native-country-picker-modal";
 import { useTheme } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function WhatsappBlock() {
   const { colors } = useTheme();
@@ -104,13 +105,12 @@ export default function WhatsappBlock() {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: isEditing ? colors.background : colors.text,
-        },
-      ]}
+    <LinearGradient
+      style={[styles.container]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      colors={isEditing ? ["#fff", "#fff"] : ["#000000ff", "#363636ff", "#000000ff", "#363636ff", "#000000ff"]}
+
     >
       {isEditing ? (
         <View style={{ width: "100%" }}>
@@ -167,7 +167,7 @@ export default function WhatsappBlock() {
               WhatsApp
             </Text>
           </View>
-          <View style={{ flexDirection: 'row' , alignItems:'center', justifyContent:'space-around'}}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}
           >
             <View style={styles.dataRow}>
               <Text style={[styles.label, { color: colors.background }]}>
@@ -201,7 +201,7 @@ export default function WhatsappBlock() {
 
         </View>
       )}
-    </View>
+    </LinearGradient>
   );
 }
 

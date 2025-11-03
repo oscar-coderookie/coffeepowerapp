@@ -203,8 +203,9 @@ export default function InjectCouponsScreen() {
 
         <ButtonGeneral
           text="Aplicar cupón a todos los usuarios"
-          textColor={colors.background}
-          bckColor={colors.text}
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
           onTouch={handleSubmit}
         />
       </View>
@@ -235,9 +236,9 @@ const styles = StyleSheet.create({
   block: {
     marginHorizontal: 10
   },
-  title:{
-    fontFamily:'Jost_600SemiBold',
-    textTransform:'uppercase',
+  title: {
+    fontFamily: 'Jost_600SemiBold',
+    textTransform: 'uppercase',
     marginBottom: 10
   }
 });

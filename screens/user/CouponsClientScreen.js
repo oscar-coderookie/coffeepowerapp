@@ -51,9 +51,11 @@ const CouponsClientScreen = () => {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
         <CustomHeader title="Mis Cupones" showBack={false} />
-        <Text style={[styles.text, { color: colors.text }]}>
-          Aún no tienes descuentos activos ☕
-        </Text>
+        <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+          <Text style={[styles.text, { color: colors.text }]}>
+            ☕ Aún no tienes descuentos activos ☕
+          </Text>
+        </View>
       </View>
     );
   }
@@ -62,7 +64,6 @@ const CouponsClientScreen = () => {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader title="Mis Cupones" showBack={false} />
-
       <FlatList
         data={coupons}
         keyExtractor={(item, index) => `${item.code}-${index}`}
@@ -112,7 +113,7 @@ const CouponsClientScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  text: { fontFamily: "Jost_400Regular", fontSize: 16 },
+  text: { fontFamily: "Jost_600SemiBold", fontSize: 18, },
 
   card: {
     flexDirection: "row",

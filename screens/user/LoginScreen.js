@@ -5,6 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { AuthContext } from "../../context/AuthContext";
+import ButtonGeneral from "../../components/ButtonGeneral";
+import CustomHeader from "../../components/CustomHeader";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -46,83 +48,69 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: colors.text }]}>Iniciar Sesión</Text>
-
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={{
-          fontFamily: "Jost_400Regular",
-          borderWidth: 1,
-          borderColor: colors.text,
-          padding: 10,
-          color: colors.text,
-          borderRadius: 8,
-          marginBottom: 10,
-        }}
-        placeholderTextColor={colors.text}
-      />
-
-      <View style={styles.passwordContainer}>
+      <CustomHeader title="iniciar sesión:" />
+      <View style={{ marginHorizontal: 10, marginTop: 20 }}>
         <TextInput
-          placeholder="Contraseña"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
           style={{
-            flex: 1,
             fontFamily: "Jost_400Regular",
             borderWidth: 1,
-            color: colors.text,
             borderColor: colors.text,
             padding: 10,
+            color: colors.text,
             borderRadius: 8,
+            marginBottom: 10,
           }}
           placeholderTextColor={colors.text}
         />
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.showButton}>
-          <Ionicons
-            name={showPassword ? "eye-off" : "eye"}
-            size={22}
-            color={colors.text}
+
+        <View style={styles.passwordContainer}>
+          <TextInput
+            placeholder="Contraseña"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            style={{
+              flex: 1,
+              fontFamily: "Jost_400Regular",
+              borderWidth: 1,
+              color: colors.text,
+              borderColor: colors.text,
+              padding: 10,
+              borderRadius: 8,
+            }}
+            placeholderTextColor={colors.text}
           />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.showButton}>
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={22}
+              color={colors.text}
+            />
+          </TouchableOpacity>
+        </View>
+        <ButtonGeneral
+          text="Login"
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+          onTouch={handleLogin} />
+
+        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+          <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+          <Text style={[styles.link, { color: "tomato" }]}>¿Olvidaste tu contraseña?</Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity
-        style={{
-          backgroundColor: colors.text,
-          padding: 15,
-          borderRadius: 8,
-          marginTop: 10,
-        }}
-        onPress={handleLogin}
-      >
-        <Text
-          style={{
-            color: colors.background,
-            textAlign: "center",
-            fontFamily: "Jost_600SemiBold",
-            textTransform: "uppercase",
-          }}
-        >
-          Entrar
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-        <Text style={[styles.link, { color: "tomato" }]}>¿Olvidaste tu contraseña?</Text>
-      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "flex-start", padding: 20, marginTop: 100 },
+  container: { flex: 1 },
   title: {
     fontSize: 24,
     fontWeight: "bold",
