@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../context/CartContext';
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from '@react-navigation/native';
+import { playSound } from '../utils/soundPlayer';
 
 
 export default function AddToCart({ coffee }) {
@@ -12,7 +13,9 @@ export default function AddToCart({ coffee }) {
     const { colors } = useTheme();
 
     const handleAddToCart = () => {
+        
         addToCart({ ...coffee, quantity });
+        playSound("cart")
         Alert.alert(
             "Añadido al carrito",
             `${quantity} x ${coffee.name} se agregó a tu carrito`

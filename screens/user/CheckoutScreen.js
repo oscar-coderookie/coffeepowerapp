@@ -267,6 +267,7 @@ export default function CheckoutScreen({ navigation, route }) {
               textColor="#000000ff"
               borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
               bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
+              soundType="click"
             />
           </Animated.View>
         </ScrollView>

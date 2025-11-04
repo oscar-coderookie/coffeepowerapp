@@ -1,7 +1,9 @@
 // components/CustomHeader.js
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useTheme } from "@react-navigation/native";
+import { playSound } from "../utils/soundPlayer";
 
 export default function CustomHeader({ title, children, showBack = false }) {
   const navigation = useNavigation();
@@ -10,46 +12,45 @@ export default function CustomHeader({ title, children, showBack = false }) {
   return (
     <View
       style={{
-
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         paddingHorizontal: 10,
-        paddingVertical:10,
+        paddingVertical: 10,
         borderBottomColor: colors.border,
         borderBottomWidth: 1,
         backgroundColor: colors.background,
-
       }}
     >
-      {/* Si showBack es true, mostramos la flecha */}
+      {/* Botón de retroceso */}
       {showBack ? (
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => {
+          playSound('cup')
+          navigation.goBack()
+        }
+        }>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
       ) : (
-        <View style={{ width: 24 }} /> // espacio vacío
+        <View style={{ width: 24 }} />
       )}
 
+      {/* Centro con título o children */}
       <View style={styles.center}>
         {children ? (
           children
         ) : (
           <Text
-            style={{
-              color: colors.text,
-              fontSize: 18,
-              textTransform: "uppercase",
-              textAlign: "center",
-              fontFamily: "Jost_700Bold",
-            }}
+            style={[styles.title, { color: colors.text }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit={true} // 👈 se adapta al ancho disponible
+            minimumFontScale={0.75} // 👈 se achica hasta 75% si es necesario
           >
             {title}
           </Text>
         )}
       </View>
 
-      {/* espacio a la derecha */}
       <View style={{ width: 24 }} />
     </View>
   );
@@ -60,5 +61,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  title: {
+    fontSize: 18,
+    textTransform: "uppercase",
+    fontFamily: "Jost_700Bold",
+    textAlign: "center",
+    width: "90%", // mantiene margen lateral para evitar recortes
   },
 });

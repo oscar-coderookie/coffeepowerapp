@@ -20,11 +20,7 @@ import LoadingScreen from "../components/LoadingScreen";
 const OurCoffees = () => {
   const navigation = useNavigation();
   const [searchResults, setSearchResults] = useState([]);
-  const [coffees, setCoffees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  const isReady = imageLoaded && !loading;
+  const [coffees, setCoffees] = useState([])
 
   useEffect(() => {
     const fetchCoffees = async () => {
@@ -37,19 +33,10 @@ const OurCoffees = () => {
         setCoffees(data);
       } catch (error) {
         console.error("❌ Error trayendo cafés:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
-    // Prefetch de la imagen (mejor que onLoadEnd)
-    const loadBackground = async () => {
-      await Image.prefetch(Image.resolveAssetSource(imageBck).uri);
-      setImageLoaded(true);
-    };
-
-    fetchCoffees();
-    loadBackground();
+    fetchCoffees(); // 👈 ESTA LLAMADA ES LO QUE FALTABA
   }, []);
 
   const handleSearch = (query) => {
@@ -96,7 +83,6 @@ const OurCoffees = () => {
     );
   };
 
-  if (!isReady) return <LoadingScreen />;
 
   return (
     <View style={{ flex: 1 }}>

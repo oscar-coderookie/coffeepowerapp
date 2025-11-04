@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
+import { playSound } from "../utils/soundPlayer";
 
 const ButtonGeneral = ({
   onTouch,
@@ -12,14 +13,20 @@ const ButtonGeneral = ({
   marginHorizontal,
   disable,
   borderColors = ["#c9b58a", "#fff1cc", "#b89465"], // degradado dorado/cobre
+  soundType, // nuevo prop para el sonido
 }) => {
   const isGradient = Array.isArray(bckColor);
   const isBorderGradient = Array.isArray(borderColors);
 
+  const handlePress = () => {
+    if (soundType) playSound(soundType);
+    if (onTouch) onTouch();
+  };
+
   return (
     <TouchableOpacity
       disabled={disable}
-      onPress={onTouch}
+      onPress={handlePress}
       activeOpacity={0.85}
       style={{
         marginVertical: 3,

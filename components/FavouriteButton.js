@@ -5,6 +5,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../config/firebase";
 import { FavoritesContext } from "../context/FavoritesContext";
 import { isDeletingAccount } from "../utils/deleteAccount";
+import { playSound } from "../utils/soundPlayer";
 
 export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) {
   const { favorites } = useContext(FavoritesContext);
@@ -78,8 +79,9 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
           updatedFavs = currentFavs;
         }
       }
-
+      playSound('favorite')
       await updateDoc(userRef, { favorites: updatedFavs });
+      Alert.alert(cafeName, "Correctamente añadido a favoritos")
     } catch (error) {
       console.log("❌ Error actualizando favoritos:", error);
     } finally {

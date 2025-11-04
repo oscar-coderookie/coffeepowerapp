@@ -76,6 +76,7 @@ export default function ShopCart() {
       Alert.alert("Carrito vacío", "Agrega productos antes de continuar 🚀");
       return;
     }
+
     navigation.navigate("Checkout", { cartItems });
   };
 
@@ -248,6 +249,7 @@ export default function ShopCart() {
               borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
               bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
               disable={!isVerifiedOrGuest}
+              soundType="click"
             />
           </View>
 

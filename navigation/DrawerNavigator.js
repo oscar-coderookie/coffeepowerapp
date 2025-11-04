@@ -22,10 +22,10 @@ import LegalStack from "./LegalStack";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 import AdminTabs from "./AdminTabs";
-import ShopCart from "../screens/ShopCart";
-import OurCoffees from "../screens/OurCoffees";
 import CoffeesStack from "./CoffeesStack";
 import CartStack from "./CartStack";
+import { playSound } from "../utils/soundPlayer";
+
 
 const Drawer = createDrawerNavigator();
 
@@ -41,14 +41,21 @@ function CustomDrawerContent(props) {
 
   const handleLogout = async () => {
     try {
+      playSound('click')
       await signOut(auth);
       props.navigation.navigate("Área personal", { screen: "Login" }); // 👈 Navegación correcta al stack anidado
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
   };
+  const handleChangeTema = ()=>{
+    playSound('switch');
+    toggleTheme();
+              
+  }
 
   const handleLoginRedirect = () => {
+    playSound('click')
     props.navigation.navigate("Área personal", { screen: "Login" });
   };
 
@@ -89,9 +96,10 @@ function CustomDrawerContent(props) {
           </Text>
           <Switch
             value={!!isDark}
-            onValueChange={toggleTheme}
+            onValueChange={handleChangeTema}
             thumbColor={colors.text}
             trackColor={{ false: "#999", true: "#666" }}
+
           />
         </View>
       </View>
@@ -169,11 +177,16 @@ export default function DrawerNavigator() {
         headerRight: () => (
           <TouchableOpacity
             style={{ marginRight: 15 }}
-            onPress={() => navigation.navigate("CartScreen")} // 👈 ajusta al nombre de tu pantalla
+            onPress={() => {
+              playSound("click"); // 🎵 reproduce el sonido
+              navigation.navigate("MainDrawer", { screen: "CartScreen" }); // navega normalmente
+            }}
+          // 👈 ajusta al nombre de tu pantalla
           >
             <Ionicons name="cart" size={26} color={colors.text} />
           </TouchableOpacity>
         ),
+
       }}
     >
       <Drawer.Screen
@@ -182,12 +195,18 @@ export default function DrawerNavigator() {
         options={{
           drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
         }}
+        listeners={{
+          drawerItemPress: () => playSound("click"),
+        }}
       />
       <Drawer.Screen
         name="¿Quiénes Somos?"
         component={AboutUsTabs}
         options={{
           drawerIcon: ({ size }) => <Image source={icon2} style={{ width: size, height: size }} />,
+        }}
+        listeners={{
+          drawerItemPress: () => playSound("click"),
         }}
       />
 
@@ -199,12 +218,18 @@ export default function DrawerNavigator() {
         options={{
           drawerIcon: ({ size }) => <Image source={icon5} style={{ width: size, height: size }} />,
         }}
+        listeners={{
+          drawerItemPress: () => playSound("click"),
+        }}
       />
       <Drawer.Screen
         name="Eventos"
         component={EventsTabs}
         options={{
           drawerIcon: ({ size }) => <Image source={icon3} style={{ width: size, height: size }} />,
+        }}
+        listeners={{
+          drawerItemPress: () => playSound("click"),
         }}
       />
       <Drawer.Screen
@@ -213,6 +238,9 @@ export default function DrawerNavigator() {
         options={{
           drawerIcon: ({ size }) => <Image source={icon4} style={{ width: size, height: size }} />,
         }}
+        listeners={{
+          drawerItemPress: () => playSound("click"),
+        }}
       />
       <Drawer.Screen
         name="Legal"
@@ -220,12 +248,18 @@ export default function DrawerNavigator() {
         options={{
           drawerIcon: ({ size }) => <Image source={icon1} style={{ width: size, height: size }} />,
         }}
+        listeners={{
+          drawerItemPress: () => playSound("click"),
+        }}
       />
       <Drawer.Screen
         name="CartScreen"
         component={CartStack}
         options={{
           drawerItemStyle: { display: 'none' }, // 👈 Esto lo oculta del menú lateral
+        }}
+        listeners={{
+          drawerItemPress: () => playSound("click"),
         }}
       />
       {/* 🔒 Pantalla visible solo si es admin */}
@@ -235,6 +269,9 @@ export default function DrawerNavigator() {
           component={AdminTabs}
           options={{
             drawerIcon: ({ size }) => <MaterialIcons name="admin-panel-settings" size={size} color={colors.text} />,
+          }}
+          listeners={{
+            drawerItemPress: () => playSound("click"),
           }}
         />
       )}

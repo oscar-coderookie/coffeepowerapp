@@ -20,6 +20,11 @@ import { ThemeProvider, useThemeContext } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 import StripeProvider from './StripeProviderWrapper';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SplashScreen from './screens/SplashScreen';
+
+
+const Stack = createNativeStackNavigator();
 
 function MainApp() {
   const { theme } = useThemeContext();
@@ -27,10 +32,14 @@ function MainApp() {
   return (
     <StripeProvider publishableKey="pk_test_51SHlhHDF3l7m7jkhqzTntSB1nsRHUhvipcnCrGKMfLB5j2UvJmcUNGI7KEC2FEsyZzlCL8FkEYid2EkJSeopmVNr00JNoHF3eP">
       <NavigationContainer theme={theme}>
-        <DrawerNavigator />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {/* 👇 Splash que se muestra primero */}
+          <Stack.Screen name="Splash" component={SplashScreen} />
+          {/* 👇 Tu Drawer principal */}
+          <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
+        </Stack.Navigator>
       </NavigationContainer>
     </StripeProvider>
-
   );
 }
 
