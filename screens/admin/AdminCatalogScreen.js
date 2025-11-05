@@ -13,6 +13,7 @@ import LoadingScreen from "../../components/LoadingScreen";
 import CustomHeader from "../../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { playSound } from "../../utils/soundPlayer";
 
 export default function AdminCatalogScreen({ navigation }) {
     const [coffees, setCoffees] = useState([]);
@@ -66,6 +67,7 @@ export default function AdminCatalogScreen({ navigation }) {
 
     // 🔹 Eliminar café
     const handleDeleteCoffee = (coffeeId) => {
+        playSound('click')
         Alert.alert("Confirmar eliminación", "¿Seguro que quieres eliminar este café?", [
             { text: "Cancelar", style: "cancel" },
             {
@@ -121,7 +123,9 @@ export default function AdminCatalogScreen({ navigation }) {
                 </View>
 
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("EditCoffee", { coffee: item })}
+                    onPress={() => {
+                        playSound('click')
+                        navigation.navigate("EditCoffee", { coffee: item })}}
                     style={{ padding: 10, borderRadius: 10, backgroundColor: "green" }}
                 >
                     <MaterialIcons name="mode-edit" size={24} color={colors.background} />
@@ -157,7 +161,10 @@ export default function AdminCatalogScreen({ navigation }) {
             />
 
             <TouchableOpacity
-                onPress={() => navigation.navigate("AddCoffee")}
+                onPress={() => {
+                    playSound('click')
+                    navigation.navigate("AddCoffee");
+                }}
                 style={styles.addButton}
             >
                 <FontAwesome name="plus-circle" size={30} color={colors.text} />

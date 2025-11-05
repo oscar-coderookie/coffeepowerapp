@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import CountryPicker from "react-native-country-picker-modal";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import ButtonGeneral from "./ButtonGeneral";
 
 export default function WhatsappBlock() {
   const { colors } = useTheme();
@@ -109,11 +110,11 @@ export default function WhatsappBlock() {
       style={[styles.container]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      colors={isEditing ? ["#fff", "#fff"] : ["#000000ff", "#363636ff", "#000000ff", "#363636ff", "#000000ff"]}
+      colors={isEditing ? [] : ["#000000ff", "#363636ff", "#000000ff", "#363636ff", "#000000ff"]}
 
     >
       {isEditing ? (
-        <View style={{ width: "100%" }}>
+        <View>
           <View
             style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
           >
@@ -133,7 +134,7 @@ export default function WhatsappBlock() {
             <TextInput
               style={[
                 styles.input,
-                { flex: 1, color: colors.text, borderColor: colors.text },
+                { flex: 1, color: colors.text, borderColor: colors.text, backgroundColor: colors.input },
               ]}
               value={phone.numero}
               onChangeText={(num) =>
@@ -146,15 +147,13 @@ export default function WhatsappBlock() {
               inputMode="tel"
             />
           </View>
-
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.text }]}
-            onPress={handleSave}
-          >
-            <Text style={[styles.buttonText, { color: colors.background }]}>
-              Guardar número
-            </Text>
-          </TouchableOpacity>
+          <ButtonGeneral
+            text="guardar número"
+            textColor="white"
+            bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+            borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+            onTouch={handleSave}
+            soundType="click" />
         </View>
       ) : (
         <View >
@@ -162,7 +161,7 @@ export default function WhatsappBlock() {
           <View style={styles.headerRow}>
             <Icon name="whatsapp" size={22} color="#25D366" />
             <Text
-              style={[styles.title, { color: colors.background, marginLeft: 8 }]}
+              style={[styles.title, { color: "white", marginLeft: 8 }]}
             >
               WhatsApp
             </Text>
@@ -170,10 +169,10 @@ export default function WhatsappBlock() {
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}
           >
             <View style={styles.dataRow}>
-              <Text style={[styles.label, { color: colors.background }]}>
+              <Text style={[styles.label, { color: 'white' }]}>
                 Número:
               </Text>
-              <Text style={[styles.value, { color: colors.background }]}>
+              <Text style={[styles.value, { color: 'white' }]}>
                 {phone.numero
                   ? `+${phone.codigo}${phone.numero}`
                   : "No registrado"}
@@ -187,6 +186,7 @@ export default function WhatsappBlock() {
               >
                 <Icon name="pencil" size={18} color="#fff" />
               </TouchableOpacity>
+
 
               {phone.numero ? (
                 <TouchableOpacity
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     borderRadius: 12,
-    padding: 16,
+    padding: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

@@ -6,11 +6,12 @@ import TermsScreen from "../screens/legal/TermsScreen";
 import CookiesScreen from "../screens/legal/CookiesScreen";
 import RightsScreen from "../screens/legal/RightsScreen";
 import { useTheme } from "@react-navigation/native";
+import { playSound } from "../utils/soundPlayer";
 
 const Tab = createBottomTabNavigator();
 
 const LegalStack = () => {
-  const {colors} = useTheme()
+  const { colors } = useTheme()
   return (
     <Tab.Navigator
       initialRouteName="Privacidad"
@@ -32,10 +33,30 @@ const LegalStack = () => {
         },
       })}
     >
-      <Tab.Screen name="Privacidad" component={PrivacyScreen} />
-      <Tab.Screen name="Términos" component={TermsScreen} />
-      <Tab.Screen name="Cookies" component={CookiesScreen} />
-      <Tab.Screen name="Derechos RGPD" component={RightsScreen} />
+      <Tab.Screen
+        name="Privacidad"
+        component={PrivacyScreen}
+        listeners={{
+          tabPress: () => playSound("click"),
+        }} />
+      <Tab.Screen
+        name="Términos"
+        component={TermsScreen}
+        listeners={{
+          tabPress: () => playSound("click"),
+        }} />
+      <Tab.Screen
+        name="Cookies"
+        component={CookiesScreen}
+        listeners={{
+          tabPress: () => playSound("click"),
+        }} />
+      <Tab.Screen
+        name="Derechos RGPD"
+        component={RightsScreen}
+        listeners={{
+          tabPress: () => playSound("click"),
+        }} />
     </Tab.Navigator>
   );
 };

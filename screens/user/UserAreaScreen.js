@@ -14,6 +14,8 @@ import PaymentMethods from "../PaymentMethods";
 import { AuthContext } from "../../context/AuthContext";
 import { MotiView } from "moti"; // 👈 Importamos MotiView
 import LoadingScreen from "../../components/LoadingScreen";
+import { playSound } from "../../utils/soundPlayer";
+import { useDrawerStatus } from "@react-navigation/drawer";
 
 export default function UserAreaScreen({ navigation }) {
   const [userName, setUserName] = useState("");
@@ -24,6 +26,7 @@ export default function UserAreaScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const { colors } = useTheme();
   const { user } = useContext(AuthContext);
+
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -162,11 +165,6 @@ export default function UserAreaScreen({ navigation }) {
                   initialData={item}
                   onDeleted={handleDeleted}
                   onUpdated={handleUpdated}
-                  isEditingAddress={editingId === item.id}
-                  setIsEditingAddress={(value) => {
-                    if (!value) setEditingId(null);
-                    else setEditingId(item.id);
-                  }}
                 />
               </MotiView>
             ))}
@@ -177,6 +175,7 @@ export default function UserAreaScreen({ navigation }) {
               textColor="white"
               onTouch={handleAddAddress}
               borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+              soundType="click"
             />
 
             <WhatsappBlock />
@@ -201,10 +200,13 @@ export default function UserAreaScreen({ navigation }) {
           bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
           text="Ir a tu carrito"
           textColor="white"
-          onTouch={() => navigation.navigate("Nuestros Cafés", { screen: "Carrito" })}
+          onTouch={() => {
+            playSound("click"); // 🎵 reproduce el sonido
+            navigation.navigate("MainDrawer", { screen: "CartScreen" }); // navega normalmente
+          }}
           marginHorizontal={10}
           borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
-
+          soundType="click"
 
         />
       </KeyboardAvoidingView>

@@ -46,7 +46,7 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
 
       // 🚫 Si el documento no existe, no lo creamos vacío
       if (!snap.exists()) {
-        console.log("El usuario no tiene documento en Firestore, no se agregará favorito.");
+        Alert.alert("El usuario no se ha registrado aun en la app, no se puede agregar a favoritos.");
         setLoading(false);
         return;
       }
@@ -58,14 +58,18 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
 
       if (isFavorite) {
         // 🧹 Eliminar si ya está en favoritos
+
         updatedFavs = currentFavs.filter(
           (f) => f.nombre?.toLowerCase() !== cafeName.toLowerCase()
         );
+        playSound('click')
       } else {
         // ✨ Agregar si no existe todavía
         const exists = currentFavs.some(
           (f) => f.nombre?.toLowerCase() === cafeName.toLowerCase()
         );
+        playSound('favorite')
+        Alert.alert(cafeName, "Correctamente añadido a favoritos")
         if (!exists) {
           updatedFavs = [
             ...currentFavs,
@@ -79,9 +83,8 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
           updatedFavs = currentFavs;
         }
       }
-      playSound('favorite')
       await updateDoc(userRef, { favorites: updatedFavs });
-      Alert.alert(cafeName, "Correctamente añadido a favoritos")
+
     } catch (error) {
       console.log("❌ Error actualizando favoritos:", error);
     } finally {
@@ -90,7 +93,7 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
   };
 
   return (
-    <TouchableOpacity style={{marginLeft: 10}} onPress={toggleFavorite} disabled={loading}>
+    <TouchableOpacity style={{ marginLeft: 10 }} onPress={toggleFavorite} disabled={loading}>
       {loading ? (
         <ActivityIndicator size="small" color={color} />
       ) : (

@@ -7,6 +7,7 @@ import CatasVip from '../screens/events/CatasVip';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { playSound } from '../utils/soundPlayer';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,10 +18,10 @@ const EventsTabs = () => {
 
             screenOptions={({ route }) => ({
                 tabBarInactiveBackgroundColor: colors.background,
-                   tabBarActiveTintColor: colors.gold,
+                tabBarActiveTintColor: colors.gold,
                 headerShown: false,
-                tabBarInactiveTintColor:colors.text,
-                tabBarStyle: { borderTopWidth: 0, height: 90 , backgroundColor: colors.background},
+                tabBarInactiveTintColor: colors.text,
+                tabBarStyle: { borderTopWidth: 0, height: 90, backgroundColor: colors.background },
                 tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
 
                 tabBarActiveBackgroundColor: colors.background,
@@ -38,8 +39,18 @@ const EventsTabs = () => {
         >
 
 
-            <Tab.Screen name="Reunion Privada" component={PrivateMeeting} />
-            <Tab.Screen name="Catas VIP" component={CatasVip} />
+            <Tab.Screen
+                name="Reunion Privada"
+                component={PrivateMeeting}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }} />
+            <Tab.Screen
+                name="Catas VIP"
+                component={CatasVip}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }} />
 
         </Tab.Navigator>
     )

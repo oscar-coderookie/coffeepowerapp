@@ -13,6 +13,7 @@ import LoadingScreen from "../../components/LoadingScreen";
 import CustomHeader from "../../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { playSound } from "../../utils/soundPlayer";
 
 export default function UsersAdminScreen({ navigation }) {
   const [users, setUsers] = useState([]);
@@ -63,6 +64,7 @@ export default function UsersAdminScreen({ navigation }) {
 
   // Eliminar usuario
   const handleDeleteUser = (userId) => {
+    playSound('click')
     Alert.alert("Confirmar eliminación", "¿Seguro que quieres eliminar este usuario?", [
       { text: "Cancelar", style: "cancel" },
       {
@@ -116,7 +118,10 @@ export default function UsersAdminScreen({ navigation }) {
         </View>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("Editar Usuario", { user: item })}
+          onPress={() => {
+            playSound('click')
+            navigation.navigate("Editar Usuario", { user: item })
+          }}
           style={{ padding: 10, borderRadius: 10, backgroundColor: "green" }}
         >
           <MaterialIcons name="mode-edit" size={24} color={colors.background} />

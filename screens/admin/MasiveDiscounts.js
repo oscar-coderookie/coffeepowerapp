@@ -207,6 +207,7 @@ export default function InjectCouponsScreen() {
           bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
           borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
           onTouch={handleSubmit}
+          soundType="click"
         />
       </View>
     </ScrollView>

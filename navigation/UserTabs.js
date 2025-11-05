@@ -7,6 +7,7 @@ import UserAreaScreen from '../screens/user/UserAreaScreen';
 import FavoritesScreen from '../screens/user/FavouritesScreen';
 import UserSettings from '../screens/user/UserSettings';
 import CouponsClientScreen from '../screens/user/CouponsClientScreen';
+import { playSound } from '../utils/soundPlayer';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,19 +32,39 @@ const UserTabs = () => {
                     } else if (route.name === 'Favoritos') {
                         iconName = focused ? 'star' : 'star-outline'
                     } else if (route.name === "Cupones") {
-                         iconName = focused ? 'pricetag' : 'pricetag-outline'
-                    }  else if (route.name === "Ajustes") {
-                         iconName = focused ? 'settings' : 'settings-outline'
+                        iconName = focused ? 'pricetag' : 'pricetag-outline'
+                    } else if (route.name === "Ajustes") {
+                        iconName = focused ? 'settings' : 'settings-outline'
                     }
                     return <Ionicons name={iconName} color={color} size={size} />
                 }
             })}
 
         >
-            <Tab.Screen name="Perfil" component={UserAreaScreen} />
-            <Tab.Screen name="Favoritos" component={FavoritesScreen} />
-            <Tab.Screen name="Cupones" component={CouponsClientScreen} />
-            <Tab.Screen name="Ajustes" component={UserSettings} />
+            <Tab.Screen
+                name="Perfil"
+                component={UserAreaScreen}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }} />
+            <Tab.Screen
+                name="Favoritos"
+                component={FavoritesScreen}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }} />
+            <Tab.Screen
+                name="Cupones"
+                component={CouponsClientScreen}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }} />
+            <Tab.Screen
+                name="Ajustes"
+                component={UserSettings}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }} />
 
         </Tab.Navigator>
     )

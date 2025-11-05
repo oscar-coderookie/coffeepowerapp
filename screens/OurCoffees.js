@@ -16,6 +16,7 @@ import SearchBar from "../components/SearchBar";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../config/firebase";
 import LoadingScreen from "../components/LoadingScreen";
+import { playSound } from "../utils/soundPlayer";
 
 const OurCoffees = () => {
   const navigation = useNavigation();
@@ -114,7 +115,10 @@ const OurCoffees = () => {
                   <AnimatedCard
                     key={item.id || index}
                     index={index}
-                    onPress={() => navigation.navigate("Category", { category: item })}
+                    onPress={() => {
+                      playSound('click')
+                      navigation.navigate("Category", { category: item });
+                    }}
                   >
                     <View style={styles.card}>
                       <Text style={styles.cardTitle}>{item.name}</Text>

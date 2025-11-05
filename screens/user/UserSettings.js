@@ -11,6 +11,7 @@ import { deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "../../config/firebase";
 import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "firebase/auth";
 import { MotiView } from "moti"; // 👈 animaciones
+import { playSound } from "../../utils/soundPlayer";
 
 const UserSettings = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -81,7 +82,9 @@ const UserSettings = () => {
               borderColor: [ "#fd8787ff", "#ff0000ff", "#fd8787ff", "#ff0000ff","#fd8787ff"],
               color: ["#ff0000ff", "#fd8787ff", "#ff0000ff", "#fd8787ff", "#ff0000ff"],
               textColor: "white",
-              onTouch: () => setModalVisible(true),
+              onTouch: () => {
+                playSound('click'),
+                setModalVisible(true)},
             },
             {
               key: "changePass",
@@ -89,7 +92,9 @@ const UserSettings = () => {
               borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
               color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
               textColor: "white",
-              onTouch: () => setShowChangePassword(!showChangePassword),
+              onTouch: () =>{
+                playSound('click')
+                setShowChangePassword(!showChangePassword)},
             },
             {
               key: "changeEmail",
@@ -97,7 +102,9 @@ const UserSettings = () => {
               borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
               color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
               textColor:"white",
-              onTouch: () => setShowChange2Email(!showChange2Email),
+              onTouch: () => {
+                playSound('click'),
+                setShowChange2Email(!showChange2Email)},
             },
           ].map((btn, index) => (
             <MotiView

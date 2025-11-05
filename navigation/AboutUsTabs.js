@@ -1,10 +1,11 @@
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {  MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AboutUsScreen from '../screens/AboutUsScreen';
 import { Image, StyleSheet } from 'react-native';
 import ContactScreen from '../screens/ContactScreen';
 import { useTheme } from '@react-navigation/native';
+import { playSound } from '../utils/soundPlayer';
 
 const Tab = createBottomTabNavigator();
 
@@ -13,15 +14,15 @@ const AboutUsTabs = () => {
     return (
         <Tab.Navigator
 
-        screenOptions={({ route }) => ({
+            screenOptions={({ route }) => ({
                 tabBarInactiveBackgroundColor: colors.background,
                 tabBarActiveTintColor: colors.gold,
                 headerShown: false,
-                tabBarInactiveTintColor:colors.text,
-                tabBarStyle:{borderTopWidth: 0, height: 90, backgroundColor: colors.background},
-                               tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
+                tabBarInactiveTintColor: colors.text,
+                tabBarStyle: { borderTopWidth: 0, height: 90, backgroundColor: colors.background },
+                tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
 
-                tabBarActiveBackgroundColor:colors.background,
+                tabBarActiveBackgroundColor: colors.background,
                 tabBarIcon: ({ color, focused, size }) => {
                     let iconName;
                     if (route.name === 'Reseña') {
@@ -35,8 +36,20 @@ const AboutUsTabs = () => {
 
         >
 
-            <Tab.Screen name="Reseña" component={AboutUsScreen}/>
-            <Tab.Screen name="Contacto" component={ContactScreen} />
+            <Tab.Screen
+                name="Reseña"
+                component={AboutUsScreen}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }}
+            />
+            <Tab.Screen
+                name="Contacto"
+                component={ContactScreen}
+                listeners={{
+                    tabPress: () => playSound("click"),
+                }}
+            />
 
         </Tab.Navigator>
     )

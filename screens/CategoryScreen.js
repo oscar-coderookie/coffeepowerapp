@@ -14,6 +14,7 @@ import FavoriteButton from "../components/FavouriteButton";
 import { useEffect, useState } from "react";
 import LoadingScreen from '../components/LoadingScreen';
 import { MotiView } from "moti";
+import { playSound } from "../utils/soundPlayer";
 
 async function prefetchImages(items) {
   try {
@@ -97,7 +98,10 @@ export default function CategoryScreen({ route }) {
             >
               <TouchableOpacity
                 style={[styles.card, { backgroundColor: colors.card }]}
-                onPress={() => navigation.navigate("CoffeeDetail", { coffee: item })}
+                onPress={() => {
+                  playSound('click');
+                  navigation.navigate("CoffeeDetail", { coffee: item })
+                }}
               >
                 <FavoriteButton cafe={item} />
                 <View style={styles.cardInfo}>

@@ -18,13 +18,16 @@ export default function MainDiscounts({ navigation }) {
           textColor="white"
           bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
           borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
-          onTouch={() => navigation.navigate("Descuentos Masivos")} />
+          onTouch={() => navigation.navigate("Descuentos Masivos")}
+          soundType="click" />
         <ButtonGeneral
           text="Crear descuento Personal"
           textColor="white"
           bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
           borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
-          onTouch={() => navigation.navigate("Descuentos Personales")} />
+          onTouch={() => navigation.navigate("Descuentos Personales")}
+          soundType="click" />
+
       </View>
 
     </View>

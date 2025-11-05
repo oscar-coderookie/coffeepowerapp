@@ -4,6 +4,8 @@ import { useTheme, useRoute, useNavigation } from "@react-navigation/native";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import CustomHeader from "../../components/CustomHeader";
+import { playSound } from "../../utils/soundPlayer";
+import ButtonGeneral from "../../components/ButtonGeneral";
 
 export default function EditUserScreen() {
   const { colors } = useTheme();
@@ -16,6 +18,7 @@ export default function EditUserScreen() {
   const [phone, setPhone] = useState(user.phone?.numero || "");
 
   const handleSave = async () => {
+    playSound('click')
     try {
       await updateDoc(doc(db, "users", user.id), {
         name,
@@ -34,7 +37,7 @@ export default function EditUserScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader title="Editar usuario" showBack />
       <View style={styles.form}>
-        <Text style={[styles.label, { color: colors.text }]}>Nombre</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Nombre completo:</Text>
         <TextInput
           value={name}
           onChangeText={setName}
@@ -43,7 +46,7 @@ export default function EditUserScreen() {
           style={[styles.input, { color: colors.text, borderColor: colors.border }]}
         />
 
-        <Text style={[styles.label, { color: colors.text }]}>Correo</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Correo electrónico:</Text>
         <TextInput
           value={email}
           onChangeText={setEmail}
@@ -52,7 +55,7 @@ export default function EditUserScreen() {
           style={[styles.input, { color: colors.text, borderColor: colors.border }]}
         />
 
-        <Text style={[styles.label, { color: colors.text }]}>Teléfono</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Móvil:</Text>
         <TextInput
           value={phone}
           onChangeText={setPhone}
@@ -62,12 +65,17 @@ export default function EditUserScreen() {
           style={[styles.input, { color: colors.text, borderColor: colors.border }]}
         />
 
-        <TouchableOpacity
-          style={[styles.saveBtn, { backgroundColor: colors.primary }]}
-          onPress={handleSave}
-        >
-          <Text style={styles.saveText}>Guardar cambios</Text>
-        </TouchableOpacity>
+
+        <ButtonGeneral
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          text="actualizar datos"
+          textColor="white"
+          onTouch={handleSave}
+
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+          soundType="click"
+
+        />
       </View>
     </View>
   );
@@ -75,13 +83,19 @@ export default function EditUserScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  form: { padding: 16 },
-  label: { marginBottom: 6, fontWeight: "600" },
+  form: { marginHorizontal: 10, paddingTop: 20 },
+  label: { 
+    marginBottom: 6, 
+    fontFamily: 'Jost_600SemiBold',
+    textTransform:'uppercase', 
+    marginLeft:4
+   },
   input: {
+    fontFamily: "Jost_400Regular",
     borderWidth: 1,
-    borderRadius: 8,
     padding: 10,
-    marginBottom: 16,
+    borderRadius: 8,
+    marginBottom: 10,
   },
   saveBtn: {
     borderRadius: 10,

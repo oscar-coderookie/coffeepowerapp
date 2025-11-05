@@ -51,6 +51,7 @@ const TastingOption = ({ image, title, duration, content, benefits, index }) => 
         textColor="#000000ff"
         borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
         bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
+        soundType="cup"
       />
       {showContent && (
         <View style={styles.list}>
@@ -68,6 +69,7 @@ const TastingOption = ({ image, title, duration, content, benefits, index }) => 
         textColor="#000000ff"
         borderColors={[colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary]}
         bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
+        soundType="cup"
       />
 
       {showBenefits && (

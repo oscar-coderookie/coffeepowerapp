@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
 import { CartContext } from "../context/CartContext";
 import { Ionicons } from "@expo/vector-icons"; // ✅ import Ionicons
 import PriceTag from "./PriceTag";
+import { playSound } from "../utils/soundPlayer";
 
 export const AddEraseBtn = ({ id, quantity }) => {
   const { increaseQuantity, decreaseQuantity, removeFromCart } = useContext(CartContext);
@@ -11,6 +12,7 @@ export const AddEraseBtn = ({ id, quantity }) => {
     try {
       if (quantity <= 1) {
         // 🔹 Si la cantidad es 1, eliminar del carrito
+        playSound('cup')
         removeFromCart(id);
       } else {
         decreaseQuantity(id);

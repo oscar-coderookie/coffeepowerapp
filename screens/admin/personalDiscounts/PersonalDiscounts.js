@@ -83,8 +83,8 @@ export default function PersonalDiscounts({ navigation }) {
     <View>
       <CustomHeader title="búsqueda de cliente:" showBack={true} />
       <ScrollView contentContainerStyle={styles.main} >
-        <Text style={[styles.text, { color: colors.text }]} >En esta sección podrás crear descuentos personalizados para tus clientes, con esta herramienta podrás filtrar vuestros clientes por correo electrónico registrado y aplicarles un cupón de descuento personalizado a tus necesidades:</Text>
-        <Text style={[styles.subtitle, { color: colors.text }]}>1. Busca el cliente al cual quieres aplicarle el descuento introduciendo su dirección de correo registrada en la app:</Text>
+        <Text style={[styles.text, { color: colors.text }]} >En esta sección podreís crear un cupón de descuento personalizado, filtrando vuestro cliente por correo electrónico registrado y aplicándole un cupón de descuento personalizado a sus necesidades:</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]}>1. Busca el cliente al cual queréis aplicarle el descuento introduciendo su dirección de correo registrada en la app:</Text>
         <TextInput placeholderTextColor={colors.text} onChangeText={handleInputMail} value={clientEmail} style={[styles.input, { outlineColor: colors.text, color: colors.text }]} placeholder='introduce aquí la direccion de correo' />
         <ButtonGeneral
           text="buscar cliente"
@@ -92,6 +92,7 @@ export default function PersonalDiscounts({ navigation }) {
           bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
           borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
           onTouch={searchClientByEmail}
+          soundType="click"
 
         />
 
@@ -113,7 +114,8 @@ export default function PersonalDiscounts({ navigation }) {
               textColor="white"
               bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
               borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
-              onTouch={() => navigation.navigate("Descuentos Personales2", { clientData })} />
+              onTouch={() => navigation.navigate("Descuentos Personales2", { clientData })}
+              soundType="click" />
           </>
 
         )}
@@ -130,7 +132,8 @@ export default function PersonalDiscounts({ navigation }) {
 const styles = StyleSheet.create({
   main: {
     marginHorizontal: 10,
-    paddingBottom: 40
+    paddingBottom: 40,
+    paddingTop:20
   },
   text: {
     fontFamily: 'Jost_400Regular',

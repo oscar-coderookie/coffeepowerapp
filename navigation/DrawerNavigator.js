@@ -6,7 +6,6 @@ import { auth } from "../config/firebase";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useThemeContext } from "../context/ThemeContext";
 import { useNavigation, useTheme } from "@react-navigation/native";
-import Tabs from "./TabNavigator";
 import AboutUsTabs from "./AboutUsTabs";
 import EventsTabs from "./EventsTabs";
 import UserStack from "./UserStack";
