@@ -1,3 +1,5 @@
+import Toast from "react-native-toast-message";
+import { toastConfig } from './components/ToastConfig';
 import { NavigationContainer } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 import {
@@ -27,6 +29,7 @@ import SplashScreen from './screens/SplashScreen';
 const Stack = createNativeStackNavigator();
 
 function MainApp() {
+  
   const { theme } = useThemeContext();
 
   return (
@@ -68,6 +71,7 @@ export default function App() {
           <CartProvider>
             <ThemeProvider>
               <MainApp />
+              <Toast config={toastConfig} />
             </ThemeProvider>
           </CartProvider>
         </FavoritesProvider>

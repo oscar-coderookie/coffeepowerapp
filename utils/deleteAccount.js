@@ -6,14 +6,19 @@ import {
   deleteUser,
 } from "firebase/auth";
 import { doc, deleteDoc, collection, getDocs } from "firebase/firestore";
+import Toast from "react-native-toast-message";
 
 export const useDeleteAccount = () => {
   const deleteAccount = async () => {
     const user = auth.currentUser;
-
     if (!user) {
-      Alert.alert("Error", "No hay usuario autenticado.");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No hay usuario autenticado.",
+      });
       return;
+
     }
 
     return new Promise((resolve, reject) => {

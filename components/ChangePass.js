@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from "react-native";
-import { 
-  auth, 
+import {
+  auth,
   // no EmailAuthProvider aquí
   // no reauthenticateWithCredential aquí
 } from "../config/firebase";
 
-import { 
-  EmailAuthProvider, 
-  reauthenticateWithCredential, 
-  updatePassword 
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword
 } from "firebase/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 export default function ChangePasswordDirect({ onSuccess }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -21,7 +22,7 @@ export default function ChangePasswordDirect({ onSuccess }) {
   const [showNew, setShowNew] = useState(false);
   const [passwordValid, setPasswordValid] = useState(null);
   const [loading, setLoading] = useState(false);
-  const {colors} = useTheme();
+  const { colors } = useTheme();
 
   // Validación de la nueva contraseña
   const validatePassword = (pass) => {
@@ -39,11 +40,21 @@ export default function ChangePasswordDirect({ onSuccess }) {
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) {
       Alert.alert("Error", "Por favor completa ambos campos");
+       Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Por favor completa ambos campos",
+      });
       return;
     }
 
     if (!passwordValid) {
       Alert.alert("Error", "La nueva contraseña no cumple los requisitos");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "La nueva contraseña no cumple los requisitos",
+      });
       return;
     }
 
@@ -58,8 +69,11 @@ export default function ChangePasswordDirect({ onSuccess }) {
 
       // Actualización de contraseña
       await updatePassword(user, newPassword);
-
-      Alert.alert("Éxito", "Contraseña actualizada correctamente");
+      Toast.show({
+        type: "success",
+        text1: "Éxito",
+        text2: "Contraseña actualizada satisfactoriamente.",
+      });
       setCurrentPassword("");
       setNewPassword("");
       setPasswordValid(null);
@@ -68,9 +82,18 @@ export default function ChangePasswordDirect({ onSuccess }) {
     } catch (error) {
       console.error(error);
       if (error.code === "auth/wrong-password") {
-        Alert.alert("Error", "La contraseña actual es incorrecta");
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "La contraseña actual es incorrecta",
+        });
       } else {
         Alert.alert("Error", error.message);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: error.message,
+        });
       }
     } finally {
       setLoading(false);
@@ -105,7 +128,7 @@ export default function ChangePasswordDirect({ onSuccess }) {
           placeholderTextColor="#999"
         />
         <TouchableOpacity onPress={() => setShowNew(!showNew)}>
-          <Ionicons name={showNew ? "eye-off" : "eye"} size={22} color={colors.text}/>
+          <Ionicons name={showNew ? "eye-off" : "eye"} size={22} color={colors.text} />
         </TouchableOpacity>
         {newPassword.length > 0 && (
           <Ionicons
@@ -128,9 +151,9 @@ export default function ChangePasswordDirect({ onSuccess }) {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color={colors.text}/>
+          <ActivityIndicator color={colors.text} />
         ) : (
-          <Text style={[styles.buttonText,{color: colors.background}]}>Actualizar contraseña</Text>
+          <Text style={[styles.buttonText, { color: colors.background }]}>Actualizar contraseña</Text>
         )}
       </TouchableOpacity>
     </View>
@@ -138,7 +161,7 @@ export default function ChangePasswordDirect({ onSuccess }) {
 }
 
 const styles = StyleSheet.create({
-  container: { marginVertical: 10 , marginHorizontal: 10},
+  container: { marginVertical: 10, marginHorizontal: 10 },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",

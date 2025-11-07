@@ -16,6 +16,7 @@ import { db, auth } from "../config/firebase";
 import { useTheme } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 export default function AvatarPicker({ size = 100 }) {
   const { colors } = useTheme();
@@ -38,7 +39,11 @@ export default function AvatarPicker({ size = 100 }) {
           setAvatar(snap.data().avatar);
         }
       } catch (err) {
-        console.error("Error cargando avatar:", err);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: err,
+        });
       }
     };
     fetchAvatar();
@@ -56,16 +61,17 @@ export default function AvatarPicker({ size = 100 }) {
         if (existingStatus !== "granted") {
           const { status: newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
           if (newStatus !== "granted") {
-            Alert.alert(
-              "Permiso denegado",
-              "Necesitamos acceso a tus fotos para que puedas subir tu avatar."
-            );
+            Toast.show({
+              type: "error",
+              text1: "Permiso denegado",
+              text2: "Necesitamos acceso a tus fotos para que puedas subir tu avatar.",
+            });
           }
         }
 
         await AsyncStorage.setItem(PERMISSION_KEY, "true"); // guardamos que ya mostramos alert
       } catch (err) {
-        console.error("Error revisando permisos:", err);
+
       }
     };
     checkPermissions();
@@ -88,10 +94,15 @@ export default function AvatarPicker({ size = 100 }) {
           { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
         );
         uploadAvatar(resized.uri);
+
       }
     } catch (err) {
       console.error("Error seleccionando imagen:", err);
-      Alert.alert("Error", "No se pudo seleccionar la imagen");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo seleccionar la imagen",
+      });
     }
   };
 
@@ -99,7 +110,7 @@ export default function AvatarPicker({ size = 100 }) {
   const uploadAvatar = async (uri) => {
     const user = auth.currentUser;
     if (!user) {
-      Alert.alert("Error", "Debes iniciar sesión antes de subir un avatar");
+
       return;
     }
 
@@ -115,10 +126,20 @@ export default function AvatarPicker({ size = 100 }) {
       const userDoc = doc(db, "users", user.uid);
       await setDoc(userDoc, { avatar: downloadURL }, { merge: true });
 
-      Alert.alert("Éxito", "Avatar actualizado correctamente ✅");
+      Toast.show({
+        type: "success",
+        text1: "Avatar",
+        text2: `imagen de perfil modificada correctamente`,
+      });
     } catch (err) {
       console.error("Error subiendo imagen:", err);
       Alert.alert("Error", "No se pudo subir la imagen");
+
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo subir la imagen",
+      });
     } finally {
       setLoading(false);
     }
@@ -146,11 +167,18 @@ export default function AvatarPicker({ size = 100 }) {
       await setDoc(userDoc, { avatar: "" }, { merge: true });
 
       setAvatar(null);
-
-      Alert.alert("Eliminado", "Tu avatar ha sido eliminado ✅");
+      Toast.show({
+        type: "success",
+        text1: "Eliminado",
+        text2: "Tu avatar ha sido eliminado ✅",
+      });
     } catch (err) {
       console.error("Error eliminando avatar:", err);
-      Alert.alert("Error", "No se pudo eliminar el avatar");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo eliminar el avatar.",
+      });
     } finally {
       setLoading(false);
     }

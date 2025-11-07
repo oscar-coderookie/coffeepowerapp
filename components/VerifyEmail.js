@@ -10,6 +10,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useTheme } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ButtonGeneral from "./ButtonGeneral";
+import Toast from "react-native-toast-message";
 
 const VerifyEmailBlock = () => {
   const { colors } = useTheme();
@@ -97,9 +98,17 @@ const VerifyEmailBlock = () => {
         "Correo enviado",
         "Se ha enviado un enlace de verificación a tu correo. Revisa tu bandeja."
       );
+      Toast.show({
+        type: "success",
+        text1: "Correo enviado",
+        text2: `Se ha enviado un enlace de verificación a tu correo. Revisa tu bandeja.`,
+      });
     } catch (error) {
-      console.log("Error enviando verificación:", error);
-      Alert.alert("Error", "No se pudo enviar el correo de verificación.");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo enviar el correo de verificación.",
+      });
     } finally {
       setSending(false);
     }
@@ -151,7 +160,7 @@ const VerifyEmailBlock = () => {
           onTouch={handleSendVerification}
           text={sending ? "Enviando..." : "Enviar enlace de verificación"}
           bckColor={["#218b00ff", "#3cfd01ff", "#218b00ff", "#3cff00ff", "#218b00ff"]}
-          borderColors={["#3cfd01ff", "#218b00ff", "#3cff00ff","#218b00ff", "#3cff00ff"]} />
+          borderColors={["#3cfd01ff", "#218b00ff", "#3cff00ff", "#218b00ff", "#3cff00ff"]} />
       )}
     </View>
   );

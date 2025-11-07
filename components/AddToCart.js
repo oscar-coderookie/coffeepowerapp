@@ -3,23 +3,32 @@ import React, { useContext, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../context/CartContext';
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from '@react-navigation/native';
 import { playSound } from '../utils/soundPlayer';
+import Toast from 'react-native-toast-message';
 
 
 export default function AddToCart({ coffee }) {
     const { addToCart } = useContext(CartContext);
     const [quantity, setQuantity] = useState(1);
-    const { colors } = useTheme();
 
     const handleAddToCart = () => {
-        
-        addToCart({ ...coffee, quantity });
-        playSound("cart")
-        Alert.alert(
-            "Añadido al carrito",
-            `${quantity} x ${coffee.name} se agregó a tu carrito`
-        );
+        try {
+            addToCart({ ...coffee, quantity });
+            playSound("cart")
+            Toast.show({
+                type: "success",
+                text1: "Producto añadido al carrito",
+                text2: `${quantity} x ${coffee.name} se agregó a tu carrito`,
+            });
+        } catch (error) {
+            Toast.show({
+                type: "error",
+                text1: "Error al guardar",
+                text2: "Por favor revisa tu conexión.",
+            });
+        }
+
+
     };
     const increaseQuantity = () => setQuantity((prev) => prev + 1);
     const decreaseQuantity = () =>

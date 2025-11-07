@@ -6,6 +6,7 @@ import { db, auth } from "../config/firebase";
 import { FavoritesContext } from "../context/FavoritesContext";
 import { isDeletingAccount } from "../utils/deleteAccount";
 import { playSound } from "../utils/soundPlayer";
+import Toast from "react-native-toast-message";
 
 export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) {
   const { favorites } = useContext(FavoritesContext);
@@ -28,13 +29,21 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
 
     // 🚫 Bloquear acción si se está eliminando la cuenta
     if (isDeletingAccount) {
-      Alert.alert("Cuenta en eliminación", "Tu cuenta está siendo eliminada. No puedes modificar tus favoritos ahora.");
+      Toast.show({
+        type: "error",
+        text1: "Cuenta en eliminación",
+        text2: "Tu cuenta está siendo eliminada. No puedes modificar tus favoritos ahora.",
+      });
       return;
     }
 
     // 🔸 Evitamos acción si el usuario no tiene sesión
     if (!user) {
-      Alert.alert("Inicia sesión", "Por favor inicia sesión para guardar tus favoritos.");
+      Toast.show({
+        type: "error",
+        text1: "Inicia sesión",
+        text2: "Por favor inicia sesión para guardar tus favoritos.",
+      });
       return;
     }
 
@@ -46,7 +55,11 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
 
       // 🚫 Si el documento no existe, no lo creamos vacío
       if (!snap.exists()) {
-        Alert.alert("El usuario no se ha registrado aun en la app, no se puede agregar a favoritos.");
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "El usuario no se ha registrado aun en la app, no se puede agregar a favoritos.",
+        });
         setLoading(false);
         return;
       }
@@ -63,13 +76,23 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
           (f) => f.nombre?.toLowerCase() !== cafeName.toLowerCase()
         );
         playSound('click')
+        // 🔔 Mostrar toast de eliminación
+        Toast.show({
+          type: "error",
+          text1: cafeName,
+          text2: "Eliminado de tu lista de favoritos.",
+        });
       } else {
         // ✨ Agregar si no existe todavía
         const exists = currentFavs.some(
           (f) => f.nombre?.toLowerCase() === cafeName.toLowerCase()
         );
         playSound('favorite')
-        Alert.alert(cafeName, "Correctamente añadido a favoritos")
+        Toast.show({
+          type: "success",
+          text1: cafeName,
+          text2: "Correctamente añadido a favoritos",
+        });
         if (!exists) {
           updatedFavs = [
             ...currentFavs,
@@ -86,7 +109,11 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
       await updateDoc(userRef, { favorites: updatedFavs });
 
     } catch (error) {
-      console.log("❌ Error actualizando favoritos:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Sucedio un error inesperado, recarga e intenta de nuevo.",
+      });
     } finally {
       setLoading(false);
     }

@@ -12,7 +12,6 @@ const { width, height } = Dimensions.get("window");
 
 export default function CoffeeDetailScreen({ route }) {
   const { coffee } = route.params;
-
   const [bgLoaded, setBgLoaded] = useState(false);
   const [section2Top, setSection2Top] = useState(0);
   // declaración recomendada (estable entre renders)
@@ -132,7 +131,7 @@ export default function CoffeeDetailScreen({ route }) {
             resizeMode="contain"
           />
 
-         <AddToCart title="añadir" coffee={coffee} />
+          <AddToCart title="añadir" coffee={coffee} />
         </Animated.View>
       </Animated.ScrollView>
     </View>
@@ -153,7 +152,8 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     backgroundColor: "#0e0e0eff",
     paddingTop: 100,
-    paddingBottom: 100
+    paddingBottom: 100,
+    height: height
   },
   infoContainer: {
     justifyContent: "center",
@@ -189,6 +189,6 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -20 }]
   },
 
- 
+
 
 });
