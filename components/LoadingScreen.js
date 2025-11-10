@@ -1,14 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, ImageBackground } from "react-native";
 import { MotiView } from "moti";
 import { useTheme } from "@react-navigation/native";
 import logo from "../assets/icon.png";
+import background from '../assets/images/splash.jpg'
 
 export default function LoadingScreen({ message = "Cargando..." }) {
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: "black"}]}>
+    <ImageBackground source={background} resizeMode="cover" style={[styles.container]}>
       {/* 💥 Logo con efecto de pulso */}
       <MotiView
         from={{ scale: 1 }}
@@ -36,13 +37,15 @@ export default function LoadingScreen({ message = "Cargando..." }) {
       >
         <Text style={[styles.text]}>{message}</Text>
       </MotiView>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width:'100%',
+    height:'100%',
     justifyContent: "center",
     alignItems: "center",
   },

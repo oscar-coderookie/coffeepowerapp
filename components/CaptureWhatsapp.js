@@ -15,6 +15,7 @@ import CountryPicker from "react-native-country-picker-modal";
 import { useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import ButtonGeneral from "./ButtonGeneral";
+import Toast from "react-native-toast-message";
 
 export default function WhatsappBlock() {
   const { colors } = useTheme();
@@ -63,21 +64,37 @@ export default function WhatsappBlock() {
   // 🟢 Guardar número
   const handleSave = async () => {
     if (!phone.numero) {
-      Alert.alert("Número vacío", "Por favor, ingresa tu número.");
+      Toast.show({
+        type: "error",
+        text1: "Número vacío",
+        text2: "Por favor, ingresa tu número.",
+      });
       return;
     }
 
     try {
       const user = auth.currentUser;
-      if (!user) return Alert.alert("Error", "Debes iniciar sesión.");
+      if (!user) return Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Debes iniciar sesión.",
+      });;
 
       const userRef = doc(db, "users", user.uid);
       await updateDoc(userRef, { phone }); // Guardamos objeto completo
-      Alert.alert("Guardado", "Número de WhatsApp actualizado ✅");
+      Toast.show({
+        type: "success",
+        text1: "Guardado",
+        text2: "Número de WhatsApp actualizado ✅",
+      });
       setIsEditing(false);
     } catch (error) {
       console.log("❌ Error guardando número:", error);
-      Alert.alert("Error", "No se pudo guardar el número. Intenta de nuevo.");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo guardar el número. Intenta de nuevo.",
+      });
     }
   };
 
@@ -95,10 +112,18 @@ export default function WhatsappBlock() {
             const userRef = doc(db, "users", user.uid);
             await updateDoc(userRef, { phone: { codigo: "34", numero: "" } });
             setPhone({ codigo: "34", numero: "" });
-            Alert.alert("Eliminado", "Número eliminado correctamente ✅");
+            Toast.show({
+              type: "error",
+              text1: "Eliminado",
+              text2: "Número eliminado correctamente ✅",
+            });
           } catch (err) {
             console.log("Error eliminando número:", err);
-            Alert.alert("Error", "No se pudo eliminar el número.");
+            Toast.show({
+              type: "error",
+              text1: "Error",
+              text2: "No se pudo eliminar el número.",
+            });
           }
         },
       },

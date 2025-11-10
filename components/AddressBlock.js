@@ -16,6 +16,7 @@ import ComunidadProvinciaPicker from "./ComunityInput";
 import { LinearGradient } from "expo-linear-gradient";
 import ButtonGeneral from "./ButtonGeneral";
 import { playSound } from "../utils/soundPlayer";
+import Toast from "react-native-toast-message";
 
 export default function AddressBlock({
   addressId,
@@ -44,17 +45,29 @@ export default function AddressBlock({
   // guardar dirección
   const handleSave = async () => {
     const user = auth.currentUser;
-    if (!user) return Alert.alert("Error", "Debes iniciar sesión.");
+    if (!user) return Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: "Debes iniciar sesión.",
+    });;
 
     try {
       const ref = doc(db, `users/${user.uid}/addresses/${addressId}`);
       await setDoc(ref, address, { merge: true });
-      Alert.alert("Guardado", "Dirección actualizada correctamente ✅");
+      Toast.show({
+        type: "success",
+        text1: "Guardado",
+        text2: "Dirección actualizada correctamente ✅",
+      });
       setIsEditing(false);
       onUpdated?.();
     } catch (err) {
       console.log("Error guardando dirección:", err);
-      Alert.alert("Error", "No se pudo guardar la dirección.");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo guardar la dirección.",
+      });
     }
   };
 
@@ -74,10 +87,18 @@ export default function AddressBlock({
               const ref = doc(db, `users/${user.uid}/addresses/${addressId}`);
               await deleteDoc(ref);
               onDeleted?.(addressId);
-              Alert.alert("Eliminada", "La dirección fue eliminada ✅");
+              Toast.show({
+                type: "error",
+                text1: "Eliminada",
+                text2: "La dirección fue eliminada ✅",
+              });
             } catch (err) {
               console.log("Error eliminando dirección:", err);
-              Alert.alert("Error", "No se pudo eliminar la dirección.");
+              Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "No se pudo eliminar la dirección.",
+              });
             }
           },
         },
@@ -239,7 +260,8 @@ export default function AddressBlock({
               style={[styles.iconBtn, { backgroundColor: "#555" }]}
               onPress={() => {
                 playSound('click')
-                setIsEditing(true)}}
+                setIsEditing(true)
+              }}
             >
               <Icon name="pencil" size={18} color="#fff" />
             </TouchableOpacity>

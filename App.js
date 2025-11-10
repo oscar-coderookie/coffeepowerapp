@@ -37,7 +37,7 @@ function MainApp() {
       <NavigationContainer theme={theme}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {/* 👇 Splash que se muestra primero */}
-          <Stack.Screen name="Splash" component={SplashScreen} />
+          <Stack.Screen name="Splash" component={SplashScreen}  />
           {/* 👇 Tu Drawer principal */}
           <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
         </Stack.Navigator>

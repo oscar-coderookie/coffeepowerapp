@@ -58,12 +58,19 @@ const CreateCoffeeScreen = ({ navigation }) => {
       };
 
       const docRef = await addDoc(collection(db, "coffees"), newCoffee);
-
-      Alert.alert("✅ Café creado", "Ahora puedes editarlo con más detalle.");
+      Toast.show({
+        type: "success",
+        text1: "✅ Café creado",
+        text2: "Ahora puedes editarlo con más detalle.",
+      });
       navigation.navigate("EditCoffeeScreen", { id: docRef.id });
     } catch (error) {
       console.error("Error al crear café:", error);
-      Alert.alert("Error", "No se pudo crear el café. Intenta de nuevo.");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo crear el café. Intenta de nuevo.",
+      });
     }
   };
 

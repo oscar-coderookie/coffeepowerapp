@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Animated, Dimensions, ImageBackground, TouchableOpacity, Alert, TextInput } from "react-native";
+import { View, Text, StyleSheet, Animated, Dimensions, ImageBackground } from "react-native";
 import { useContext, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { CartContext } from "../context/CartContext";

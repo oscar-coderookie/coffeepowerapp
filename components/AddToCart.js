@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
 import React, { useContext, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { CartContext } from '../context/CartContext';

@@ -133,8 +133,6 @@ export default function AvatarPicker({ size = 100 }) {
       });
     } catch (err) {
       console.error("Error subiendo imagen:", err);
-      Alert.alert("Error", "No se pudo subir la imagen");
-
       Toast.show({
         type: "error",
         text1: "Error",
@@ -151,7 +149,11 @@ export default function AvatarPicker({ size = 100 }) {
     if (!user) return;
 
     if (!avatar) {
-      Alert.alert("Aviso", "No tienes un avatar para eliminar");
+      Toast.show({
+        type: "error",
+        text1: "Aviso",
+        text2: "No tienes un avatar para eliminar",
+      });
       return;
     }
 

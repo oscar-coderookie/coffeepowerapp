@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { TouchableOpacity, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../config/firebase";

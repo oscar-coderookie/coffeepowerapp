@@ -39,7 +39,6 @@ export default function CoffeesStack() {
         component={CoffeeDetailScreen}
         options={{
           headerShown: false,
-          presentation:"modal"
         }}
       />
 

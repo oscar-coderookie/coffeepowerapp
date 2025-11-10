@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
 import {
   auth,
   // no EmailAuthProvider aquí
@@ -39,7 +39,6 @@ export default function ChangePasswordDirect({ onSuccess }) {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) {
-      Alert.alert("Error", "Por favor completa ambos campos");
        Toast.show({
         type: "error",
         text1: "Error",
@@ -49,7 +48,6 @@ export default function ChangePasswordDirect({ onSuccess }) {
     }
 
     if (!passwordValid) {
-      Alert.alert("Error", "La nueva contraseña no cumple los requisitos");
       Toast.show({
         type: "error",
         text1: "Error",
@@ -88,7 +86,6 @@ export default function ChangePasswordDirect({ onSuccess }) {
           text2: "La contraseña actual es incorrecta",
         });
       } else {
-        Alert.alert("Error", error.message);
         Toast.show({
           type: "error",
           text1: "Error",

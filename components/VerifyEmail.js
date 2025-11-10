@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { auth, db } from "../config/firebase";
 import {
   sendEmailVerification,
@@ -50,7 +50,11 @@ const VerifyEmailBlock = () => {
       await updateDoc(userRef, { verified: true });
       setIsVerified(true);
       await AsyncStorage.setItem(ALERT_KEY, "true");
-      Alert.alert("✅ ¡Cuenta verificada!", "Tu correo ha sido confirmado.");
+      Toast.show({
+        type: "success",
+        text1: "✅ ¡Cuenta verificada!",
+        text2: "Tu correo ha sido confirmado exitosamente, puedes comenzar a comprar.",
+      });
     } catch (error) {
       console.log("Error actualizando estado:", error);
     }
@@ -93,11 +97,7 @@ const VerifyEmailBlock = () => {
     if (!user) return;
     setSending(true);
     try {
-      await sendEmailVerification(user);
-      Alert.alert(
-        "Correo enviado",
-        "Se ha enviado un enlace de verificación a tu correo. Revisa tu bandeja."
-      );
+      await sendEmailVerification(user)
       Toast.show({
         type: "success",
         text1: "Correo enviado",

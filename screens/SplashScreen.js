@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, ImageBackground } from "react-native";
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -10,12 +10,13 @@ import Animated, {
     withSequence,
     Easing,
 } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
 import {
     useFonts,
     ShadowsIntoLightTwo_400Regular,
 } from "@expo-google-fonts/shadows-into-light-two";
 import logotipo from "../assets/splash-icon.png";
+import background from '../assets/images/splash.jpg'
+
 
 const { width } = Dimensions.get("window");
 
@@ -69,7 +70,7 @@ export default function SplashScreen({ navigation }) {
         opacity: logoOpacity.value,
         transform: [{ scale: logoScale.value }],
         shadowColor: "#ffffff",
-        shadowOffset: { width:0, height: 0 },
+        shadowOffset: { width: 0, height: 0 },
         shadowOpacity: glow.value,
         shadowRadius: glow.value * 16,
     }));
@@ -81,11 +82,10 @@ export default function SplashScreen({ navigation }) {
     if (!fontsLoaded) return null;
 
     return (
-        <LinearGradient
-            colors={["#000000", "#1c1c1c", "#4e4e4eff", "#1c1c1c", "#000000"]}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 1, y: 1 }}
+        <ImageBackground
+            source={background}
             style={styles.container}
+            resizeMode="contain"
         >
             <Animated.Image
                 source={logotipo}
@@ -93,17 +93,19 @@ export default function SplashScreen({ navigation }) {
                 resizeMode="contain"
             />
             <Animated.Text style={[styles.textoPrincipal, textStyle]}>
-                Only for Coffee Lovers!!
+                "Café selecto, momento perfecto"
             </Animated.Text>
-        </LinearGradient>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
+        width: "100%",
+        height: "100%",
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     logo: {
         width: width * 0.65,

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { AddEraseBtn } from "../components/AddEraseBtn";
@@ -12,6 +12,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { Easing } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import Toast from "react-native-toast-message";
 
 export default function ShopCart() {
   const { colors } = useTheme();
@@ -19,7 +20,6 @@ export default function ShopCart() {
   const { user } = useContext(AuthContext);
   const { cartItems, increaseQuantity, decreaseQuantity } = useContext(CartContext);
   const [loading, setLoading] = useState(true); // 👈 estado para controlar la carga
-  const [imagesLoaded, setImagesLoaded] = useState(0); // 👈 contador de imágenes cargadas
 
 
   // Simular la carga del carrito (cuando viene de Firestore o context)
@@ -65,15 +65,27 @@ export default function ShopCart() {
 
   const handleCheckout = () => {
     if (!user) {
-      Alert.alert("Inicia sesión", "Debes iniciar sesión para realizar el pedido ☕");
+      Toast.show({
+        type: "error",
+        text1: "Inicia sesión",
+        text2: "Debes iniciar sesión para realizar el pedido ☕",
+      });
       return;
     }
     if (!isVerifiedOrGuest) {
-      Alert.alert("Verificación requerida", "Debes verificar tu correo electrónico antes de realizar un pedido 📧");
+      Toast.show({
+        type: "error",
+        text1: "Verificación requerida",
+        text2: "Debes verificar tu correo electrónico antes de realizar un pedido 📧",
+      });
       return;
     }
     if (!cartItems || cartItems.length === 0) {
-      Alert.alert("Carrito vacío", "Agrega productos antes de continuar 🚀");
+      Toast.show({
+        type: "error",
+        text1: "Carrito vacío",
+        text2: "Agrega productos antes de continuar 🚀",
+      });
       return;
     }
 
@@ -137,6 +149,7 @@ export default function ShopCart() {
               <AddEraseBtn
                 id={item.id}
                 quantity={item?.quantity || 0}
+                coffeeName={item.name}
                 onIncrease={
                   isVerifiedOrGuest ? () => increaseQuantity(item.id) : null
                 }
