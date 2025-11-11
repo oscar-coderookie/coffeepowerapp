@@ -14,6 +14,7 @@ import CustomHeader from "../../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { playSound } from "../../utils/soundPlayer";
+import Toast from "react-native-toast-message";
 
 export default function AdminCatalogScreen({ navigation }) {
     const [coffees, setCoffees] = useState([]);
@@ -77,7 +78,12 @@ export default function AdminCatalogScreen({ navigation }) {
                     try {
                         const coffeeRef = doc(db, "coffees", coffeeId);
                         await deleteDoc(coffeeRef);
-                        Alert.alert("Café eliminado correctamente ✅");
+            
+                        Toast.show({
+                            type: "error",
+                            text1: "Eliminado",
+                            text2: "Café eliminado correctamente de la base de datos✅",
+                        });
                     } catch (error) {
                         console.error("Error al eliminar café:", error);
                         Alert.alert("Error", "No se pudo eliminar el café ❌");
@@ -125,7 +131,8 @@ export default function AdminCatalogScreen({ navigation }) {
                 <TouchableOpacity
                     onPress={() => {
                         playSound('click')
-                        navigation.navigate("EditCoffee", { coffee: item })}}
+                        navigation.navigate("EditCoffee", { coffee: item })
+                    }}
                     style={{ padding: 10, borderRadius: 10, backgroundColor: "green" }}
                 >
                     <MaterialIcons name="mode-edit" size={24} color={colors.background} />
@@ -168,7 +175,7 @@ export default function AdminCatalogScreen({ navigation }) {
                 style={styles.addButton}
             >
                 <FontAwesome name="plus-circle" size={30} color={colors.text} />
-                <Text style={[styles.addText,{color:colors.text}]}>Agregar Café nuevo</Text>
+                <Text style={[styles.addText, { color: colors.text }]}>Agregar Café nuevo</Text>
             </TouchableOpacity>
         </View>
     );

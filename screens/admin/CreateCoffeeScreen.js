@@ -19,6 +19,7 @@ import CustomHeader from "../../components/CustomHeader";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import uuid from "react-native-uuid";
+import Toast from "react-native-toast-message";
 
 export default function CreateCoffeeScreen({ navigation }) {
     const { colors } = useTheme();
@@ -114,12 +115,19 @@ export default function CreateCoffeeScreen({ navigation }) {
                 tasteNotes: tasteNotes.filter(t => t.trim() !== ""),
                 createdAt: new Date(),
             });
-
-            Alert.alert("☕ Café creado", "El nuevo café se ha agregado correctamente.");
+            Toast.show({
+                type: "success",
+                text1: "☕ Café creado",
+                text2: "El nuevo café se ha agregado correctamente.",
+            });
             navigation.goBack();
         } catch (error) {
             console.error("Error creando café:", error);
-            Alert.alert("Error", "No se pudo crear el café.");
+               Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "No se pudo crear el café.",
+            });
         }
     };
 
@@ -190,12 +198,12 @@ export default function CreateCoffeeScreen({ navigation }) {
 
                 <View>
                     <Text style={[styles.label, { color: colors.text }]}>Subir imagen (empaque):</Text>
-                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", width: '100%'}}>
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", width: '100%' }}>
                         <TouchableOpacity
                             onPress={image ? deleteImage : () => pickAndUploadImage(setImage)}
                             style={[
                                 styles.uploadButton,
-                                { backgroundColor: image ? "#c0392b" : colors.text, marginRight:10 },
+                                { backgroundColor: image ? "#c0392b" : colors.text, marginRight: 10 },
                             ]}
                         >
                             <MaterialIcons
@@ -275,6 +283,6 @@ const styles = StyleSheet.create({
         padding: 10,
         borderWidth: 0.5,
         borderRadius: 10,
-   
+
     },
 });

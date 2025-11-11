@@ -6,7 +6,6 @@ import {
   ScrollView,
   ImageBackground,
   TouchableOpacity,
-  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MotiView } from "moti";
@@ -15,14 +14,14 @@ import { coffeeCategories } from "../data/CoffesCategories";
 import SearchBar from "../components/SearchBar";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../config/firebase";
-import LoadingScreen from "../components/LoadingScreen";
 import { playSound } from "../utils/soundPlayer";
 
 const OurCoffees = () => {
   const navigation = useNavigation();
   const [searchResults, setSearchResults] = useState([]);
-  const [coffees, setCoffees] = useState([])
+  const [coffees, setCoffees] = useState([]);
 
+  // --- Obtener cafés de Firestore ---
   useEffect(() => {
     const fetchCoffees = async () => {
       try {
@@ -37,9 +36,10 @@ const OurCoffees = () => {
       }
     };
 
-    fetchCoffees(); // 👈 ESTA LLAMADA ES LO QUE FALTABA
+    fetchCoffees();
   }, []);
 
+  // --- Lógica de búsqueda ---
   const handleSearch = (query) => {
     if (!query) {
       setSearchResults([]);
@@ -61,6 +61,7 @@ const OurCoffees = () => {
     setSearchResults(filtered);
   };
 
+  // --- Componente con animación ---
   const AnimatedCard = ({ index, children, onPress }) => {
     const [pressed, setPressed] = useState(false);
 
@@ -76,7 +77,10 @@ const OurCoffees = () => {
           onPressOut={() => setPressed(false)}
           onPress={onPress}
         >
-          <MotiView animate={{ scale: pressed ? 0.96 : 1 }} transition={{ type: "spring", damping: 15 }}>
+          <MotiView
+            animate={{ scale: pressed ? 0.96 : 1 }}
+            transition={{ type: "spring", damping: 15 }}
+          >
             {children}
           </MotiView>
         </TouchableOpacity>
@@ -84,7 +88,7 @@ const OurCoffees = () => {
     );
   };
 
-
+  // --- Render principal ---
   return (
     <View style={{ flex: 1 }}>
       <SearchBar onSearch={handleSearch} />
@@ -116,7 +120,7 @@ const OurCoffees = () => {
                     key={item.id || index}
                     index={index}
                     onPress={() => {
-                      playSound('click')
+                      playSound("click");
                       navigation.navigate("Category", { category: item });
                     }}
                   >

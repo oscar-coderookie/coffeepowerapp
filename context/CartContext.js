@@ -41,15 +41,20 @@ export const CartProvider = ({ children }) => {
     setCartItems(updatedCart);
 
     if (user) {
-      const simplifiedCart = updatedCart.map((item) => ({
-        id: item.id,
-        name: item.name,
-        image: item.image,
-        quantity: item.quantity,
-        price: item.price,
-        description: item.description
-      }));
-      await updateDoc(doc(db, "users", user.uid), { cart: simplifiedCart });
+      try {
+        const simplifiedCart = updatedCart.map((item) => ({
+          id: item.id,
+          name: item.name,
+          image: item.image,
+          quantity: item.quantity,
+          price: item.price ?? 0,
+          description: item.description ?? "",
+        }));
+        await updateDoc(doc(db, "users", user.uid), { cart: simplifiedCart });
+        console.log("Carrito guardado en Firestore ✅");
+      } catch (error) {
+        console.log("Error guardando carrito en Firestore:", error);
+      }
     } else {
       await AsyncStorage.setItem("cartItems", JSON.stringify(updatedCart));
     }

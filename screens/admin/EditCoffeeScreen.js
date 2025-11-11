@@ -15,6 +15,7 @@ import CustomHeader from "../../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 
 export default function EditCoffeeScreen({ route, navigation }) {
     const { coffee } = route.params;
@@ -63,7 +64,11 @@ export default function EditCoffeeScreen({ route, navigation }) {
 
             await updateDoc(coffeeRef, updatedData);
 
-            Alert.alert("✅ Actualizado", "Los datos del café se han actualizado.");
+            Toast.show({
+                type: "success",
+                text1: "✅ Actualizado",
+                text2: "Los datos del café se han actualizado.",
+            });
             navigation.goBack();
         } catch (error) {
             console.error("Error al actualizar:", error);
@@ -74,7 +79,7 @@ export default function EditCoffeeScreen({ route, navigation }) {
 
     const renderArrayEditor = (label, array, setArray) => (
         <View style={styles.arrayContainer}>
-            <Text style={[styles.label, { color: colors.text , textTransform:'capitalize'}]}>{label}</Text>
+            <Text style={[styles.label, { color: colors.text, textTransform: 'capitalize' }]}>{label}</Text>
 
             {array.map((item, index) => (
                 <View key={index} style={styles.arrayItem}>
