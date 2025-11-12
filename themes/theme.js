@@ -18,9 +18,9 @@ export const DarkTheme = {
   ...NavigationDarkTheme,
   colors: {
     ...NavigationDarkTheme.colors,
-    background: "#000000",
+    background: "#161616ff",
     text: "#c7c7c7ff",
-    card: "#1a1a1a",
+    card: "#000000ff",
     input: "#1a1a1a",
     border: "#747474ff",
     gold: "#8d701aff",

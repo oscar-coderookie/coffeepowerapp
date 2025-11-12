@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useTheme, useRoute, useNavigation } from "@react-navigation/native";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import CustomHeader from "../../components/CustomHeader";
 import { playSound } from "../../utils/soundPlayer";
 import ButtonGeneral from "../../components/ButtonGeneral";
+import Toast from "react-native-toast-message";
 
 export default function EditUserScreen() {
   const { colors } = useTheme();
@@ -25,11 +26,19 @@ export default function EditUserScreen() {
         email,
         phone: { numero: phone },
       });
-      Alert.alert("✅ Datos actualizados");
+      Toast.show({
+        type: "success",
+        text1: "Éxito",
+        text2: "✅ Datos actualizados exitosamente.",
+      });
       navigation.goBack();
     } catch (error) {
       console.error(error);
-      Alert.alert("❌ Error al actualizar datos");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "❌ Error al actualizar datos",
+      });
     }
   };
 
@@ -84,12 +93,12 @@ export default function EditUserScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   form: { marginHorizontal: 10, paddingTop: 20 },
-  label: { 
-    marginBottom: 6, 
+  label: {
+    marginBottom: 6,
     fontFamily: 'Jost_600SemiBold',
-    textTransform:'uppercase', 
-    marginLeft:4
-   },
+    textTransform: 'uppercase',
+    marginLeft: 4
+  },
   input: {
     fontFamily: "Jost_400Regular",
     borderWidth: 1,

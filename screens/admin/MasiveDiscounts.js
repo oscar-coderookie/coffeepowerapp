@@ -17,6 +17,7 @@ import CustomHeader from "../../components/CustomHeader";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import LoadingScreen from "../../components/LoadingScreen";
 import { Ionicons } from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
 
 export default function InjectCouponsScreen() {
   const { colors } = useTheme();
@@ -55,7 +56,11 @@ export default function InjectCouponsScreen() {
     const { code, discount, description, expiresAt } = couponData;
 
     if (!code || !discount) {
-      Alert.alert("Campos requeridos", "Debes llenar al menos el código y el descuento.");
+      Toast.show({
+        type: "error",
+        text1: "Campos requeridos",
+        text2:  "Debes llenar al menos el código y el descuento.",
+      })
       return;
     }
 
@@ -67,7 +72,11 @@ export default function InjectCouponsScreen() {
         {
           text: "Sí, aplicar",
           onPress: async () => {
-            console.log("✅ Confirmación aceptada. Iniciando proceso de inyección...");
+            Toast.show({
+              type: "working",
+              text1: "Ejecutando",
+              text2: "✅ Confirmación aceptada. Iniciando proceso de inyección...",
+            });
             setLoading(true);
             try {
               const usersRef = collection(db, "users");
@@ -75,7 +84,11 @@ export default function InjectCouponsScreen() {
               const snapshot = await getDocs(usersRef);
               console.log("Usuarios encontrados:", snapshot.size);
               if (snapshot.empty) {
-                Alert.alert("Sin usuarios", "No se encontraron usuarios en la base de datos.");
+                Toast.show({
+                  type: "error",
+                  text1: "Sin usuarios",
+                  text2: "No se encontraron usuarios en la base de datos.",
+                });
                 return;
               }
 
@@ -98,11 +111,11 @@ export default function InjectCouponsScreen() {
 
               await Promise.all(promises);
 
-              Alert.alert(
-                "✅ Proceso completado",
-                `Cupón "${code.toUpperCase()}" inyectado a ${successCount} usuarios.`
-              );
-
+              Toast.show({
+                type: "success",
+                text1: "✅ Proceso completado",
+                text2: `Cupón "${code.toUpperCase()}" inyectado a ${successCount} usuarios.`,
+              });
               setCouponData({
                 code: "",
                 discount: "",
@@ -111,7 +124,11 @@ export default function InjectCouponsScreen() {
               });
             } catch (error) {
               console.error("Error inyectando cupones:", error);
-              Alert.alert("Error", "Ocurrió un problema al inyectar los cupones.");
+              Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "Ocurrió un problema al inyectar los cupones.",
+              });
             } finally {
               setLoading(false);
             }

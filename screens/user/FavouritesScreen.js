@@ -83,7 +83,6 @@ export default function FavoritesScreen() {
 
       await updateDoc(userRef, { favorites: updatedFavs });
       setFavorites(updatedFavs);
-
       playSound("delete");
       Toast.show({
         type: "success",

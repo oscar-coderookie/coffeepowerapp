@@ -1,12 +1,13 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { AuthContext } from "../../context/AuthContext";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import CustomHeader from "../../components/CustomHeader";
+import Toast from "react-native-toast-message";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -23,7 +24,11 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Por favor ingresa tus credenciales");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Por favor ingresa tus credenciales",
+      });
       return;
     }
 
@@ -32,17 +37,22 @@ export default function LoginScreen({ navigation }) {
       const userLogged = userCredential.user;
 
       if (!userLogged.emailVerified) {
-        Alert.alert(
-          "Cuenta no verificada",
-          "Por favor, verifica tu correo antes de iniciar sesión."
-        );
+        Toast.show({
+          type: "working",
+          text1: "Cuenta no verificada",
+          text2: "Por favor, verifica tu correo para habilitar las compras.",
+        });
         return;
       }
 
       // El AuthContext detectará el usuario automáticamente y navegará
     } catch (error) {
       console.log("Error login:", error);
-      Alert.alert("Error", error.message);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
     }
   };
 

@@ -14,6 +14,7 @@ import CustomHeader from "../../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { playSound } from "../../utils/soundPlayer";
+import Toast from "react-native-toast-message";
 
 export default function UsersAdminScreen({ navigation }) {
   const [users, setUsers] = useState([]);
@@ -73,10 +74,18 @@ export default function UsersAdminScreen({ navigation }) {
         onPress: async () => {
           try {
             await deleteDoc(doc(db, "users", userId));
-            Alert.alert("Usuario eliminado correctamente ✅");
+            Toast.show({
+              type: "success",
+              text1: "Eliminación Exitosa",
+              text2: "Usuario eliminado correctamente ✅",
+            });
           } catch (error) {
             console.error("Error al eliminar usuario:", error);
-            Alert.alert("Error", "No se pudo eliminar el usuario ❌");
+            Toast.show({
+              type: "error",
+              text1: "Error",
+              text2: "No se pudo eliminar el usuario ❌",
+            })
           }
         },
       },

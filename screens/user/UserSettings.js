@@ -1,4 +1,4 @@
-import { Alert, Text, TextInput, View, ScrollView } from "react-native";
+import { TextInput, View, ScrollView } from "react-native";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import ConfirmDeleteModal from "../../components/DeleteModal";
 import { useState, useEffect, useContext } from "react";
@@ -7,11 +7,12 @@ import ChangePasswordDirect from "../../components/ChangePass";
 import CustomHeader from "../../components/CustomHeader";
 import PassInput from "../../components/PassInput";
 import { AuthContext } from "../../context/AuthContext";
-import { deleteDoc, doc, onSnapshot } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, onSnapshot } from "firebase/firestore";
 import { db, auth } from "../../config/firebase";
 import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from "firebase/auth";
 import { MotiView } from "moti"; // 👈 animaciones
 import { playSound } from "../../utils/soundPlayer";
+import Toast from "react-native-toast-message";
 
 const UserSettings = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,25 +26,78 @@ const UserSettings = () => {
 
   // ✅ Recibe la contraseña desde el modal
   const handleDeleteAccount = async (password) => {
-    if (!password) return Alert.alert("Error", "Ingresa tu contraseña para confirmar.");
-
     const currentUser = auth.currentUser;
-    if (!currentUser) return Alert.alert("Error", "No hay usuario autenticado.");
+    const uid = currentUser?.uid;
+
+    if (!password) {
+      return Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Ingresa tu contraseña para confirmar.",
+      });
+    }
+
+    if (!currentUser) {
+      return Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No hay usuario autenticado.",
+      });
+    }
 
     try {
+      // 1️⃣ Reautenticar al usuario antes de hacer cualquier eliminación
       const credential = EmailAuthProvider.credential(currentUser.email, password);
       await reauthenticateWithCredential(currentUser, credential);
-      await deleteDoc(doc(db, "users", currentUser.uid));
+
+      // 2️⃣ Eliminar subcolección "favorites"
+      const favsRef = collection(db, `users/${uid}/favorites`);
+      const favsSnap = await getDocs(favsRef);
+      for (const fav of favsSnap.docs) {
+        await deleteDoc(fav.ref);
+      }
+      const addrRef = collection(db, `users/${uid}/addresses`);
+      const addrSnap = await getDocs(addrRef);
+      for (const addr of addrSnap.docs) {
+        await deleteDoc(addr.ref);
+      }
+
+      // 3️⃣ Eliminar el documento principal del usuario
+      await deleteDoc(doc(db, "users", auth.currentUser.uid));
+
+      // 4️⃣ Finalmente, eliminar la cuenta del usuario de Authentication
       await deleteUser(currentUser);
+
+      // 5️⃣ Mostrar confirmación
       setModalVisible(false);
-      Alert.alert("Cuenta eliminada", "Tu cuenta ha sido eliminada exitosamente.");
+      Toast.show({
+        type: "success",
+        text1: "Cuenta eliminada",
+        text2: "Tu cuenta ha sido eliminada exitosamente.",
+      });
+
     } catch (error) {
       console.error("❌ Error eliminando cuenta:", error);
-      if (error.code === "auth/wrong-password")
-        Alert.alert("Contraseña incorrecta", "La contraseña ingresada no es válida.");
-      else if (error.code === "auth/requires-recent-login")
-        Alert.alert("Inicio de sesión requerido", "Vuelve a iniciar sesión antes de eliminar tu cuenta.");
-      else Alert.alert("Error", error.message);
+
+      if (error.code === "auth/wrong-password") {
+        Toast.show({
+          type: "error",
+          text1: "Contraseña incorrecta",
+          text2: "La contraseña ingresada no es válida.",
+        });
+      } else if (error.code === "auth/requires-recent-login") {
+        Toast.show({
+          type: "error",
+          text1: "Inicio de sesión requerido",
+          text2: "Vuelve a iniciar sesión antes de eliminar tu cuenta.",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: error.message,
+        });
+      }
     }
   };
 
@@ -58,14 +112,26 @@ const UserSettings = () => {
 
   const handleChangeEmail = async () => {
     if (!newEmail || !currentPassword)
-      return Alert.alert("Error", "Debes completar todos los campos.");
+      return Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Debes completar todos los campos.",
+      });
 
     const result = await changeEmail(newEmail, currentPassword);
     if (result.success) {
-      Alert.alert("Éxito", result.message);
+      Toast.show({
+        type: "success",
+        text1: "Éxito",
+        text2: result.message,
+      })
       setNewEmail("");
       setCurrentPassword("");
-    } else Alert.alert("Error", result.message);
+    } else Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: result.message,
+    });
   };
 
   return (
@@ -79,12 +145,13 @@ const UserSettings = () => {
             {
               key: "delete",
               text: "Eliminar cuenta",
-              borderColor: [ "#fd8787ff", "#ff0000ff", "#fd8787ff", "#ff0000ff","#fd8787ff"],
+              borderColor: ["#fd8787ff", "#ff0000ff", "#fd8787ff", "#ff0000ff", "#fd8787ff"],
               color: ["#ff0000ff", "#fd8787ff", "#ff0000ff", "#fd8787ff", "#ff0000ff"],
               textColor: "white",
               onTouch: () => {
                 playSound('click'),
-                setModalVisible(true)},
+                  setModalVisible(true)
+              },
             },
             {
               key: "changePass",
@@ -92,19 +159,21 @@ const UserSettings = () => {
               borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
               color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
               textColor: "white",
-              onTouch: () =>{
+              onTouch: () => {
                 playSound('click')
-                setShowChangePassword(!showChangePassword)},
+                setShowChangePassword(!showChangePassword)
+              },
             },
             {
               key: "changeEmail",
               text: showChange2Email ? "Cancelar" : "Cambiar correo registrado",
               borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
               color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
-              textColor:"white",
+              textColor: "white",
               onTouch: () => {
                 playSound('click'),
-                setShowChange2Email(!showChange2Email)},
+                  setShowChange2Email(!showChange2Email)
+              },
             },
           ].map((btn, index) => (
             <MotiView

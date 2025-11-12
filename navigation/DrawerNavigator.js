@@ -10,7 +10,6 @@ import AboutUsTabs from "./AboutUsTabs";
 import EventsTabs from "./EventsTabs";
 import UserStack from "./UserStack";
 import AccesoriesPro from "../screens/AccesoriesPro";
-import logo from "../assets/images/logo.png";
 import logoMenu from "../assets/images/logo-nuevo.png";
 import icon1 from "../assets/icons/menu-1.png";
 import icon2 from "../assets/icons/menu-2.png";
@@ -24,6 +23,7 @@ import AdminTabs from "./AdminTabs";
 import CoffeesStack from "./CoffeesStack";
 import CartStack from "./CartStack";
 import { playSound } from "../utils/soundPlayer";
+import { LinearGradient } from "expo-linear-gradient";
 
 
 const Drawer = createDrawerNavigator();
@@ -47,10 +47,10 @@ function CustomDrawerContent(props) {
       console.error("Error al cerrar sesión:", error);
     }
   };
-  const handleChangeTema = ()=>{
+  const handleChangeTema = () => {
     playSound('switch');
     toggleTheme();
-              
+
   }
 
   const handleLoginRedirect = () => {
@@ -59,50 +59,59 @@ function CustomDrawerContent(props) {
   };
 
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      {/* 🔹 Logo superior */}
-      <View style={[styles.logoContainer, { borderBottomColor: colors.border, }]}>
-        <Image source={logoMenu} style={styles.logo} resizeMode="contain" />
-      </View>
 
-      {/* 🔹 Items del menú */}
-      <DrawerItemList {...props} />
+    <LinearGradient colors={[colors.card, colors.background, colors.card]} // tus colores del degradado
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={{ flex: 1 }}>
+      <DrawerContentScrollView {...props} contentContainerStyle={{ flexGrow: 1 }}>
+        {/* 🔹 Logo superior */}
 
-      {/* 🔹 Footer dinámico */}
-      <View style={styles.footerContainer}>
-        <View style={styles.authContainer}>
-          {user ? (
-            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-              <Ionicons name="exit-outline" size={24} color={colors.text} />
-              <Text style={[styles.logoutText, { color: colors.text }]}>
-                Cerrar sesión
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.logoutBtn} onPress={handleLoginRedirect}>
-              <Ionicons name="log-in-outline" size={24} color={colors.text} />
-              <Text style={[styles.logoutText, { color: colors.text }]}>
-                Iniciar sesión
-              </Text>
-            </TouchableOpacity>
-          )}
+        <View style={[styles.logoContainer, { borderBottomColor: colors.border, }]}>
+          <Image source={logoMenu} style={styles.logo} resizeMode="contain" />
         </View>
 
-        {/* 🔹 Switch de modo oscuro */}
-        <View style={[styles.switchContainer, { borderTopColor: colors.border, }]}>
-          <Text style={[styles.switchLabel, { color: colors.text }]}>
-            {isDark ? "Cambiar a Tema Light" : "Cambiar a Tema Dark"}
-          </Text>
-          <Switch
-            value={!!isDark}
-            onValueChange={handleChangeTema}
-            thumbColor={colors.text}
-            trackColor={{ false: "#999", true: "#666" }}
+        {/* 🔹 Items del menú */}
+        <DrawerItemList {...props} />
 
-          />
+        {/* 🔹 Footer dinámico */}
+        <View style={styles.footerContainer}>
+          <View style={styles.authContainer}>
+            {user ? (
+              <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+                <Ionicons name="exit-outline" size={24} color={colors.text} />
+                <Text style={[styles.logoutText, { color: colors.text }]}>
+                  Cerrar sesión
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.logoutBtn} onPress={handleLoginRedirect}>
+                <Ionicons name="log-in-outline" size={24} color={colors.text} />
+                <Text style={[styles.logoutText, { color: colors.text }]}>
+                  Iniciar sesión
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* 🔹 Switch de modo oscuro */}
+          <View style={[styles.switchContainer, { borderTopColor: colors.border, }]}>
+            <Text style={[styles.switchLabel, { color: colors.text }]}>
+              {isDark ? "Cambiar a Tema Light" : "Cambiar a Tema Dark"}
+            </Text>
+            <Switch
+              value={!!isDark}
+              onValueChange={handleChangeTema}
+              thumbColor={colors.text}
+              trackColor={{ false: "#999", true: "#666" }}
+
+            />
+          </View>
         </View>
-      </View>
-    </DrawerContentScrollView>
+      </DrawerContentScrollView>
+    </LinearGradient>
+
+
   );
 }
 
@@ -158,7 +167,7 @@ export default function DrawerNavigator() {
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
+        headerStyle: { backgroundColor: colors.background, height: 120 },
         headerTintColor: colors.text,
         drawerStyle: { backgroundColor: colors.background },
         drawerActiveTintColor: colors.text,
@@ -167,10 +176,26 @@ export default function DrawerNavigator() {
           textTransform: "uppercase",
           letterSpacing: 1,
         },
+        headerBackground: () => (
+          <LinearGradient
+            colors={[colors.card, colors.background, colors.card]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={{ flex: 1 }}
+          />
+        ),
         headerTitle: () => (
           <Image
-            source={logo}
-            style={{ width: 102.5, height: 37.5, resizeMode: "contain" }}
+            source={logoMenu}
+            style={{
+              width: 60,
+              resizeMode: "contain",
+              shadowColor: "#fdfdfdff",
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.8,
+              shadowRadius: 2,
+              elevation: 2,
+            }}
           />
         ),
         headerRight: () => (
@@ -292,9 +317,9 @@ const styles = StyleSheet.create({
     height: 100,
     shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 3,
+    shadowOpacity: 2,
     shadowRadius: 4,
-    elevation: 10,
+    elevation: 2,
   },
   footerContainer: {
     marginTop: "auto",

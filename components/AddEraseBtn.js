@@ -4,6 +4,7 @@ import { CartContext } from "../context/CartContext";
 import { Ionicons } from "@expo/vector-icons";
 import { playSound } from "../utils/soundPlayer";
 import Toast from "react-native-toast-message";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const AddEraseBtn = ({ id, quantity, coffeeName }) => {
   const { increaseQuantity, decreaseQuantity, removeFromCart } = useContext(CartContext);
@@ -63,31 +64,38 @@ export const AddEraseBtn = ({ id, quantity, coffeeName }) => {
 
 
       {/* 🔸 Bloque principal de cantidad */}
-      <View style={styles.quantityContainer}>
-        {showDelete && (
-          <TouchableOpacity style={styles.deleteButton} onPress={handleRemove}>
-            <Ionicons style={{marginLeft:4}} name="trash-outline" size={22} color="red" />
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={styles.qtyButton}
-          onPress={handleDecrease}
-          onLongPress={handleLongPress}
-          delayLongPress={600}
-        >
-          {quantity <= 1 ? (
-            <Ionicons name="trash-outline" size={24} color="#ff4444" />
-          ) : (
-            <Text style={styles.qtyText}>−</Text>
+      <LinearGradient
+        colors={["#7e7e7eff", "#d6d6d6ff", "#838383ff", "#d6d6d6ff", "#838383ff"]} // tus colores del degradado
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.quantityContainer}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }} >
+          {showDelete && (
+            <TouchableOpacity style={styles.deleteButton} onPress={handleRemove}>
+              <Ionicons style={{ marginLeft: 4 }} name="trash-outline" size={22} color="red" />
+            </TouchableOpacity>
           )}
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.qtyButton}
+            onPress={handleDecrease}
+            onLongPress={handleLongPress}
+            delayLongPress={600}
+          >
+            {quantity <= 1 ? (
+              <Ionicons name="trash-outline" size={24} color="#ff4444" />
+            ) : (
+              <Text style={styles.qtyText}>−</Text>
+            )}
+          </TouchableOpacity>
 
-        <Text style={styles.quantity}>{quantity}</Text>
+          <Text style={styles.quantity}>{quantity}</Text>
 
-        <TouchableOpacity style={styles.qtyButton} onPress={handleIncrease}>
-          <Text style={styles.qtyText}>+</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={styles.qtyButton} onPress={handleIncrease}>
+            <Text style={styles.qtyText}>+</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
+
     </View>
   );
 };
@@ -100,11 +108,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   quantityContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#2a2a2a",
     borderRadius: 8,
     overflow: "hidden",
+    borderBottomRightRadius: 0,
+    borderTopEndRadius: 0,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
   },
   qtyButton: {
     paddingHorizontal: 16,
@@ -114,14 +126,24 @@ const styles = StyleSheet.create({
   },
   qtyText: {
     color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontFamily: 'Jost_700Bold',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 1,
+    elevation: 2,
   },
   quantity: {
     color: "#fff",
     fontSize: 18,
     marginHorizontal: 10,
-    fontWeight: "600",
+    fontFamily: 'Jost_700Bold',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
   },
   deleteButton: {
     padding: 4,

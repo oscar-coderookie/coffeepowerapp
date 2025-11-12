@@ -6,8 +6,7 @@ import {
     TextInput,
     StyleSheet,
     TouchableOpacity,
-    ScrollView,
-    Alert,
+    ScrollView
 } from "react-native";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
@@ -72,7 +71,11 @@ export default function EditCoffeeScreen({ route, navigation }) {
             navigation.goBack();
         } catch (error) {
             console.error("Error al actualizar:", error);
-            Alert.alert("Error", "No se pudo actualizar el café.");
+            Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "No se pudo actualizar el café.",
+            });
 
         }
     };

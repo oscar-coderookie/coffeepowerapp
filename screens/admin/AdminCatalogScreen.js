@@ -78,7 +78,7 @@ export default function AdminCatalogScreen({ navigation }) {
                     try {
                         const coffeeRef = doc(db, "coffees", coffeeId);
                         await deleteDoc(coffeeRef);
-            
+
                         Toast.show({
                             type: "error",
                             text1: "Eliminado",
@@ -86,7 +86,11 @@ export default function AdminCatalogScreen({ navigation }) {
                         });
                     } catch (error) {
                         console.error("Error al eliminar café:", error);
-                        Alert.alert("Error", "No se pudo eliminar el café ❌");
+                        Toast.show({
+                            type: "error",
+                            text1: "Error",
+                            text2: "No se pudo eliminar el café ❌",
+                        })
                     }
                 },
             },

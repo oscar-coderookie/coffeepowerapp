@@ -6,7 +6,6 @@ import {
     TextInput,
     ScrollView,
     TouchableOpacity,
-    Alert,
     StyleSheet,
     Image,
 } from "react-native";
@@ -42,7 +41,11 @@ export default function CreateCoffeeScreen({ navigation }) {
             // ✅ Pedir permisos
             const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (!granted) {
-                Alert.alert("Permiso denegado", "Debes permitir acceso a la galería.");
+                Toast.show({
+                    type: "error",
+                    text1: "Permiso denegado",
+                    text2: "Debes permitir acceso a la galería.",
+                })
                 return;
             }
 
@@ -59,7 +62,11 @@ export default function CreateCoffeeScreen({ navigation }) {
 
             // ✅ Validar formato PNG (por extensión)
             if (!uri.toLowerCase().endsWith(".png")) {
-                Alert.alert("Formato no permitido", "Solo se aceptan imágenes PNG.");
+                Toast.show({
+                    type: "error",
+                    text1: "Formato no permitido",
+                    text2: "Solo se aceptan imágenes PNG, fondo transparente.",
+                })
                 return;
             }
 
@@ -74,11 +81,18 @@ export default function CreateCoffeeScreen({ navigation }) {
 
             const downloadURL = await getDownloadURL(imageRef);
             setImageUrl(downloadURL);
-
-            Alert.alert("✅ Imagen subida correctamente");
+            Toast.show({
+                type: "success",
+                text1: "Subida Exitosa",
+                text2: "✅ Imagen subida correctamente",
+            });
         } catch (error) {
             console.error("Error subiendo imagen:", error);
-            Alert.alert("Error", "No se pudo subir la imagen.");
+            Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "No se pudo subir la imagen.",
+            })
         }
     };
 
@@ -91,7 +105,11 @@ export default function CreateCoffeeScreen({ navigation }) {
             await deleteObject(storageRef);
 
             setImage("");
-            Alert.alert("Imagen eliminada", "La imagen ha sido eliminada correctamente.");
+            Toast.show({
+                type: "error",
+                text1: "Imagen eliminada",
+                text2: "La imagen ha sido eliminada correctamente.",
+            });
         } catch (error) {
             console.error("Error eliminando imagen:", error);
             setImage(""); // limpia el estado si el ref no existe
@@ -100,7 +118,11 @@ export default function CreateCoffeeScreen({ navigation }) {
 
     const handleCreate = async () => {
         if (!name || !description || !price || !image) {
-            return Alert.alert("Campos incompletos", "Por favor, rellena todos los campos.");
+            return Toast.show({
+                type: "error",
+                text1: "Campos incompletos",
+                text2: "Por favor, rellena todos los campos.",
+            });;
         }
 
         try {
@@ -123,7 +145,7 @@ export default function CreateCoffeeScreen({ navigation }) {
             navigation.goBack();
         } catch (error) {
             console.error("Error creando café:", error);
-               Toast.show({
+            Toast.show({
                 type: "error",
                 text1: "Error",
                 text2: "No se pudo crear el café.",

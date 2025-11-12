@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   FlatList,
 } from "react-native";
@@ -14,6 +13,7 @@ import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../components/CustomHeader";
 import { initPaymentSheet, presentPaymentSheet } from "@stripe/stripe-react-native";
 import { LinearGradient } from 'expo-linear-gradient';
+import Toast from "react-native-toast-message";
 
 
 
@@ -57,7 +57,11 @@ const PaymentMethods = () => {
   const handleAddPaymentMethod = async () => {
     setLoading(true);
     const user = auth.currentUser;
-    if (!user) return Alert.alert("Error", "Debes iniciar sesión");
+    if (!user) return Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: "Debes iniciar sesión",
+    });
 
     try {
       // 1️⃣ Crear SetupIntent
@@ -71,7 +75,11 @@ const PaymentMethods = () => {
       );
       const { client_secret } = await res.json();
       if (!client_secret)
-        return Alert.alert("Error", "No se pudo generar SetupIntent");
+        return Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "No se pudo generar SetupIntent",
+        });
 
       // 2️⃣ Inicializar PaymentSheet
       const { error: initError } = await initPaymentSheet({
@@ -83,20 +91,36 @@ const PaymentMethods = () => {
 
       if (initError) {
         console.log("Init PaymentSheet error:", initError);
-        return Alert.alert("Error", initError.message);
+        return Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: initError.message,
+        });
       }
 
       // 3️⃣ Mostrar PaymentSheet
       const { error: presentError } = await presentPaymentSheet();
       if (presentError) {
-        Alert.alert("Error", presentError.message);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: presentError.message,
+        });
       } else {
-        Alert.alert("✅ Método de pago agregado", "Tu método de pago se vinculó correctamente");
+        Toast.show({
+          type: "success",
+          text1: "✅ Método de pago agregado",
+          text2: "Tu método de pago se vinculó correctamente",
+        });
         fetchPaymentMethods(); // 🔁 Actualizar lista tras añadir
       }
     } catch (err) {
       console.log(err);
-      Alert.alert("Error", "No se pudo vincular el método de pago");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudo vincular el método de pago",
+      })
     } finally {
       setLoading(false);
     }
@@ -153,14 +177,26 @@ const PaymentMethods = () => {
       );
       const data = await res.json();
       if (data.id) {
-        Alert.alert("Método eliminado", "Se ha eliminado correctamente");
+        Toast.show({
+          type: "error",
+          text1: "Método eliminado",
+          text2: "Se ha eliminado correctamente",
+        })
         fetchPaymentMethods();
       } else {
-        Alert.alert("Error", "No se pudo eliminar el método de pago");
+         Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "No se pudo eliminar el método de pago",
+        })
       }
     } catch (err) {
       console.log(err);
-      Alert.alert("Error", "No se pudo eliminar el método de pago");
+      Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "No se pudo eliminar el método de pago",
+        })
     }
   };
 
@@ -190,7 +226,7 @@ const PaymentMethods = () => {
           <FontAwesome5 name="apple-pay" size={30} color={colors.background} />
         </TouchableOpacity>
 
-       
+
 
         {/* 🔹 Lista de métodos de pago existentes */}
         {paymentMethods.length > 0 && (
@@ -204,7 +240,7 @@ const PaymentMethods = () => {
             />
           </View>
         )}
-         <TouchableOpacity
+        <TouchableOpacity
           style={[styles.gpayButton, { backgroundColor: colors.text }]}
           onPress={handleAddPaymentMethod}
         >
@@ -225,7 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     paddingVertical: 12,
-    marginHorizontal:10,
+    marginHorizontal: 10,
     marginVertical: 6,
     alignItems: "center",
     flexDirection: "row",

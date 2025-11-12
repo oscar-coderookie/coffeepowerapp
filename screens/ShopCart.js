@@ -114,70 +114,73 @@ export default function ShopCart() {
       }}
 
     >
-      <LinearGradient
-        colors={["#000000ff", "#080808ff", "#252525ff", "#1a1a1aff", "#000000ff", "#131313ff", "#363636ff", "#1a1a1aff", "#000000ff"]} // dorado metálico
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.cardContainer}
-      >
-        <View style={styles.itemRow}>
-          {item.image ? (
-            <Image
-              resizeMode="contain"
-              source={{ uri: item.image }}
-              style={styles.image}
-            />
-          ) : (
-            <View
-              style={[
-                styles.image,
-                { justifyContent: "center", alignItems: "center" },
-              ]}
-            >
-              <Text style={{ color: "#999" }}>Sin imagen</Text>
-            </View>
-          )}
+      <View style={styles.cardShadow}>
 
-          <View style={styles.info}>
-            <View style={{ alignItems: 'flex-end' }}>
-              <Text style={styles.name}>{item?.name}</Text>
-              <Text style={styles.notes}>{item.description}</Text>
-              <Text style={styles.notes}>Saco de 300 gr. (Café molido)</Text>
 
-            </View>
-            <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
-              <AddEraseBtn
-                id={item.id}
-                quantity={item?.quantity || 0}
-                coffeeName={item.name}
-                onIncrease={
-                  isVerifiedOrGuest ? () => increaseQuantity(item.id) : null
-                }
-                onDecrease={
-                  isVerifiedOrGuest ? () => decreaseQuantity(item.id) : null
-                }
-                disabled={!isVerifiedOrGuest}
+        <LinearGradient
+          colors={["#111111ff", "#080808ff", "#1a1a1aff", "#131313ff", "#363636ff", "#1a1a1aff"]} // dorado metálico
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0.9, y: 0 }}
+          style={styles.cardContainer}
+        >
+          <View style={styles.itemRow}>
+            {item.image ? (
+              <Image
+                resizeMode="contain"
+                source={{ uri: item.image }}
+                style={styles.image}
               />
-              <MotiView
-                from={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 300 }}
+            ) : (
+              <View
+                style={[
+                  styles.image,
+                  { justifyContent: "center", alignItems: "center" },
+                ]}
               >
-                <PriceTag
-                  price={
-                    (Number(item.price) || 0) * (Number(item.quantity) || 0)
+                <Text style={{ color: "#999" }}>Sin imagen</Text>
+              </View>
+            )}
+
+            <View style={styles.info}>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={styles.name}>{item?.name}</Text>
+                <Text style={styles.notes}>{item.description}</Text>
+                <Text style={styles.notes}>Saco de 300 gr. (Café molido)</Text>
+
+              </View>
+              <View style={{ alignItems: 'flex-end', flexDirection: 'row' }}>
+                <AddEraseBtn
+                  id={item.id}
+                  quantity={item?.quantity || 0}
+                  coffeeName={item.name}
+                  onIncrease={
+                    isVerifiedOrGuest ? () => increaseQuantity(item.id) : null
                   }
-                  currency=" €"
+                  onDecrease={
+                    isVerifiedOrGuest ? () => decreaseQuantity(item.id) : null
+                  }
+                  disabled={!isVerifiedOrGuest}
                 />
-              </MotiView>
+                <MotiView
+                  from={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 300 }}
+                >
+                  <PriceTag
+                    price={
+                      (Number(item.price) || 0) * (Number(item.quantity) || 0)
+                    }
+                    currency=" €"
+                  />
+                </MotiView>
+              </View>
+
             </View>
+
 
           </View>
-
-
-        </View>
-      </LinearGradient>
-
+        </LinearGradient>
+      </View>
     </MotiView>
   );
 
@@ -274,16 +277,20 @@ export default function ShopCart() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  cardContainer: {
+  cardShadow: {
     marginHorizontal: 10,
     marginVertical: 4,
-    backgroundColor: "#121212",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
+    elevation: 2,
     borderRadius: 10,
-    shadowColor: "#b58e31",
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    overflow: "hidden",
+  },
+  cardContainer: {
+    borderRadius: 10,
+    overflow: "hidden", // 👈 recorte interno sin afectar sombra
+    padding: 10,
   },
   itemRow: {
     flexDirection: "row",

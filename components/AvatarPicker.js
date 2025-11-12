@@ -90,8 +90,12 @@ export default function AvatarPicker({ size = 100 }) {
       if (!result.canceled && result.assets && result.assets[0].uri) {
         const resized = await ImageManipulator.manipulateAsync(
           result.assets[0].uri,
-          [{ resize: { width: 300, height: 300 } }],
-          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+          [
+            { resize: { width: 300, height: 300 } },
+            { crop: { originX: 0, originY: 0, width: 300, height: 300 } }, // fuerza cuadrado
+            { rotate: 0 } // elimina metadatos EXIF de orientación
+          ],
+          { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
         );
         uploadAvatar(resized.uri);
 
@@ -206,12 +210,13 @@ export default function AvatarPicker({ size = 100 }) {
             <ActivityIndicator size="large" color="#a88e19" />
           ) : (
             <Image
+              resizeMode="cover"
               source={
                 avatar
                   ? { uri: avatar }
                   : require("../assets/images/default-avatar.png")
               }
-              style={[styles.avatar, { width: size, height: size, borderRadius: size / 2 }]}
+              style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, aspectRatio: 1 }]}
             />
           )}
         </TouchableOpacity>

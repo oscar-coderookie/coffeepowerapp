@@ -3,9 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  Alert,
-  ScrollView,
-  ActivityIndicator,
+  ScrollView
 } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import emailjs from "@emailjs/browser";
@@ -14,6 +12,7 @@ import { Picker } from "@react-native-picker/picker";
 import CustomHeader from "../../components/CustomHeader";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import { MotiView } from "moti"; // 👈 importamos Moti
+import Toast from "react-native-toast-message";
 
 export default function PrivateMeeting() {
   const { colors } = useTheme();
@@ -29,7 +28,11 @@ export default function PrivateMeeting() {
 
   const enviarFormulario = () => {
     if (!name || !phone || !email) {
-      Alert.alert("Error", "Por favor completa todos los campos obligatorios.");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Por favor completa todos los campos obligatorios.",
+      });
       return;
     }
 
@@ -52,13 +55,21 @@ export default function PrivateMeeting() {
       .then(
         () => {
           setLoading(false);
-          Alert.alert("Éxito", "Formulario enviado correctamente.");
+          Toast.show({
+            type: "success",
+            text1: "Éxito",
+            text2: "Formulario enviado correctamente.",
+          })
           navigation.navigate("Confirmacion");
         },
         (error) => {
           setLoading(false);
           console.log(error.text);
-          Alert.alert("Error", "Hubo un problema al enviar el formulario.");
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: "Hubo un problema al enviar el formulario.",
+          });
         }
       );
   };

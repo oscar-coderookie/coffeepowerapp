@@ -25,6 +25,15 @@ export const toastConfig = {
       </View>
     </LinearGradient>
   ),
+    working: ({ text1, text2 }) => (
+    <LinearGradient colors={["#000000ff", "#2e2e2eff", "#000000ff", "#000000ff"]} style={styles.toast}>
+      <Ionicons name="time" size={28} color="#ffffffff" />
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.title, { color: "#ffffffff" }]}>{text1}</Text>
+        {text2 ? <Text style={styles.message}>{text2}</Text> : null}
+      </View>
+    </LinearGradient>
+  ),
 
   info: ({ text1, text2 }) => (
     <LinearGradient colors={["#000000ff", "#2e2e2eff", "#000000ff", "#000000ff"]} style={styles.toast}>

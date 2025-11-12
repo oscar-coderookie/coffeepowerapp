@@ -12,6 +12,7 @@ import PaymentSelector from "../../components/PaymentSelector";
 import CouponSelectorModal from "../../components/CouponsSelectorModal";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 export default function CheckoutScreen({ navigation, route }) {
   const { colors } = useTheme();
@@ -55,14 +56,22 @@ export default function CheckoutScreen({ navigation, route }) {
       setShowCouponModal(true);
     } catch (error) {
       console.error("Error al obtener cupones:", error);
-      Alert.alert("Error", "No se pudieron cargar los cupones.");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "No se pudieron cargar los cupones.",
+      });
     }
   };
 
   const handleContinue = () => {
     const selectedAddress = directions.find((dir) => dir.id === selected);
     if (!selectedAddress) {
-      Alert.alert("Selecciona una dirección de entrega");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Por favor. Selecciona una dirección de entrega",
+      });
       return;
     }
 
@@ -249,7 +258,11 @@ export default function CheckoutScreen({ navigation, route }) {
               onSelect={(coupon) => {
                 setAppliedCoupon(coupon);
                 setShowCouponModal(false);
-                Alert.alert("Cupón aplicado", `Descuento del ${coupon.discount}% activado 🎉`);
+                Toast.show({
+                  type: "success",
+                  text1: "Cupón aplicado",
+                  text2: `Descuento del ${coupon.discount}% activado 🎉`,
+                })
               }}
             />
           </Animated.View>

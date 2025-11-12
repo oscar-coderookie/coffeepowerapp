@@ -50,20 +50,32 @@ export const useDeleteAccount = () => {
 
                 // 🔹 Finalmente, eliminar usuario de Auth
                 await deleteUser(user);
-
-                Alert.alert("Cuenta eliminada", "Tu cuenta ha sido borrada exitosamente.");
+                Toast.show({
+                  type: "error",
+                  text1: "Cuenta eliminada",
+                  text2: "Tu cuenta ha sido eliminada Exitosamente",
+                })
                 resolve();
               } catch (error) {
                 console.log("Error eliminando cuenta:", error);
                 if (error.code === "auth/wrong-password") {
-                  Alert.alert("Contraseña incorrecta", "La contraseña ingresada no es válida.");
+                  Toast.show({
+                    type: "error",
+                    text1: "Contraseña incorrecta",
+                    text2: "La contraseña ingresada no es válida.",
+                  })
                 } else if (error.code === "auth/requires-recent-login") {
-                  Alert.alert(
-                    "Inicio de sesión requerido",
-                    "Por seguridad, vuelve a iniciar sesión antes de eliminar tu cuenta."
-                  );
+                  Toast.show({
+                    type: "error",
+                    text1: "Inicio de sesión requerido",
+                    text2: "Por seguridad, vuelve a iniciar sesión antes de eliminar tu cuenta.",
+                  })
                 } else {
-                  Alert.alert("Error", "No se pudo eliminar la cuenta.");
+                  Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "No se pudo eliminar la cuenta.",
+                  })
                 }
                 reject(error);
               }

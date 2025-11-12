@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../config/firebase";
 import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../../components/CustomHeader";
 import ButtonGeneral from "../../components/ButtonGeneral";
+import Toast from "react-native-toast-message";
 
 export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -12,16 +13,28 @@ export default function ForgotPasswordScreen({ navigation }) {
 
   const handleReset = async () => {
     if (!email) {
-      Alert.alert("Error", "Por favor ingresa tu correo");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Por favor ingresa tu correo",
+      });
       return;
     }
 
     try {
       await sendPasswordResetEmail(auth, email);
-      Alert.alert("Éxito", "Revisa tu correo para restablecer la contraseña");
+      Toast.show({
+        type: "success",
+        text1: "Éxito",
+        text2: "Revisa tu correo para restablecer la contraseña",
+      })
       navigation.goBack();
     } catch (error) {
-      Alert.alert("Error", error.message);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
     }
   };
 
@@ -29,7 +42,7 @@ export default function ForgotPasswordScreen({ navigation }) {
     <View style={styles.container}>
       <CustomHeader title="recuperar contraseña" showBack />
       <View style={{ marginHorizontal: 10, marginTop: 20 }}>
-        <Text style={{fontFamily:'Jost_400Regular', marginBottom:10, textAlign:'justify'}}>Aqui podras restablecer tu contraseña en caso de olvido, introduce el correo registrado en la app; y te enviaremos un enlace para reestablecer la contraseña:</Text>
+        <Text style={{ fontFamily: 'Jost_400Regular', marginBottom: 10, textAlign: 'justify' }}>Aqui podras restablecer tu contraseña en caso de olvido, introduce el correo registrado en la app; y te enviaremos un enlace para reestablecer la contraseña:</Text>
         <TextInput
           placeholder="Correo electrónico"
           value={email}
@@ -52,5 +65,5 @@ export default function ForgotPasswordScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  input: { borderWidth: 1, padding: 10, borderRadius: 120, marginBottom: 15, fontFamily:'Jost_400Regular' },
+  input: { borderWidth: 1, padding: 10, borderRadius: 120, marginBottom: 15, fontFamily: 'Jost_400Regular' },
 });

@@ -5,8 +5,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Alert,
+  StyleSheet
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -14,6 +13,7 @@ import { auth, db } from "../../config/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import CustomHeader from "../../components/CustomHeader";
+import Toast from "react-native-toast-message";
 
 export default function RegisterScreen({ navigation }) {
   const { colors } = useTheme();
@@ -27,7 +27,11 @@ export default function RegisterScreen({ navigation }) {
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
-      Alert.alert("Error", "Por favor completa todos los campos");
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Por favor completa todos los campos",
+      });
       return;
     }
 
@@ -56,16 +60,18 @@ export default function RegisterScreen({ navigation }) {
         favorites: [],
         createdAt: serverTimestamp(),
       });
-
-      Alert.alert(
-        "Registro exitoso",
-        "Tu cuenta ha sido creada. Revisa tu correo para verificarla antes de iniciar sesión."
-      );
-
-      navigation.replace("Login");
+      Toast.show({
+        type: "success",
+        text1: "Registro Exitoso: Cuenta creada",
+        text2: "Verifica tu correo para habilitar las compras dentro de la app.",
+      })
     } catch (error) {
       console.log("Error registro:", error);
-      Alert.alert("Error", error.message);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
     } finally {
       setLoading(false);
     }
@@ -75,7 +81,7 @@ export default function RegisterScreen({ navigation }) {
     <View style={styles.container}>
       <CustomHeader title="registro:" />
       <View style={{ marginHorizontal: 10, marginTop: 20 }}>
-        <Text style={{fontFamily:'Jost_400Regular', textAlign:'justify', marginBottom:10}}>Diligencia todos los campos para efectuar el registro en nuestra app:</Text>
+        <Text style={{ fontFamily: 'Jost_400Regular', textAlign: 'justify', marginBottom: 10, color: colors.text }}>Diligencia todos los campos para efectuar el registro en nuestra app:</Text>
         <TextInput
           placeholder="Nombre completo"
           value={name}

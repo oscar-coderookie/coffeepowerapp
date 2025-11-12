@@ -6,8 +6,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
-  Alert,
+  ScrollView
 } from "react-native";
 import { db } from "../../config/firebase";
 import { collection, addDoc } from "firebase/firestore";

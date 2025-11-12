@@ -14,35 +14,6 @@ export default function PersonalDiscounts({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
   const { colors } = useTheme()
 
-  //funcion para asignar el cupon al cliente:
-  const assignCouponToUser = async (email, couponData) => {
-    try {
-      // 1️⃣ Buscar el usuario por correo
-      const usersRef = collection(db, "users");
-      const q = query(usersRef, where("email", "==", email));
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        Alert.alert("No encontrado", "No se encontró ningún usuario con ese correo.");
-        return;
-      }
-
-      // 2️⃣ Obtener la referencia al documento del usuario
-      const userDoc = querySnapshot.docs[0].ref;
-
-      // 3️⃣ Agregar el cupón al array 'coupons'
-      await updateDoc(userDoc, {
-        coupons: arrayUnion(couponData),
-      });
-
-      Alert.alert("Éxito", "El cupón fue asignado correctamente al usuario.");
-    } catch (error) {
-      console.error("Error asignando cupón:", error);
-      Alert.alert("Error", "No se pudo asignar el cupón.");
-    }
-  };
-
-
   // Campos del cupón
 
   const handleInputMail = (text) => {
