@@ -14,12 +14,26 @@ export default function SearchBar({ onSearch }) {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Ionicons name="search-outline" size={22} color={colors.text} style={styles.icon} />
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.background, // fondo Google pero dinámico
+          shadowColor: colors.text,     // sombra dinámica
+        },
+      ]}
+    >
+      <Ionicons
+        name="search-outline"
+        size={20}
+        color={colors.text} // icono Google pero dinámico
+        style={styles.icon}
+      />
+
       <TextInput
         placeholder="Buscar..."
         placeholderTextColor={colors.text}
-        style={[styles.input, { color: colors.text }]}
+        style={[styles.input, { color: colors.text}]}
         value={query}
         onChangeText={handleChange}
       />
@@ -31,11 +45,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 10,
-    marginBottom: 8,
-    borderRadius: 10,
-    marginTop: 10,
-    paddingHorizontal: 4,
+
+    borderRadius: 28,
+    height: 48,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+
+    // sombra estilo Google
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
   },
   icon: {
     marginRight: 8,

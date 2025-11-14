@@ -24,7 +24,7 @@ import CoffeesStack from "./CoffeesStack";
 import CartStack from "./CartStack";
 import { playSound } from "../utils/soundPlayer";
 import { LinearGradient } from "expo-linear-gradient";
-
+import cartIcon from '../assets/icons/cart.png'
 
 const Drawer = createDrawerNavigator();
 
@@ -60,7 +60,7 @@ function CustomDrawerContent(props) {
 
   return (
 
-    <LinearGradient colors={[colors.card, colors.background, colors.card]} // tus colores del degradado
+    <LinearGradient colors={[colors.card, colors.card, colors.gray, colors.card, colors.card]} // tus colores del degradado
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={{ flex: 1 }}>
@@ -167,7 +167,13 @@ export default function DrawerNavigator() {
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
-        headerStyle: { backgroundColor: colors.background, height: 120 },
+        headerStyle: {
+          backgroundColor: colors.background, height: 120, shadowColor: "#fff",
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 2,
+          shadowRadius: 4,
+          elevation: 2,
+        },
         headerTintColor: colors.text,
         drawerStyle: { backgroundColor: colors.background },
         drawerActiveTintColor: colors.text,
@@ -178,9 +184,9 @@ export default function DrawerNavigator() {
         },
         headerBackground: () => (
           <LinearGradient
-            colors={[colors.card, colors.background, colors.card]}
+            colors={[colors.card, colors.card, colors.gray, colors.card, colors.card]}
             start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 0 }}
             style={{ flex: 1 }}
           />
         ),
@@ -189,26 +195,38 @@ export default function DrawerNavigator() {
             source={logoMenu}
             style={{
               width: 60,
+              height:60,
               resizeMode: "contain",
-              shadowColor: "#fdfdfdff",
+              shadowColor: "#d4d4d4ff",
               shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.8,
-              shadowRadius: 2,
-              elevation: 2,
+              shadowOpacity: 0.9,
+              shadowRadius: 1,
+              elevation: 1,
             }}
           />
         ),
         headerRight: () => (
-          <TouchableOpacity
-            style={{ marginRight: 15 }}
-            onPress={() => {
-              playSound("click"); // 🎵 reproduce el sonido
-              navigation.navigate("MainDrawer", { screen: "CartScreen" }); // navega normalmente
-            }}
-          // 👈 ajusta al nombre de tu pantalla
-          >
-            <Ionicons name="cart" size={26} color={colors.text} />
-          </TouchableOpacity>
+          <View style={{ height: 70, justifyContent: "center" }}>
+            <TouchableOpacity
+              onPress={() => {
+                playSound("click");
+                navigation.navigate("MainDrawer", { screen: "CartScreen" });
+              }}
+              style={{
+                marginRight: 15,
+                width: 50,
+                height: 50,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Image
+                source={cartIcon}
+                style={{ width: 50, height: 50 }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
         ),
 
       }}
@@ -317,9 +335,9 @@ const styles = StyleSheet.create({
     height: 100,
     shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 2,
+    shadowOpacity: 0.8,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   footerContainer: {
     marginTop: "auto",
@@ -352,4 +370,11 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_600SemiBold",
     fontSize: 16,
   },
+  iconCart: {
+    shadowColor: "#2b2b2bff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 1,
+    elevation: 1,
+  }
 });

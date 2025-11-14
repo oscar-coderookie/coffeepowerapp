@@ -4,31 +4,37 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { playSound } from "../utils/soundPlayer";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function CustomHeader({ title, children, showBack = false }) {
   const navigation = useNavigation();
   const { colors } = useTheme();
 
   return (
-    <View
+    <LinearGradient
+      pointerEvents="box-none"
+      colors={[colors.gray,colors.card, colors.gray, colors.card]}
+      start={{ x: 0.5, y: 0 }}   // arriba
+  end={{ x: 0.5, y: 1 }}
       style={{
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         paddingHorizontal: 10,
         paddingVertical: 10,
-        borderBottomColor: colors.border,
-        borderBottomWidth: 1,
-        backgroundColor: colors.background,
+     
+
       }}
     >
       {/* Botón de retroceso */}
       {showBack ? (
-        <TouchableOpacity onPress={() => {
-          playSound('cup')
-          navigation.goBack()
-        }
-        }>
+        <TouchableOpacity
+
+          onPress={() => {
+            playSound('cup')
+            navigation.goBack()
+          }
+          }>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
       ) : (
@@ -52,7 +58,7 @@ export default function CustomHeader({ title, children, showBack = false }) {
       </View>
 
       <View style={{ width: 24 }} />
-    </View>
+    </LinearGradient>
   );
 }
 

@@ -51,9 +51,9 @@ export const CartProvider = ({ children }) => {
           description: item.description ?? "",
         }));
         await updateDoc(doc(db, "users", user.uid), { cart: simplifiedCart });
-        console.log("Carrito guardado en Firestore ✅");
+    
       } catch (error) {
-        console.log("Error guardando carrito en Firestore:", error);
+        console.error("Error guardando carrito en Firestore:", error)
       }
     } else {
       await AsyncStorage.setItem("cartItems", JSON.stringify(updatedCart));

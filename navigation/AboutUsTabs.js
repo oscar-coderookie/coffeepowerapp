@@ -6,6 +6,7 @@ import { Image, StyleSheet } from 'react-native';
 import ContactScreen from '../screens/ContactScreen';
 import { useTheme } from '@react-navigation/native';
 import { playSound } from '../utils/soundPlayer';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,14 +16,18 @@ const AboutUsTabs = () => {
         <Tab.Navigator
 
             screenOptions={({ route }) => ({
-                tabBarInactiveBackgroundColor: colors.background,
                 tabBarActiveTintColor: colors.gold,
                 headerShown: false,
                 tabBarInactiveTintColor: colors.text,
                 tabBarStyle: { borderTopWidth: 0, height: 90, backgroundColor: colors.background },
                 tabBarLabelStyle: { width: '100%', fontSize: 12, marginTop: 4, fontWeight: "300", textTransform: 'uppercase', fontFamily: 'Jost_600SemiBold' },
-
-                tabBarActiveBackgroundColor: colors.background,
+                tabBarBackground: () => (
+                    <LinearGradient
+                        colors={[colors.card, colors.card, colors.gray, colors.card, colors.card]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={{ flex: 1 }} />
+                ),
                 tabBarIcon: ({ color, focused, size }) => {
                     let iconName;
                     if (route.name === 'Reseña') {

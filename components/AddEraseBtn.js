@@ -65,7 +65,7 @@ export const AddEraseBtn = ({ id, quantity, coffeeName }) => {
 
       {/* 🔸 Bloque principal de cantidad */}
       <LinearGradient
-        colors={["#7e7e7eff", "#d6d6d6ff", "#838383ff", "#d6d6d6ff", "#838383ff"]} // tus colores del degradado
+        colors={["#7e7e7eff", "#d6d6d6ff", "#838383ff", "#d6d6d6ff", "#574016ff"]} // tus colores del degradado
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.quantityContainer}>

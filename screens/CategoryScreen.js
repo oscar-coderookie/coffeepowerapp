@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import LoadingScreen from '../components/LoadingScreen';
 import { MotiView } from "moti";
 import { playSound } from "../utils/soundPlayer";
+import SortToolCoffeePower from "../components/SortCoffees";
+import SortButton from "../components/SortButton";
 
 async function prefetchImages(items) {
   try {
@@ -29,8 +31,33 @@ export default function CategoryScreen({ route }) {
   const { category } = route.params;
   const navigation = useNavigation();
   const [coffees, setCoffees] = useState([]);
+  const [sortVisible, setSortVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sortType, setSortType] = useState("az");
   const { colors } = useTheme();
+
+
+  function applySort(type) {
+    let sorted = [...coffees];
+
+    switch (type) {
+      case "az":
+        sorted.sort((a, b) => a.name.localeCompare(b.nombre));
+        break;
+      case "za":
+        sorted.sort((a, b) => b.name.localeCompare(a.nombre));
+        break;
+      case "short":
+        sorted.sort((a, b) => a.name.length - b.nombre.length);
+        break;
+      case "long":
+        sorted.sort((a, b) => b.name.length - a.nombre.length);
+        break;
+    }
+
+    setCoffees(sorted);
+    setSortType(type);
+  };
 
   useEffect(() => {
     const loadCoffees = async () => {
@@ -74,12 +101,27 @@ export default function CategoryScreen({ route }) {
         title={category.name}
         showBack={true}
       />
+      {/* BOTÓN DORADO */}
+
 
       {loading ? (<LoadingScreen />) : (<View style={[styles.overlay, { backgroundColor: colors.background }]}>
         {category.legend && (
           <Text style={[styles.legend, { color: colors.text }]}>{category.legend}</Text>
         )}
 
+        <View style={{ borderBottomColor: colors.border, borderBottomWidth: 0.5, marginBottom: 10 }}>
+          <SortButton
+            onPress={() => setSortVisible(true)}
+            sortType={sortType}
+          />
+        </View>
+
+        {/* MODAL DE SORT */}
+        <SortToolCoffeePower
+          visible={sortVisible}
+          onClose={() => setSortVisible(false)}
+          onSelect={applySort}
+        />
         <FlatList
           data={coffees}
           keyExtractor={(item) => item.name.toUpperCase()}
@@ -90,34 +132,45 @@ export default function CategoryScreen({ route }) {
             <MotiView
               from={{ opacity: 0, translateY: 30, scale: 0.95 }}
               animate={{ opacity: 1, translateY: 0, scale: 1 }}
+           
               transition={{
                 delay: index * 100, // ⏱ efecto cascada
                 type: 'spring',
                 damping: 20,
               }}
             >
-              <TouchableOpacity
-                style={[styles.card, { backgroundColor: colors.card }]}
-                onPress={() => {
-                  playSound('click');
-                  navigation.navigate("CoffeeDetail", { coffee: item })
-                }}
-              >
-                <FavoriteButton cafe={item} />
-                <View style={styles.cardInfo}>
-                  <Text style={[styles.cardTitle, { color: colors.text }]}>{item.name}</Text>
-                  <Text style={[styles.cardDesc, { color: colors.text }]}>{item.description}</Text>
-                </View>
+              <LinearGradient
+                colors={[colors.card, colors.gray, colors.card]}
+                start={{x:0.3, y:0}}
+                style={[styles.card]}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                  onPress={() => {
+                    playSound('click');
+                    navigation.navigate("CoffeeDetail", { coffee: item })
+                  }}
+                >
+                  <FavoriteButton cafe={item} />
+                  <View style={styles.cardInfo}>
+                    <Text style={[styles.cardTitle, { color: colors.text }]}>{item.name}</Text>
+                    <Text style={[styles.cardDesc, { color: colors.text }]}>{item.description}</Text>
+                  </View>
 
-                <View style={styles.imageContainer}>
-                  <Image
-                    resizeMode="contain"
-                    source={{ uri: item.image }}
-                    style={styles.image}
-                  />
-                </View>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      resizeMode="contain"
+                      source={{ uri: item.image }}
+                      style={styles.image}
+                    />
+                  </View>
 
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </LinearGradient>
+
             </MotiView>
 
           )}
@@ -139,14 +192,19 @@ const styles = StyleSheet.create({
   },
   flatList: {
     flexGrow: 1,
+    paddingTop: 10,
+    paddingHorizontal: 4
   },
   card: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-    borderRadius: 12,
-    padding: 10,
+    marginBottom: 14,
+    borderRadius: 42,
+    padding: 6,
+    shadowColor: "#000000ff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 1,
+  
   },
   cardInfo: {
     width: '65%',
@@ -171,15 +229,15 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: 80,
     height: 80,
-    borderRadius: 45,
+    borderRadius: 36,
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8
   },
   image: {
-    width: "300%",
-    height: "300%",
-    transform: [{ translateX: -4 }, { translateY: 0 }]
+    width: "240%",
+    height: "240%",
+    transform: [{ translateX: -4 }, { translateY: 16 }]
   },
 });

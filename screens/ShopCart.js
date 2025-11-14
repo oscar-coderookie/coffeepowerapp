@@ -238,7 +238,7 @@ export default function ShopCart() {
               item.id?.toString() || index.toString()
             }
             renderItem={renderItem}
-            contentContainerStyle={{ paddingBottom: 80, paddingTop: 10 }}
+            contentContainerStyle={{ paddingBottom: 80, paddingTop: 10,backgroundColor: colors.card, flex:1 }}
             showsVerticalScrollIndicator={false}
           />
           <View style={{ marginHorizontal: 10 }}>
@@ -283,14 +283,14 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
-    shadowRadius: 3,
+    shadowRadius: 2,
     elevation: 2,
-    borderRadius: 10,
+    borderRadius: 30,
   },
   cardContainer: {
-    borderRadius: 10,
+    borderRadius: 30,
     overflow: "hidden", // 👈 recorte interno sin afectar sombra
-    padding: 10,
+    padding: 8,
   },
   itemRow: {
     flexDirection: "row",
