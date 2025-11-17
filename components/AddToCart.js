@@ -5,12 +5,14 @@ import { CartContext } from '../context/CartContext';
 import { LinearGradient } from "expo-linear-gradient";
 import { playSound } from '../utils/soundPlayer';
 import Toast from 'react-native-toast-message';
+import FavouriteButton from '../components/FavouriteButton'
+import { useTheme } from '@react-navigation/native';
 
 
 export default function AddToCart({ coffee }) {
     const { addToCart } = useContext(CartContext);
     const [quantity, setQuantity] = useState(1);
-
+    const { colors } = useTheme();
     const handleAddToCart = () => {
         try {
             addToCart({ ...coffee, quantity });
@@ -27,7 +29,6 @@ export default function AddToCart({ coffee }) {
                 text2: "Por favor revisa tu conexión.",
             });
         }
-
 
     };
     const increaseQuantity = () => setQuantity((prev) => prev + 1);
@@ -83,6 +84,9 @@ export default function AddToCart({ coffee }) {
                 </LinearGradient>
 
             </TouchableOpacity>
+            <View style={{ alignItems: "center", marginTop: 10 }}>
+                <FavouriteButton cafe={coffee} size={50} />
+            </View>
         </View>
     )
 };

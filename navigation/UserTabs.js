@@ -8,6 +8,9 @@ import FavoritesScreen from '../screens/user/FavouritesScreen';
 import UserSettings from '../screens/user/UserSettings';
 import CouponsClientScreen from '../screens/user/CouponsClientScreen';
 import { playSound } from '../utils/soundPlayer';
+import PerfilTopTabs from './PerfilTopTabs';
+import UserMessagesScreen from '../screens/user/UserMessagesScreen';
+import MessagesStack from './MessagesStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,8 +36,8 @@ const UserTabs = () => {
                         iconName = focused ? 'star' : 'star-outline'
                     } else if (route.name === "Cupones") {
                         iconName = focused ? 'pricetag' : 'pricetag-outline'
-                    } else if (route.name === "Ajustes") {
-                        iconName = focused ? 'settings' : 'settings-outline'
+                    } else if (route.name === "Mensajes") {
+                        iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline'
                     }
                     return <Ionicons name={iconName} color={color} size={size} />
                 }
@@ -43,7 +46,7 @@ const UserTabs = () => {
         >
             <Tab.Screen
                 name="Perfil"
-                component={UserAreaScreen}
+                component={PerfilTopTabs}
                 listeners={{
                     tabPress: () => playSound("click"),
                 }} />
@@ -60,8 +63,8 @@ const UserTabs = () => {
                     tabPress: () => playSound("click"),
                 }} />
             <Tab.Screen
-                name="Ajustes"
-                component={UserSettings}
+                name="Mensajes"
+                component={MessagesStack}
                 listeners={{
                     tabPress: () => playSound("click"),
                 }} />

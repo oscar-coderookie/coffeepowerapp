@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MotiView } from "moti";
-import imageBck from "../assets/images/nuestros-cafes.jpg";
+import imageBck from "../assets/images/nuestros-cafes-movil.jpg";
+import chef from '../assets/images/chef-movil.jpg';
 import { coffeeCategories } from "../data/CoffesCategories";
 import SearchBar from "../components/SearchBar";
 import { collection, getDocs } from "firebase/firestore";
@@ -91,56 +92,60 @@ const OurCoffees = () => {
 
   // --- Render principal ---
   return (
-<>
-<CustomHeader title='nuestros cafés' />
-<ImageBackground source={imageBck} style={styles.background}>
-      
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <>
 
-        <SearchBar onSearch={handleSearch} />
-        {searchResults.length > 0 ? (
-          <>
-            <Text style={styles.title}>Resultados de búsqueda</Text>
-            <View style={styles.mosaic}>
-              {searchResults.map((coffee, index) => (
-                <AnimatedCard
-                  key={coffee.id || index}
-                  index={index}
-                  onPress={() => navigation.navigate("CoffeeDetail", { coffee })}
-                >
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>{coffee.name}</Text>
-                  </View>
-                </AnimatedCard>
-              ))}
-            </View>
-          </>
-        ) : (
-          <>
+      <ImageBackground
+        source={chef}
+        style={styles.background}
+        imageStyle={styles.backgroundImage}
+      >
+        <CustomHeader title='nuestros cafés' />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
 
-            <View style={styles.mosaic}>
-              {coffeeCategories.map((item, index) => (
-                <AnimatedCard
-                  key={item.id || index}
-                  index={index}
-                  onPress={() => {
-                    playSound("click");
-                    navigation.navigate("Category", { category: item });
-                  }}
-                >
-                  <View style={styles.card}>
-                    <Text style={styles.cardTitle}>{item.name}</Text>
-                    {item.legend && <Text style={styles.legend}>{item.legend}</Text>}
-                  </View>
-                </AnimatedCard>
-              ))}
-            </View>
-          </>
-        )}
-      </ScrollView>
-    </ImageBackground>
-</>
-    
+          <SearchBar onSearch={handleSearch} />
+          {searchResults.length > 0 ? (
+            <>
+              <Text style={styles.title}>Resultados de búsqueda</Text>
+              <View style={styles.mosaic}>
+                {searchResults.map((coffee, index) => (
+                  <AnimatedCard
+                    key={coffee.id || index}
+                    index={index}
+                    onPress={() => navigation.navigate("CoffeeDetail", { coffee })}
+                  >
+                    <View style={styles.card}>
+                      <Text style={styles.cardTitle}>{coffee.name}</Text>
+                    </View>
+                  </AnimatedCard>
+                ))}
+              </View>
+            </>
+          ) : (
+            <>
+
+              <View style={styles.mosaic}>
+                {coffeeCategories.map((item, index) => (
+                  <AnimatedCard
+                    key={item.id || index}
+                    index={index}
+                    onPress={() => {
+                      playSound("click");
+                      navigation.navigate("Category", { category: item });
+                    }}
+                  >
+                    <View style={styles.card}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      {item.legend && <Text style={styles.legend}>{item.legend}</Text>}
+                    </View>
+                  </AnimatedCard>
+                ))}
+              </View>
+            </>
+          )}
+        </ScrollView>
+      </ImageBackground>
+    </>
+
 
   );
 };
@@ -150,12 +155,16 @@ export default OurCoffees;
 const styles = StyleSheet.create({
   background: {
     flex: 1,
+
+  },
+
+  backgroundImage: {
     resizeMode: "cover",
-    height: "100%"
+
   },
   scrollContent: {
     padding: 10,
-    paddingBottom: 100,
+
   },
   title: {
     fontSize: 30,
@@ -175,7 +184,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "rgba(0, 0, 0, 0.43)",
     borderRadius: 60,
-    padding: 16,
+    padding: 14,
   },
   cardTitle: {
     fontSize: 20,

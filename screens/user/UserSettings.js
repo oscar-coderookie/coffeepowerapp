@@ -24,82 +24,83 @@ const UserSettings = () => {
   const { colors } = useTheme();
   const { user, changeEmail } = useContext(AuthContext);
 
-  // ✅ Recibe la contraseña desde el modal
+  // Funcion eliminar:
   const handleDeleteAccount = async (password) => {
-    const currentUser = auth.currentUser;
-    const uid = currentUser?.uid;
+  const currentUser = auth.currentUser;
+  const uid = currentUser?.uid;
 
-    if (!password) {
-      return Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Ingresa tu contraseña para confirmar.",
-      });
+  if (!password) {
+    return Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: "Ingresa tu contraseña para confirmar.",
+    });
+  }
+
+  if (!currentUser) {
+    return Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: "No hay usuario autenticado.",
+    });
+  }
+
+  try {
+    // 1️⃣ Reautenticación
+    const credential = EmailAuthProvider.credential(currentUser.email, password);
+    await reauthenticateWithCredential(currentUser, credential);
+
+    // 2️⃣ Eliminar TODAS las subcolecciones
+    const subcollections = ["favorites", "addresses", "messages"];
+
+    for (const sub of subcollections) {
+      const subRef = collection(db, `users/${uid}/${sub}`);
+      const subSnap = await getDocs(subRef);
+
+      for (const docItem of subSnap.docs) {
+        await deleteDoc(docItem.ref);
+      }
     }
 
-    if (!currentUser) {
-      return Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "No hay usuario autenticado.",
-      });
-    }
+    // 3️⃣ Eliminar documento principal del usuario
+    await deleteDoc(doc(db, "users", uid));
 
-    try {
-      // 1️⃣ Reautenticar al usuario antes de hacer cualquier eliminación
-      const credential = EmailAuthProvider.credential(currentUser.email, password);
-      await reauthenticateWithCredential(currentUser, credential);
+    // 4️⃣ Eliminar cuenta del Authentication
+    await deleteUser(currentUser);
 
-      // 2️⃣ Eliminar subcolección "favorites"
-      const favsRef = collection(db, `users/${uid}/favorites`);
-      const favsSnap = await getDocs(favsRef);
-      for (const fav of favsSnap.docs) {
-        await deleteDoc(fav.ref);
-      }
-      const addrRef = collection(db, `users/${uid}/addresses`);
-      const addrSnap = await getDocs(addrRef);
-      for (const addr of addrSnap.docs) {
-        await deleteDoc(addr.ref);
-      }
+    // 5️⃣ UI
+    setModalVisible(false);
+    Toast.show({
+      type: "success",
+      text1: "Cuenta eliminada",
+      text2: "Tu cuenta ha sido eliminada exitosamente.",
+    });
 
-      // 3️⃣ Eliminar el documento principal del usuario
-      await deleteDoc(doc(db, "users", auth.currentUser.uid));
+  } catch (error) {
+    console.error("❌ Error eliminando cuenta:", error);
 
-      // 4️⃣ Finalmente, eliminar la cuenta del usuario de Authentication
-      await deleteUser(currentUser);
-
-      // 5️⃣ Mostrar confirmación
-      setModalVisible(false);
+    if (error.code === "auth/wrong-password") {
       Toast.show({
-        type: "success",
-        text1: "Cuenta eliminada",
-        text2: "Tu cuenta ha sido eliminada exitosamente.",
+        type: "error",
+        text1: "Contraseña incorrecta",
+        text2: "La contraseña ingresada no es válida.",
       });
-
-    } catch (error) {
-      console.error("❌ Error eliminando cuenta:", error);
-
-      if (error.code === "auth/wrong-password") {
-        Toast.show({
-          type: "error",
-          text1: "Contraseña incorrecta",
-          text2: "La contraseña ingresada no es válida.",
-        });
-      } else if (error.code === "auth/requires-recent-login") {
-        Toast.show({
-          type: "error",
-          text1: "Inicio de sesión requerido",
-          text2: "Vuelve a iniciar sesión antes de eliminar tu cuenta.",
-        });
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: error.message,
-        });
-      }
+    } else if (error.code === "auth/requires-recent-login") {
+      Toast.show({
+        type: "error",
+        text1: "Inicio de sesión requerido",
+        text2: "Vuelve a iniciar sesión antes de eliminar tu cuenta.",
+      });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
     }
-  };
+  }
+};
+
 
   // 🔹 Escuchar cambios en Firestore
   useEffect(() => {
@@ -136,8 +137,6 @@ const UserSettings = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <CustomHeader showBack={false} title="Ajustes:" />
-
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         {/* ⚙️ Botones con animación escalonada */}
         <View style={{ marginTop: 10 }}>

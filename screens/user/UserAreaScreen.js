@@ -98,7 +98,6 @@ export default function UserAreaScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <CustomHeader title="Perfil Personal" showBack={false} />
       <VerifyEmailBlock />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView>
@@ -202,7 +201,8 @@ export default function UserAreaScreen({ navigation }) {
           textColor="white"
           onTouch={() => {
             playSound("click"); // 🎵 reproduce el sonido
-            navigation.navigate("MainDrawer", { screen: "CartScreen" }); // navega normalmente
+            const rootNavigation = navigation.getParent()?.getParent();
+            rootNavigation?.navigate("CartScreen");
           }}
           marginHorizontal={10}
           borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
