@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { auth, db } from "../../config/firebase";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import CustomHeader from "../../components/CustomHeader";
 import logo from "../../assets/icon.png";
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,19 +22,23 @@ const CouponsClientScreen = () => {
         const user = auth.currentUser;
         if (!user) return;
 
-        const userRef = doc(db, "users", user.uid);
+        // 👇 Subcolección de cupones
+        const couponsRef = collection(db, "users", user.uid, "coupons");
 
-        unsubscribe = onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            setCoupons(userData.coupons || []);
-          } else {
-            console.log("No se encontró el documento del usuario.");
-          }
+        // 👇 Traemos los cupones ordenados por fecha
+        const q = query(couponsRef, orderBy("createdAt", "desc"));
+
+        unsubscribe = onSnapshot(q, (snapshot) => {
+          const list = snapshot.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+          }));
+
+          setCoupons(list);
           setLoading(false);
         });
       } catch (error) {
-        console.error("Error escuchando cupones:", error);
+        console.error("Error leyendo cupones:", error);
         setLoading(false);
       }
     };
@@ -51,7 +55,7 @@ const CouponsClientScreen = () => {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
         <CustomHeader title="Mis Cupones" showBack={false} />
-        <View style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}>
+        <View style={{ alignItems: "center", flex: 1, justifyContent: "center" }}>
           <Text style={[styles.text, { color: colors.text }]}>
             ☕ Aún no tienes descuentos activos ☕
           </Text>
@@ -60,13 +64,14 @@ const CouponsClientScreen = () => {
     );
   }
 
-  // 🔹 Lista de cupones con animación en cascada
+  // 🔹 Lista
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader title="Mis Cupones" showBack={false} />
+
       <FlatList
         data={coupons}
-        keyExtractor={(item, index) => `${item.code}-${index}`}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 10 }}
         renderItem={({ item, index }) => (
           <MotiView
@@ -75,7 +80,7 @@ const CouponsClientScreen = () => {
             transition={{
               type: "timing",
               duration: 900,
-              delay: index * 120, // Efecto cascada
+              delay: index * 120,
             }}
           >
             <LinearGradient
@@ -86,15 +91,24 @@ const CouponsClientScreen = () => {
             >
               <View style={{ flex: 1 }}>
                 <Text style={styles.code}>{item.code}</Text>
-                <Text style={styles.discount}>-{item.discount}% de descuento</Text>
+
+                {item.discount ? (
+                  <Text style={styles.discount}>-{item.discount}% de descuento</Text>
+                ) : null}
 
                 {item.description ? (
                   <Text style={styles.description}>{item.description}</Text>
                 ) : null}
 
-                {item.expiresAt ? (
-                  <Text style={styles.expiry}>Caduca: {item.expiresAt}</Text>
-                ) : null}
+                {item.expiresAt && (
+                  <Text style={styles.expiry}>
+                    Caduca: {
+                      item.expiresAt.toDate
+                        ? item.expiresAt.toDate().toLocaleDateString()
+                        : item.expiresAt // por si algún cupón viejo es string
+                    }
+                  </Text>
+                )}
 
                 {item.used && (
                   <Text style={styles.used}>(Cupón ya utilizado)</Text>
@@ -113,7 +127,7 @@ const CouponsClientScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  text: { fontFamily: "Jost_600SemiBold", fontSize: 18, },
+  text: { fontFamily: "Jost_600SemiBold", fontSize: 18 },
 
   card: {
     flexDirection: "row",

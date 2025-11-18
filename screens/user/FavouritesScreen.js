@@ -29,7 +29,7 @@ async function prefetchImages(favorites) {
 }
 
 export default function FavoritesScreen() {
-  const { favorites, setFavorites } = useContext(FavoritesContext);
+  const { favorites, deleteFavorite } = useContext(FavoritesContext);
   const { colors } = useTheme();
   const [loading, setLoading] = useState(true);
   const swipeableRefs = useRef(new Map());
@@ -68,40 +68,6 @@ export default function FavoritesScreen() {
     </LinearGradient>
   );
 
-  const handleSwipeToDelete = async (item) => {
-    if (!user) return;
-
-    try {
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-      if (!snap.exists()) return;
-
-      const currentFavs = snap.data().favorites || [];
-      const updatedFavs = currentFavs.filter(
-        (f) => f.nombre?.toLowerCase() !== item.nombre?.toLowerCase()
-      );
-
-      await updateDoc(userRef, { favorites: updatedFavs });
-      setFavorites(updatedFavs);
-      playSound("delete");
-      Toast.show({
-        type: "success",
-        text1: item.nombre,
-        text2: "Eliminado de tus favoritos",
-      });
-
-      const ref = swipeableRefs.current.get(item.id);
-      if (ref) ref.close();
-
-    } catch (error) {
-      console.error(error);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "No se pudo eliminar de favoritos. Intenta de nuevo.",
-      });
-    }
-  };
 
   return (
     <View style={[styles.containerList, { backgroundColor: colors.background }]}>
@@ -122,7 +88,15 @@ export default function FavoritesScreen() {
               friction={2}
               leftThreshold={20}
               overshootLeft={false}
-              onSwipeableOpen={() => handleSwipeToDelete(item)}
+              onSwipeableOpen={() => {
+                playSound("delete");
+                deleteFavorite(item.id);
+                Toast.show({
+                  type: "success",
+                  text1: item.name,
+                  text2: "Eliminado de tus favoritos",
+                });
+              }}
             >
               <MotiView
                 from={{ opacity: 0, translateX: -30 }}
@@ -138,8 +112,8 @@ export default function FavoritesScreen() {
                 >
                   <Image resizeMode="contain" source={{ uri: item.image }} style={styles.image} />
                   <View style={styles.info}>
-                    <Text style={styles.name}>{item.nombre}</Text>
-                    <Text style={styles.desc}>{item.descripcion}</Text>
+                    <Text style={styles.name}>{item.name}</Text>
+                    <Text style={styles.desc}>{item.description}</Text>
                   </View>
                 </LinearGradient>
               </MotiView>

@@ -16,6 +16,44 @@ const app = express();
 app.use(cors({ origin: true }));
 app.use(express.json());
 
+
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+admin.initializeApp();
+const db = admin.firestore();
+
+exports.replicateMassMessage = functions.https.onRequest(async (req, res) => {
+  try {
+    const { message } = req.body;
+    if (!message) return res.status(400).send("No se recibió mensaje");
+
+    const usersSnapshot = await db.collection("users").get();
+
+    const batch = db.batch();
+
+    usersSnapshot.forEach((doc) => {
+      const userMessagesRef = db
+        .collection("users")
+        .doc(doc.id)
+        .collection("messages")
+        .doc(); // genera ID automáticamente
+
+      batch.set(userMessagesRef, {
+        ...message,
+        createdAt: new Date(),
+        read: false,
+      });
+    });
+
+    await batch.commit();
+
+    res.status(200).send("Mensaje replicado a todos los usuarios");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
+
 // -------------------------------
 // 🔹 Helper: crear o recuperar cliente de Stripe
 // -------------------------------

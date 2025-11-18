@@ -16,24 +16,24 @@ export default function UserMessagesScreen() {
 
   const navigation = useNavigation();
 
-useFocusEffect(
-  React.useCallback(() => {
-    if (!user) return;
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!user) return;
 
-    const ref = collection(db, `users/${user.uid}/messages`);
-    const q = query(ref, orderBy("createdAt", "desc"));
+      const ref = collection(db, `users/${user.uid}/messages`);
+      const q = query(ref, orderBy("createdAt", "desc"));
 
-    const unsubscribe = onSnapshot(q, snap => {
-      const data = snap.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      }));
-      setMessages(data);
-    });
+      const unsubscribe = onSnapshot(q, snap => {
+        const data = snap.docs.map(d => ({
+          id: d.id,
+          ...d.data()
+        }));
+        setMessages(data);
+      });
 
-    return () => unsubscribe(); // 🔥 Limpia cuando salgas de la screen
-  }, [user])
-);
+      return () => unsubscribe(); // 🔥 Limpia cuando salgas de la screen
+    }, [user])
+  );
 
   const renderItem = ({ item, index }) => (
     <MotiView
@@ -47,7 +47,7 @@ useFocusEffect(
           padding: 16,
           backgroundColor: item.read ? colors.gray : "#2bb800ff",
           marginBottom: 12,
-          borderRadius: 8,
+          borderRadius: 50,
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
@@ -61,6 +61,7 @@ useFocusEffect(
             }
             size={26}
             color={colors.text}
+
           />
 
           <View style={{ flex: 1 }}>
@@ -68,6 +69,7 @@ useFocusEffect(
               style={{
                 fontFamily: "Jost_600SemiBold",
                 color: colors.text,
+                textAlign: 'justify',
                 fontSize: 16,
               }}
             >
@@ -82,9 +84,20 @@ useFocusEffect(
                 fontSize: 12,
               }}
             >
-              CADUCA: {item.expiresAt.toDate().toLocaleString()}
+              {item.body}
             </Text>
+
           </View>
+          <Text
+            style={{
+              fontFamily: "Jost_400Regular",
+              color: colors.text,
+              marginTop: 5,
+              fontSize: 12,
+            }}
+          >
+            {item.createdAt}
+          </Text>
         </View>
       </TouchableOpacity>
     </MotiView>

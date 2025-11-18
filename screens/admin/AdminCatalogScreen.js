@@ -10,7 +10,6 @@ import {
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import LoadingScreen from "../../components/LoadingScreen";
-import CustomHeader from "../../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { playSound } from "../../utils/soundPlayer";
@@ -161,7 +160,6 @@ export default function AdminCatalogScreen({ navigation }) {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <CustomHeader title="Listado de Cafés: Modo editor" />
 
             <Animated.FlatList
                 data={coffees}

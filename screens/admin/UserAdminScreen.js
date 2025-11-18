@@ -155,7 +155,6 @@ export default function UsersAdminScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader title="Listado de Usuarios" />
       <View style={{ marginHorizontal: 10 }}>
         <Text style={{ fontFamily: 'Jost_400Regular', marginVertical: 10, textAlign: 'justify', color: colors.text }}>Aqui podréis listar, editar datos y eliminar los usuarios registrados de vuestra app:</Text>
         <Animated.FlatList

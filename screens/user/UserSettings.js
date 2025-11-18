@@ -25,7 +25,7 @@ const UserSettings = () => {
   const { user, changeEmail } = useContext(AuthContext);
 
   // Funcion eliminar:
-  const handleDeleteAccount = async (password) => {
+const handleDeleteAccount = async (password) => {
   const currentUser = auth.currentUser;
   const uid = currentUser?.uid;
 
@@ -50,25 +50,36 @@ const UserSettings = () => {
     const credential = EmailAuthProvider.credential(currentUser.email, password);
     await reauthenticateWithCredential(currentUser, credential);
 
-    // 2️⃣ Eliminar TODAS las subcolecciones
-    const subcollections = ["favorites", "addresses", "messages"];
+    // 2️⃣ Detectar TODAS las subcolecciones del usuario
+    const userDocRef = doc(db, "users", uid);
+    const subcollectionsSnap = await getDocs(collection(db, `users/${uid}`));
 
-    for (const sub of subcollections) {
-      const subRef = collection(db, `users/${uid}/${sub}`);
-      const subSnap = await getDocs(subRef);
-
-      for (const docItem of subSnap.docs) {
+    // 2.1️⃣ Eliminar recursivamente cualquier subcolección y sub-subcolección
+    const deleteRecursive = async (refPath) => {
+      const colSnap = await getDocs(collection(db, refPath));
+      for (const docItem of colSnap.docs) {
+        // Detectar sub-subcolecciones
+        const subSubSnap = await getDocs(collection(db, `${refPath}/${docItem.id}`));
+        if (!subSubSnap.empty) {
+          await deleteRecursive(`${refPath}/${docItem.id}`);
+        }
         await deleteDoc(docItem.ref);
       }
+    };
+
+    // 2.2️⃣ Ejecutarlo para cada subcolección detectada
+    const subcollectionList = ["favorites", "addresses", "coupons", "messages", "cart", "history"];
+    for (const sub of subcollectionList) {
+      await deleteRecursive(`users/${uid}/${sub}`);
     }
 
     // 3️⃣ Eliminar documento principal del usuario
-    await deleteDoc(doc(db, "users", uid));
+    await deleteDoc(userDocRef);
 
-    // 4️⃣ Eliminar cuenta del Authentication
+    // 4️⃣ Eliminar usuario de Firebase Auth
     await deleteUser(currentUser);
 
-    // 5️⃣ UI
+    // 5️⃣ Success UI
     setModalVisible(false);
     Toast.show({
       type: "success",
@@ -100,7 +111,6 @@ const UserSettings = () => {
     }
   }
 };
-
 
   // 🔹 Escuchar cambios en Firestore
   useEffect(() => {

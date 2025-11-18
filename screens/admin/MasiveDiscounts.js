@@ -97,15 +97,16 @@ export default function InjectCouponsScreen() {
                 const userRef = doc(db, "users", userDoc.id);
 
                 // 1️⃣ Inyectar cupón
-                await updateDoc(userRef, {
-                  coupons: arrayUnion({
-                    code: code.trim().toUpperCase(),
-                    discount: parseFloat(discount),
-                    description: description.trim(),
-                    expiresAt,
-                    createdAt: new Date().toISOString(),
-                    used: false,
-                  }),
+                const couponRef = doc(collection(db, `users/${userDoc.id}/coupons`));
+
+                await setDoc(couponRef, {
+                  id: couponRef.id,
+                  code: code.trim().toUpperCase(),
+                  discount: parseFloat(discount),
+                  description: description.trim(),
+                  expiresAt,
+                  createdAt: new Date().toISOString(),
+                  used: false,
                 });
 
                 // 2️⃣ Crear mensaje
@@ -114,11 +115,9 @@ export default function InjectCouponsScreen() {
                   id: messageRef.id,
                   title: messageTitle.trim(),
                   body: messageBody.trim(),
-                  couponCode: code.trim().toUpperCase(),
-                  discount: parseFloat(discount),
                   expiresAt: expiresAt,
                   read: false,
-                  createdAt: new Date().toISOString(),
+                  createdAt: new Date(),
                   type: "coupon",
                 });
 
@@ -163,10 +162,10 @@ export default function InjectCouponsScreen() {
   if (loading) return <LoadingScreen message="Inyectando cupones..." />;
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <CustomHeader title="Crear descuento masivo:" showBack={true} />
 
-      <View style={styles.block}>
+      <ScrollView style={styles.block}>
         <Text style={[styles.subtitle, { color: colors.text }]}>
           Crea un cupón y aplícalo automáticamente a todos los usuarios.
         </Text>
@@ -227,10 +226,10 @@ export default function InjectCouponsScreen() {
         <View style={styles.formGroup}>
           <Text style={[styles.label, { color: colors.text }]}>Mensaje *</Text>
           <TextInput
-            style={[styles.input, { height: 100, color: colors.text, borderColor: colors.text }]}
-   
+            style={[styles.input, {height: 100,color: colors.text, borderColor: colors.text }]}
+            numberOfLines={4}
             placeholderTextColor={colors.text}
-            multiline
+            multiline={true}
             value={couponData.messageBody}
             onChangeText={(v) => handleChange("messageBody", v)}
           />
@@ -281,8 +280,8 @@ export default function InjectCouponsScreen() {
           onTouch={handleSubmit}
           soundType="click"
         />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 

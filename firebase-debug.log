@@ -1,0 +1,74 @@
+[debug] [2025-11-18T16:57:53.237Z] ----------------------------------------------------------------------
+[debug] [2025-11-18T16:57:53.239Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Oscar Serna\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init functions
+[debug] [2025-11-18T16:57:53.239Z] CLI Version:   14.19.1
+[debug] [2025-11-18T16:57:53.240Z] Platform:      win32
+[debug] [2025-11-18T16:57:53.240Z] Node Version:  v22.11.0
+[debug] [2025-11-18T16:57:53.240Z] Time:          Tue Nov 18 2025 11:57:53 GMT-0500 (hora estándar de Colombia)
+[debug] [2025-11-18T16:57:53.240Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-18T16:57:53.242Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Projects\coffeepowerapp
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+  * You are initializing within an existing Firebase project directory
+
+[debug] [2025-11-18T16:57:53.664Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-11-18T16:57:53.665Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2025-11-18T16:58:21.051Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-18T16:58:21.051Z] > authorizing via signed-in user (industrialdesignoscar@gmail.com)
+[debug] [2025-11-18T16:58:21.052Z] Checked if tokens are valid: false, expires at: 1760457028813
+[debug] [2025-11-18T16:58:21.052Z] Checked if tokens are valid: false, expires at: 1760457028813
+[debug] [2025-11-18T16:58:21.052Z] > refreshing access token with scopes: []
+[debug] [2025-11-18T16:58:21.053Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-11-18T16:58:21.053Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-18T16:58:21.239Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-11-18T16:58:21.239Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-18T16:58:21.244Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/chris-rosas-web [none]
+[debug] [2025-11-18T16:58:21.632Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/chris-rosas-web 200
+[debug] [2025-11-18T16:58:21.632Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/chris-rosas-web {"projectId":"chris-rosas-web","projectNumber":"528871640613","displayName":"chris-rosas-web","name":"projects/chris-rosas-web","resources":{"hostingSite":"chris-rosas-web","locationId":"europe-west"},"state":"ACTIVE","etag":"1_24a569fe-0d96-4957-b1e1-6ece1ce8b5ff"}
+[info] i  Using project chris-rosas-web (chris-rosas-web) . 
+[info] 
+=== Functions Setup
+[debug] [2025-11-18T16:58:21.636Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-18T16:58:21.636Z] > authorizing via signed-in user (industrialdesignoscar@gmail.com)
+[debug] [2025-11-18T16:58:21.636Z] [iam] checking project chris-rosas-web for permissions ["firebase.projects.get"]
+[debug] [2025-11-18T16:58:21.636Z] Checked if tokens are valid: true, expires at: 1763488700239
+[debug] [2025-11-18T16:58:21.637Z] Checked if tokens are valid: true, expires at: 1763488700239
+[debug] [2025-11-18T16:58:21.637Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chris-rosas-web:testIamPermissions [none]
+[debug] [2025-11-18T16:58:21.637Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chris-rosas-web:testIamPermissions x-goog-quota-user=projects/chris-rosas-web
+[debug] [2025-11-18T16:58:21.637Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chris-rosas-web:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-11-18T16:58:22.164Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chris-rosas-web:testIamPermissions 200
+[debug] [2025-11-18T16:58:22.164Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chris-rosas-web:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] 
+Detected existing codebase(s): default
+
+[debug] [2025-11-18T17:01:28.296Z] ExitPromptError: User force closed the prompt with SIGINT
+    at Interface.sigint (C:\Users\Oscar Serna\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\@inquirer\core\dist\commonjs\lib\create-prompt.js:101:37)
+    at Interface.emit (node:events:518:28)
+    at Interface.emit (node:domain:489:12)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1124:18)
+    at ReadStream.onkeypress (node:internal/readline/interface:263:20)
+    at ReadStream.emit (node:events:530:35)
+    at ReadStream.emit (node:domain:489:12)
+    at emitKeys (node:internal/readline/utils:370:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+[error] 
+[error] Error: An unexpected error has occurred.

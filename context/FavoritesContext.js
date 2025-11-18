@@ -1,5 +1,12 @@
 import React, { createContext, useEffect, useState } from "react";
-import { onSnapshot, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  doc,
+  setDoc,
+  deleteDoc,
+  getDoc
+} from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../config/firebase";
 
@@ -10,7 +17,7 @@ export const FavoritesProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
-  // 🔹 Detectar el usuario actual de Firebase Auth
+  // 🔹 Detectar usuario logueado
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
@@ -19,28 +26,70 @@ export const FavoritesProvider = ({ children }) => {
     return () => unsubscribeAuth();
   }, []);
 
-  // 🔹 Escuchar en tiempo real los favoritos del usuario
+  // 🔹 Escuchar favoritos desde la SUBCOLECCIÓN
   useEffect(() => {
     if (!user || isDeletingAccount) {
-      setFavorites([]); // limpiar al cerrar sesión o al eliminar cuenta
+      setFavorites([]);
       return;
     }
 
-    const userRef = doc(db, "users", user.uid);
+    const ref = collection(db, `users/${user.uid}/favorites`);
 
-    const unsubscribe = onSnapshot(userRef, (snap) => {
-      if (snap.exists()) {
-        const data = snap.data();
-        setFavorites(data.favorites || []);
-      } 
-      // ❌ ya no crear el documento si no existe
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      const list = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+      setFavorites(list);
     });
 
     return () => unsubscribe();
   }, [user, isDeletingAccount]);
 
+  // ⭐ Agregar o quitar favorito
+  const toggleFavorite = async (cafe) => {
+    const userId = auth.currentUser.uid;
+    const ref = doc(db, "users", userId, "favorites", cafe.id);
+
+    const exists = await getDoc(ref);
+
+    if (exists.exists()) {
+      await deleteDoc(ref);
+      return { added: false };
+    }
+
+    await setDoc(ref, {
+      id: cafe.id,
+      description: cafe.description,
+      name: cafe.name,
+      image: cafe.image,
+      price: cafe.price,
+      createdAt: Date.now(),
+    });
+
+    return { added: true };
+  };
+
+  const deleteFavorite = async (id) => {
+    const userId = auth.currentUser.uid;
+    const ref = doc(db, "users", userId, "favorites", id);
+
+    try {
+      await deleteDoc(ref);
+    } catch (error) {
+      console.error("Error eliminando favorito:", error);
+    }
+  };
   return (
-    <FavoritesContext.Provider value={{ favorites, setFavorites, user, setIsDeletingAccount }}>
+    <FavoritesContext.Provider
+      value={{
+        favorites,
+        toggleFavorite,
+        user,
+        setIsDeletingAccount,
+        deleteFavorite
+      }}
+    >
       {children}
     </FavoritesContext.Provider>
   );
