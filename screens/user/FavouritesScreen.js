@@ -18,6 +18,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../../config/firebase";
 import { playSound } from "../../utils/soundPlayer";
 import Toast from "react-native-toast-message";
+import SwipeToDelete from "../../components/SwipeToDelete";
 
 async function prefetchImages(favorites) {
   try {
@@ -57,17 +58,6 @@ export default function FavoritesScreen() {
     );
   }
 
-  const renderLeftActions = () => (
-    <LinearGradient
-      colors={["#cc0000ff", "#cc0000ff", "#ffffff04"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={[styles.swipeAction, { height: 90 }]}
-    >
-      <Ionicons name="trash" size={30} color="#fff" />
-    </LinearGradient>
-  );
-
 
   return (
     <View style={[styles.containerList, { backgroundColor: colors.background }]}>
@@ -80,44 +70,28 @@ export default function FavoritesScreen() {
         <FlatList
           style={{ marginTop: 20 }}
           data={favorites}
-          keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+          keyExtractor={(item, index) => item.id || index.toString()}
           renderItem={({ item, index }) => (
-            <Swipeable
-              ref={(ref) => swipeableRefs.current.set(item.id, ref)}
-              renderLeftActions={renderLeftActions}
-              friction={2}
-              leftThreshold={20}
-              overshootLeft={false}
-              onSwipeableOpen={() => {
-                playSound("delete");
-                deleteFavorite(item.id);
-                Toast.show({
-                  type: "success",
-                  text1: item.name,
-                  text2: "Eliminado de tus favoritos",
-                });
-              }}
+            <SwipeToDelete
+              itemId={item.id}
+              index={index}
+              onSwipe={() => deleteFavorite(item.id, item.name)}
+              borderRadius={35}
+           
             >
-              <MotiView
-                from={{ opacity: 0, translateX: -30 }}
-                animate={{ opacity: 1, translateX: 0 }}
-                transition={{ type: "timing", duration: 420, delay: index * 120 }}
-                style={{ marginBottom: 12 }}
+              <LinearGradient
+                colors={["#000000ff", "#2b2b2bff", "#000000ff", "#303030ff", "#000000ff"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[styles.card]}
               >
-                <LinearGradient
-                  colors={["#000000ff", "#2b2b2bff", "#000000ff", "#303030ff", "#000000ff"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={[styles.card]}
-                >
-                  <Image resizeMode="contain" source={{ uri: item.image }} style={styles.image} />
-                  <View style={styles.info}>
-                    <Text style={styles.name}>{item.name}</Text>
-                    <Text style={styles.desc}>{item.description}</Text>
-                  </View>
-                </LinearGradient>
-              </MotiView>
-            </Swipeable>
+                <Image resizeMode="contain" source={{ uri: item.image }} style={styles.image} />
+                <View style={styles.info}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.desc}>{item.description}</Text>
+                </View>
+              </LinearGradient>
+            </SwipeToDelete>
           )}
         />
       </View>
@@ -129,7 +103,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   containerList: { flex: 1 },
   text: { fontSize: 18, fontFamily: "Jost_600SemiBold", textAlign: "center" },
-  card: { borderRadius: 12, marginBottom: 4, flexDirection: "row", alignItems: "center", padding: 10, shadowColor: "#000", shadowOpacity: 0.25, shadowOffset: { width: 0, height: 3 }, shadowRadius: 6, elevation: 4, height: 90 },
+  card: { borderRadius: 35, flexDirection: "row", alignItems: "center", padding: 10, shadowColor: "#000", shadowOpacity: 0.25, shadowOffset: { width: 0, height: 3 }, shadowRadius: 6, elevation: 4, height: 90 },
   image: { width: 70, height: 70, borderRadius: 8, marginRight: 12 },
   info: { flex: 1 },
   name: { color: "#FFD700", fontSize: 16, fontFamily: "Jost_700Bold", marginBottom: 4 },

@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { AuthContext } from "../../context/AuthContext";
 import { auth, db } from "../../config/firebase";
 import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore";
 import ButtonGeneral from "../../components/ButtonGeneral";
@@ -17,81 +18,57 @@ import Toast from "react-native-toast-message";
 
 export default function RegisterScreen({ navigation }) {
   const { colors } = useTheme();
-
+  const { register } = useContext(AuthContext)
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-  if (!name || !email || !password) {
-    Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: "Por favor completa todos los campos",
-    });
-    return;
-  }
+    if (!name || !email || !password) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Por favor completa todos los campos",
+      });
+      return;
+    }
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    // Crear usuario en Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    try {
+      const user = await register(name, email, password);
 
-    // Crear documento en Firestore
-    const userRef = doc(db, "users", user.uid);
+      if (!user) return;
 
-    await setDoc(userRef, {
-      name,
-      email,
-      verified: false,
-      isAdmin: false,
-      avatar: "",
-      phone: {
-        codigo: "34",
-        numero: "",
-      },
-      cart: [],
-      coupons: [],
-      favorites: [],
-      createdAt: serverTimestamp(),
-    });
+      const welcomeMsgRef = doc(collection(db, `users/${user.uid}/messages`));
 
-    
+      await setDoc(welcomeMsgRef, {
+        title: "Bienvenido a Coffee Power App",
+        body: "...",
+        type: "inform",
+        read: false,
+        createdAt: serverTimestamp(),
+      });
 
-    // Crear automáticamente la subcolección "messages"
-    const welcomeMsgRef = doc(collection(db, `users/${user.uid}/messages`));
+      Toast.show({
+        type: "success",
+        text1: "Registro Exitoso",
+        text2: "Verifica tu correo...",
+      });
 
-    await setDoc(welcomeMsgRef, {
-      title: "Bienvenido a Coffee Power App",
-      body: "Gracias por registrarte. Aquí recibirás descuentos, alertas y novedades especiales.",
-      type: "promo",
-      read: false,
-      createdAt: serverTimestamp(),
-      expiresAt: serverTimestamp(),
-    });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
 
-    Toast.show({
-      type: "success",
-      text1: "Registro Exitoso: Cuenta creada",
-      text2: "Verifica tu correo para habilitar las compras dentro de la app.",
-    });
-
-  } catch (error) {
-    console.log("Error registro:", error);
-    Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: error.message,
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   return (

@@ -30,20 +30,19 @@ export default function UserAreaScreen({ navigation }) {
 
   useEffect(() => {
     const loadUserData = async () => {
-      if (!user) return navigation.replace("Login");
+      if (!user) {
+        return navigation.replace("Login");
+      }
 
       try {
         const userRef = doc(db, "users", user.uid);
         let userSnap = await getDoc(userRef);
+
         if (!userSnap.exists()) {
-          await setDoc(userRef, {
-            phone: "",
-            name: user.displayName || "Usuario",
-            email: user.email || "",
-            coupons: [],
-            createdAt: new Date(),
-          });
-          userSnap = await getDoc(userRef);
+          setUserName("Usuario");
+          setUserEmail(user.email || "");
+          setLoading(false);
+          return;
         }
         const data = userSnap.data();
         setUserName(data.name || "Usuario");
@@ -51,6 +50,10 @@ export default function UserAreaScreen({ navigation }) {
         await fetchAddresses(user.uid);
       } catch (err) {
         console.error("❌ Error cargando datos del usuario:", err);
+        // ⚠️ Si Firestore dice que no hay permisos, el user YA NO EXISTE
+        if (err.code === "permission-denied") {
+          return navigation.replace("Login");
+        }
       } finally {
         setLoading(false); // ✅ termina la carga
       }

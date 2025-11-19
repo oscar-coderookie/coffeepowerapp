@@ -24,12 +24,13 @@ import { FavoritesProvider } from './context/FavoritesContext';
 import StripeProvider from './StripeProviderWrapper';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from './screens/SplashScreen';
+import { MessagesProvider } from "./context/MessagesContext";
 
 
 const Stack = createNativeStackNavigator();
 
 function MainApp() {
-  
+
   const { theme } = useThemeContext();
 
   return (
@@ -37,7 +38,7 @@ function MainApp() {
       <NavigationContainer theme={theme}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {/* 👇 Splash que se muestra primero */}
-          <Stack.Screen name="Splash" component={SplashScreen}  />
+          <Stack.Screen name="Splash" component={SplashScreen} />
           {/* 👇 Tu Drawer principal */}
           <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
         </Stack.Navigator>
@@ -68,12 +69,14 @@ export default function App() {
     <ErrorBoundary>
       <AuthProvider>
         <FavoritesProvider>
-          <CartProvider>
-            <ThemeProvider>
-              <MainApp />
-              <Toast config={toastConfig} />
-            </ThemeProvider>
-          </CartProvider>
+          <MessagesProvider>
+            <CartProvider>
+              <ThemeProvider>
+                <MainApp />
+                <Toast config={toastConfig} />
+              </ThemeProvider>
+            </CartProvider>
+          </MessagesProvider>
         </FavoritesProvider>
       </AuthProvider>
     </ErrorBoundary>

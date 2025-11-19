@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../config/firebase";
+import Toast from "react-native-toast-message";
 
 export const FavoritesContext = createContext();
 
@@ -70,12 +71,13 @@ export const FavoritesProvider = ({ children }) => {
     return { added: true };
   };
 
-  const deleteFavorite = async (id) => {
+  const deleteFavorite = async (id , name) => {
     const userId = auth.currentUser.uid;
     const ref = doc(db, "users", userId, "favorites", id);
 
     try {
       await deleteDoc(ref);
+      Toast.show({ type: "error", text1: `${name}: Eliminado de Favoritos` });
     } catch (error) {
       console.error("Error eliminando favorito:", error);
     }

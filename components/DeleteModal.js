@@ -30,7 +30,7 @@ const ConfirmDeleteModal = ({ isVisible, onClose, onConfirm }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{
-          backgroundColor: "#fff",
+          backgroundColor: colors.background,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           padding: 20,
@@ -52,13 +52,13 @@ const ConfirmDeleteModal = ({ isVisible, onClose, onConfirm }) => {
             disabled={loading}
             style={{
               flex: 1,
-              backgroundColor: "#ccc",
+              backgroundColor: colors.text,
               padding: 12,
               borderRadius: 10,
               marginRight: 8,
             }}
           >
-            <Text style={{ color: "#333", textAlign: "center", fontFamily: "Jost_700Bold" }}>Cancelar</Text>
+            <Text style={{ color: colors.background, textAlign: "center", fontFamily: "Jost_700Bold" }}>Cancelar</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

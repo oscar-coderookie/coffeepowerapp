@@ -3,6 +3,7 @@ const cors = require("cors");
 const { onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2/options");
 const { defineSecret } = require("firebase-functions/params");
+const { auth } = require("firebase-functions/v1"); // <-- CAMBIO CLAVE AQUÍ// <-- Importa el módulo completo de v2
 
 setGlobalOptions({ region: "us-central1" });
 
@@ -19,9 +20,11 @@ app.use(express.json());
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+
 admin.initializeApp();
 const db = admin.firestore();
 
+//funcion para mensajes masivos replicados:
 exports.replicateMassMessage = functions.https.onRequest(async (req, res) => {
   try {
     const { message } = req.body;
@@ -54,7 +57,24 @@ exports.replicateMassMessage = functions.https.onRequest(async (req, res) => {
   }
 });
 
-// -------------------------------
+
+exports.deleteAccount = auth.user().onDelete(async(user)=>{
+const uid = user.uid; // En v1, el UID está directamente en user.uid
+
+  // Referencia a la colección de usuarios en Firestore
+  const userDocRef = admin.firestore().collection('users').doc(uid);
+
+  try {
+    await userDocRef.delete();
+    console.log(`Documento del usuario ${uid} eliminado exitosamente de Firestore.`);
+    return null;
+  } catch (error) {
+    console.error(`Error al eliminar el documento del usuario ${uid}:`, error);
+    return null;
+  }
+})
+
+
 // 🔹 Helper: crear o recuperar cliente de Stripe
 // -------------------------------
 async function getOrCreateCustomer(stripe, uid, email) {
