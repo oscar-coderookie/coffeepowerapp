@@ -25,6 +25,7 @@ import StripeProvider from './StripeProviderWrapper';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from './screens/SplashScreen';
 import { MessagesProvider } from "./context/MessagesContext";
+import { UserProvider } from "./context/UserContext";
 
 
 const Stack = createNativeStackNavigator();
@@ -67,18 +68,26 @@ export default function App() {
 
   return (
     <ErrorBoundary>
+
       <AuthProvider>
-        <FavoritesProvider>
-          <MessagesProvider>
-            <CartProvider>
-              <ThemeProvider>
-                <MainApp />
-                <Toast config={toastConfig} />
-              </ThemeProvider>
-            </CartProvider>
-          </MessagesProvider>
-        </FavoritesProvider>
+        <UserProvider>
+          <FavoritesProvider>
+
+
+
+            <MessagesProvider>
+              <CartProvider>
+                <ThemeProvider>
+                  <MainApp />
+                  <Toast config={toastConfig} />
+                </ThemeProvider>
+              </CartProvider>
+            </MessagesProvider>
+
+          </FavoritesProvider>
+        </UserProvider>
       </AuthProvider>
+
     </ErrorBoundary>
   );
 }

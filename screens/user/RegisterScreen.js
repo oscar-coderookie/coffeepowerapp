@@ -8,10 +8,7 @@ import {
   StyleSheet
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { AuthContext } from "../../context/AuthContext";
-import { auth, db } from "../../config/firebase";
-import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import CustomHeader from "../../components/CustomHeader";
 import Toast from "react-native-toast-message";
@@ -39,18 +36,7 @@ export default function RegisterScreen({ navigation }) {
 
     try {
       const user = await register(name, email, password);
-
       if (!user) return;
-
-      const welcomeMsgRef = doc(collection(db, `users/${user.uid}/messages`));
-
-      await setDoc(welcomeMsgRef, {
-        title: "Bienvenido a Coffee Power App",
-        body: "...",
-        type: "inform",
-        read: false,
-        createdAt: serverTimestamp(),
-      });
 
       Toast.show({
         type: "success",

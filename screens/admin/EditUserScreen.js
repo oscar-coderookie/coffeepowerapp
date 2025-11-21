@@ -7,6 +7,7 @@ import CustomHeader from "../../components/CustomHeader";
 import { playSound } from "../../utils/soundPlayer";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import Toast from "react-native-toast-message";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function EditUserScreen() {
   const { colors } = useTheme();
@@ -17,6 +18,35 @@ export default function EditUserScreen() {
   const [name, setName] = useState(user.name || "");
   const [email, setEmail] = useState(user.email || "");
   const [phone, setPhone] = useState(user.phone?.numero || "");
+
+    // Eliminar usuario
+    const handleDeleteUser = (userId) => {
+      playSound('click')
+      Alert.alert("Confirmar eliminación", "¿Seguro que quieres eliminar este usuario?", [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteDoc(doc(db, "users", userId));
+              Toast.show({
+                type: "success",
+                text1: "Eliminación Exitosa",
+                text2: "Usuario eliminado correctamente ✅",
+              });
+            } catch (error) {
+              console.error("Error al eliminar usuario:", error);
+              Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "No se pudo eliminar el usuario ❌",
+              })
+            }
+          },
+        },
+      ]);
+    };
 
   const handleSave = async () => {
     playSound('click')
@@ -44,7 +74,7 @@ export default function EditUserScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader title="Editar usuario" showBack />
+      <CustomHeader title={`Editar: ${user.name}`} showBack />
       <View style={styles.form}>
         <Text style={[styles.label, { color: colors.text }]}>Nombre completo:</Text>
         <TextInput
@@ -85,7 +115,23 @@ export default function EditUserScreen() {
           soundType="click"
 
         />
+        <TouchableOpacity
+          onPress={() => handleDeleteUser(user.id)}
+          style={{
+            padding: 14,
+            borderRadius: 10,
+            backgroundColor: "red",
+            flexDirection:'row',
+            alignItems:'center',
+            justifyContent:'center'
+          }}
+        >
+          <MaterialIcons name="delete" size={24} color={colors.background} />
+          <Text style={{fontFamily:'Jost_600SemiBold', color:colors.background, textTransform:'uppercase', width:'40%'}}>Eliminar Usuario</Text>
+
+        </TouchableOpacity>
       </View>
+
     </View>
   );
 }

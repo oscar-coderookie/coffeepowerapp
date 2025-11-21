@@ -84,9 +84,6 @@ export default function AddToCart({ coffee }) {
                 </LinearGradient>
 
             </TouchableOpacity>
-            <View style={{ alignItems: "center", marginTop: 10 }}>
-                <FavouriteButton cafe={coffee} size={50} />
-            </View>
         </View>
     )
 };

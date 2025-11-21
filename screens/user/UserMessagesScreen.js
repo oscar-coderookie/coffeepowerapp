@@ -1,13 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import {
-  collection,
   updateDoc,
   doc,
-  orderBy,
-  query,
-  onSnapshot,
-  where
 } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { AuthContext } from "../../context/AuthContext";
@@ -32,13 +27,25 @@ export default function UserMessagesScreen() {
   // -----------------------------
   const [section, setSection] = useState("inbox");
 
-  const handleDeleteMessage = async (id) => {
+  const handleSwipeMessage = async (id) => {
     try {
-      deleteMessage(id)
-      Toast.show({ type: "success", text1: "Mensaje eliminado" });
+      // Determinamos el nuevo valor de deleted según la sección actual
+      const newDeletedValue = section === "trash" ? false : true;
+
+      await updateDoc(doc(db, "users", user.uid, "messages", id), {
+        deleted: newDeletedValue,
+      });
+
+      // Actualizamos también en tu context local si usas useMessages
+      if (newDeletedValue) {
+        Toast.show({ type: "success", text1: "Mensaje Eliminado correctamente." });
+      } else {
+        Toast.show({ type: "success", text1: "Mensaje Restaurado correctamente." });
+      }
+
     } catch (err) {
       console.error(err);
-      Toast.show({ type: "error", text1: "Error al eliminar mensaje" });
+      Toast.show({ type: "error", text1: "Error al actualizar mensaje" });
     }
   };
 
@@ -78,12 +85,24 @@ export default function UserMessagesScreen() {
       ? colors.gray
       : messageColors[item.type] || "#2bb800ff";
 
+
+
+    const gradientColors = section === "trash"
+      ? ["#00cc00ff", "#00cc00ff", "#00cc0021"] // Verde para restaurar
+      : ["#cc0000ff", "#cc0000ff", "#cc000021"];
+
+
     return (
       <SwipeToDelete
         itemId={item.id}
         index={index}
-        onSwipe={() => handleDeleteMessage(item.id)}
+        onSwipe={() => handleSwipeMessage(item.id)}
         borderRadius={50}
+        colors={section === "trash"
+          ? ["#00cc00ff", "#00cc00ff", "#00cc0021"]
+          : ["#cc0000ff", "#cc0000ff", "#cc000021"]
+        }
+        icon={section === "trash" ? "arrow-undo" : "trash"} // 🔹 condicional
       >
         <TouchableOpacity
           onPress={() => {
@@ -127,17 +146,6 @@ export default function UserMessagesScreen() {
               >
                 {item.title}
               </Text>
-
-              <Text
-                style={{
-                  fontFamily: "Jost_400Regular",
-                  color: colors.text,
-                  marginTop: 5,
-                  fontSize: 12,
-                }}
-              >
-                {item.body}
-              </Text>
             </View>
 
             <View style={{ alignItems: "flex-end" }}>
@@ -178,8 +186,6 @@ export default function UserMessagesScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <CustomHeader title="Mensajes" />
-
       <View style={{ marginHorizontal: 10, paddingTop: 20 }}>
 
         {/* 🔥 TABS SUPERIORES */}
@@ -213,7 +219,17 @@ export default function UserMessagesScreen() {
             </TouchableOpacity>
           ))}
         </View>
-
+        {dataToRender.length > 0 && (
+          <Text
+            style={{
+              textAlign: "center",
+              fontFamily: "Jost_400Regular",
+              marginBottom: 10,
+            }}
+          >
+            ➔ Desliza hacia la derecha para {section === "trash" ? "restaurar" : "eliminar"} mensajes ➔
+          </Text>
+        )}
         {/* 🔥 LISTA */}
         <FlatList
           data={dataToRender}

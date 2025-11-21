@@ -4,11 +4,12 @@ import {
   onAuthStateChanged,
   signOut,
   createUserWithEmailAndPassword,
+  updateProfile,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   reload, updateEmail, reauthenticateWithCredential, EmailAuthProvider, verifyBeforeUpdateEmail, deleteUser
 } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase"; // tu instancia de Firestore
 import Toast from "react-native-toast-message";
 
@@ -29,7 +30,6 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
   //Funcionalidad para actualizar el correo electronico(modificar):
-
   const changeEmail = async (newEmail, currentPassword) => {
     try {
       const user = auth.currentUser;
@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
   };
+
   const changeEmailFirestore = async (userId, newEmail) => {
     try {
       if (!userId) throw new Error("No hay usuario logueado");
@@ -94,38 +95,64 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   //Registro:
-const register = async (name, email, password) => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+  const register = async (name, email, password) => {
+    try {
 
-    await setDoc(doc(db, "users", user.uid), {
-      name: name,
-      email: email,
-      verified: false,
-      isAdmin: false,
-      avatar: "",
-      phone: { codigo: "34", numero: "" },
-      createdAt: serverTimestamp(),
-    });
+      //1. Crear usuario en Auth:
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      const user = userCredential.user;
 
-    return user;
+      // 2️⃣ Actualizar displayName para que la Cloud Function lo pueda usar
+      await updateProfile(user, { displayName: name });
 
-  } catch (error) {
-    console.log("Error registro:", error);
-    throw error; // ✔️ importantísimo
-  }
-};
+      await setDoc(doc(db, "users", user.uid), {
+        name: name,
+        email: email,
+        verified: false,
+        isAdmin: false,
+        avatar: "",
+        phone: { codigo: "34", numero: "" },
+        createdAt: serverTimestamp(),
+      });
 
+      return user;
 
-  //Login:
+    } catch (error) {
+      console.log("Error registro:", error);
+      throw error; // ✔️ importantísimo
+    }
+  };
+
   const login = async (email, password) => {
     try {
       setAuthError(null);
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user);
+      const firebaseUser = userCredential.user;
+
+      // si NO está verificado, mostramos aviso pero igual guardamos user en el contexto
+      if (!firebaseUser.emailVerified) {
+        Toast.show({
+          type: "working",
+          text1: "Cuenta no verificada",
+          text2: "Por favor revisa tu correo.",
+        });
+      }
+
+      // importante → actualizar estado del contexto para activar navegación automática
+      setUser(firebaseUser);
+
+      return firebaseUser;
+
     } catch (error) {
       setAuthError(error.message);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
+      throw error;
     }
   };
   //Logout:
@@ -147,71 +174,71 @@ const register = async (name, email, password) => {
   };
 
   //Borrar cuenta y datos de firestore:
-const handleDeleteAccount = async (password) => {
-  const currentUser = auth.currentUser;
+  const handleDeleteAccount = async (password) => {
+    const currentUser = auth.currentUser;
 
-  if (!password) {
-    return Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: "Ingresa tu contraseña para confirmar.",
-    });
-  }
-
-  if (!currentUser) {
-    return Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: "No hay usuario autenticado.",
-    });
-  }
-
-  try {
-    // 1️⃣ Reautenticar
-    const credential = EmailAuthProvider.credential(
-      currentUser.email,
-      password
-    );
-    await reauthenticateWithCredential(currentUser, credential);
-
-    // 2️⃣ Eliminar usuario de Firebase Auth
-    await deleteUser(currentUser);
-
-    // 💡 Aquí NO eliminas nada más.
-    // La Cloud Function deleteAccount se encargará del resto.
-
-    Toast.show({
-      type: "success",
-      text1: "Cuenta eliminada",
-      text2: "Tu cuenta y todos tus datos han sido eliminados.",
-    });
-
-  } catch (error) {
-    console.error("❌ Error eliminando cuenta:", error);
-
-    if (error.code === "auth/wrong-password") {
+    if (!password) {
       return Toast.show({
         type: "error",
-        text1: "Contraseña incorrecta",
-        text2: "La contraseña ingresada no es válida.",
+        text1: "Error",
+        text2: "Ingresa tu contraseña para confirmar.",
       });
     }
 
-    if (error.code === "auth/requires-recent-login") {
+    if (!currentUser) {
       return Toast.show({
         type: "error",
-        text1: "Inicio de sesión requerido",
-        text2: "Vuelve a iniciar sesión antes de eliminar tu cuenta.",
+        text1: "Error",
+        text2: "No hay usuario autenticado.",
       });
     }
 
-    Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: error.message,
-    });
-  }
-};
+    try {
+      // 1️⃣ Reautenticar
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        password
+      );
+      await reauthenticateWithCredential(currentUser, credential);
+
+      // 2️⃣ Eliminar usuario de Firebase Auth
+      await deleteUser(currentUser);
+
+      // 💡 Aquí NO eliminas nada más.
+      // La Cloud Function deleteAccount se encargará del resto.
+
+      Toast.show({
+        type: "success",
+        text1: "Cuenta eliminada",
+        text2: "Tu cuenta y todos tus datos han sido eliminados.",
+      });
+
+    } catch (error) {
+      console.error("❌ Error eliminando cuenta:", error);
+
+      if (error.code === "auth/wrong-password") {
+        return Toast.show({
+          type: "error",
+          text1: "Contraseña incorrecta",
+          text2: "La contraseña ingresada no es válida.",
+        });
+      }
+
+      if (error.code === "auth/requires-recent-login") {
+        return Toast.show({
+          type: "error",
+          text1: "Inicio de sesión requerido",
+          text2: "Vuelve a iniciar sesión antes de eliminar tu cuenta.",
+        });
+      }
+
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
+    }
+  };
 
 
 

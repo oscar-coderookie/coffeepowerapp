@@ -66,35 +66,7 @@ export default function AdminCatalogScreen({ navigation }) {
     }, [coffees]);
 
     // 🔹 Eliminar café
-    const handleDeleteCoffee = (coffeeId) => {
-        playSound('click')
-        Alert.alert("Confirmar eliminación", "¿Seguro que quieres eliminar este café?", [
-            { text: "Cancelar", style: "cancel" },
-            {
-                text: "Eliminar",
-                style: "destructive",
-                onPress: async () => {
-                    try {
-                        const coffeeRef = doc(db, "coffees", coffeeId);
-                        await deleteDoc(coffeeRef);
 
-                        Toast.show({
-                            type: "error",
-                            text1: "Eliminado",
-                            text2: "Café eliminado correctamente de la base de datos✅",
-                        });
-                    } catch (error) {
-                        console.error("Error al eliminar café:", error);
-                        Toast.show({
-                            type: "error",
-                            text1: "Error",
-                            text2: "No se pudo eliminar el café ❌",
-                        })
-                    }
-                },
-            },
-        ]);
-    };
 
     // 🔹 Render de cada item con animación individual
     const renderItem = ({ item, index }) => {
@@ -128,7 +100,6 @@ export default function AdminCatalogScreen({ navigation }) {
             >
                 <View style={styles.info}>
                     <Text style={[styles.title, { color: colors.text }]}>{item.name}</Text>
-                    <Text style={[styles.price, { color: colors.text }]}>{item.price} €</Text>
                 </View>
 
                 <TouchableOpacity
@@ -136,22 +107,12 @@ export default function AdminCatalogScreen({ navigation }) {
                         playSound('click')
                         navigation.navigate("EditCoffee", { coffee: item })
                     }}
-                    style={{ padding: 10, borderRadius: 10, backgroundColor: "green" }}
+                    style={{ padding: 10, borderRadius: 40, backgroundColor: "green" }}
                 >
                     <MaterialIcons name="mode-edit" size={24} color={colors.background} />
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={() => handleDeleteCoffee(item.id)}
-                    style={{
-                        padding: 10,
-                        borderRadius: 10,
-                        backgroundColor: "red",
-                        marginLeft: 10,
-                    }}
-                >
-                    <MaterialIcons name="delete" size={24} color={colors.background} />
-                </TouchableOpacity>
+             
             </Animated.View>
         );
     };
@@ -188,16 +149,18 @@ const styles = StyleSheet.create({
     list: { padding: 10, paddingBottom: 80 },
     card: {
         flexDirection: "row",
-        borderRadius: 14,
-        padding: 10,
+        borderRadius: 40,
+        padding: 6,
         marginBottom: 10,
         alignItems: "center",
+        justifyContent:'center',
         elevation: 2,
     },
     info: { flex: 1 },
     title: {
-        fontFamily: "Jost_400Regular",
+        fontFamily: "Jost_600SemiBold",
         textTransform: "capitalize",
+        marginLeft:10
     },
     price: {
         fontFamily: "Jost_600SemiBold",

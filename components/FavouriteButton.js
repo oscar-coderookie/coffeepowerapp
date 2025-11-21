@@ -5,6 +5,8 @@ import { FavoritesContext } from "../context/FavoritesContext";
 import { auth } from "../config/firebase";
 import { playSound } from "../utils/soundPlayer";
 import Toast from "react-native-toast-message";
+import { Ionicons } from "@expo/vector-icons";
+import { View } from "react-native";
 
 export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) {
   const { favorites, toggleFavorite } = useContext(FavoritesContext);
@@ -54,13 +56,26 @@ export default function FavouriteButton({ cafe, size = 26, color = "#FFD700" }) 
     }
   };
 
-  return (
-    <TouchableOpacity style={{ marginLeft: 10 }} onPress={handlePress} disabled={loading}>
+ return (
+  <TouchableOpacity onPress={handlePress} disabled={loading}>
+    <View
+      style={{
+        width: size,
+        height: size,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {loading ? (
         <ActivityIndicator size="small" color={color} />
       ) : (
-        <Icon name={isFavorite ? "star" : "star-o"} size={size} color={color} />
+        <Ionicons
+          name={isFavorite ? "heart-sharp" : "heart-outline"}
+          size={size}
+          color={color}
+        />
       )}
-    </TouchableOpacity>
-  );
+    </View>
+  </TouchableOpacity>
+);
 }

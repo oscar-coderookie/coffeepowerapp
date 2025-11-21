@@ -6,12 +6,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 
-export default function SwipeToDelete({ children, onSwipe, itemId, index = 0, borderRadius, heightContainer }) {
+export default function SwipeToDelete({ children, onSwipe, itemId, index = 0, borderRadius, icon, colors }) {
   const swipeableRef = useRef(null);
 
   const renderLeftActions = () => (
     <LinearGradient
-      colors={["#cc0000ff", "#cc0000ff", "#cc000021"]}
+      colors={colors}
       locations={[0, 0.8, 1]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
@@ -25,7 +25,7 @@ export default function SwipeToDelete({ children, onSwipe, itemId, index = 0, bo
         borderBottomEndRadius: 0,
       }}
     >
-      <Ionicons name="trash" size={30} color="#fff" />
+      <Ionicons name={icon} size={30} color="#fff" />
     </LinearGradient>
   );
 

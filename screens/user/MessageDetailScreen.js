@@ -35,22 +35,10 @@ export default function MessageDetailScreen({ route }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <CustomHeader title="Detalle Mensaje" showBack />
+      <CustomHeader title={message.title} showBack />
       <ScrollView contentContainerStyle={{ padding: 10, paddingBottom: 60 }}>
-        {/* TÍTULO */}
-        <Text
-          style={{
-            fontSize: 20,
-            fontFamily: "Jost_700Bold",
-            color: colors.text,
-            marginBottom: 12,
-            letterSpacing: -0.3,
-          }}
-        >
-          {message.title}
-        </Text>
-
-        {/* FECHA */}
+        {/* CUERPO */}
+         {/* FECHA */}
         <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
           
           <Text
@@ -79,8 +67,6 @@ export default function MessageDetailScreen({ route }) {
           </Text>
           <Ionicons name="time-outline" size={18} color="#888" />
         </View>
-
-        {/* CUERPO */}
         <Text
           style={{
             fontSize: 16,

@@ -2,19 +2,20 @@ import { useTheme } from "@react-navigation/native";
 import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../config/firebase";
 import { AuthContext } from "../../context/AuthContext";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import CustomHeader from "../../components/CustomHeader";
 import Toast from "react-native-toast-message";
+import useGoogleAuth from "../../hooks/useGoogleAuth";
+import GoogleButton from "../../components/GoogleButton";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { colors } = useTheme();
-  const { user } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
+  const { promptGoogleLogin } = useGoogleAuth();
 
   useEffect(() => {
     if (user) {
@@ -33,19 +34,7 @@ export default function LoginScreen({ navigation }) {
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const userLogged = userCredential.user;
-
-      if (!userLogged.emailVerified) {
-        Toast.show({
-          type: "working",
-          text1: "Cuenta no verificada",
-          text2: "Por favor, verifica tu correo para habilitar las compras.",
-        });
-        return;
-      }
-
-      // El AuthContext detectará el usuario automáticamente y navegará
+      await login(email, password)
     } catch (error) {
       console.log("Error login:", error);
       Toast.show({
@@ -107,13 +96,14 @@ export default function LoginScreen({ navigation }) {
           bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
           borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
           onTouch={handleLogin} />
-
+        <GoogleButton onPress={promptGoogleLogin} />
         <TouchableOpacity onPress={() => navigation.navigate("Register")}>
           <Text style={styles.link}>¿No tienes cuenta? Regístrate</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
           <Text style={[styles.link, { color: "tomato" }]}>¿Olvidaste tu contraseña?</Text>
         </TouchableOpacity>
+
       </View>
     </View>
   );

@@ -5,10 +5,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import { playSound } from "../../utils/soundPlayer";
 import logoMenu from "../../assets/images/logo-nuevo.png";
 import cartIcon from "../../assets/icons/cart.png";
+import BadgeWrapper from "../../components/BadgeWrapper";
+import { useCart } from "../../context/CartContext";
+
 
 export default function HeaderDrawer() {
   const { colors } = useTheme();
   const navigation = useNavigation();
+  const { cartItems } = useCart();
+
+
+  const cartCount = cartItems.reduce(
+    (total, item) => total + (item.quantity || 1),
+    0
+  );
 
   return {
     headerBackground: () => (
@@ -51,11 +61,10 @@ export default function HeaderDrawer() {
             justifyContent: "center",
           }}
         >
-          <Image
-            source={cartIcon}
-            style={{ width: 50, height: 50 }}
-            resizeMode="contain"
-          />
+          <BadgeWrapper
+            pngSource={cartIcon}
+            size={50}
+            badgeCount={cartCount} />
         </TouchableOpacity>
       </View>
     )

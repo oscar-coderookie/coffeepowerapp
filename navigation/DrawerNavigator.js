@@ -45,6 +45,7 @@ export default function DrawerNavigator() {
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         ...headerConfig,
+        headerTitleAlign:'center',
         headerStyle: { height: 120, elevation: 2 },
         drawerStyle: { backgroundColor: colors.background },
         drawerActiveTintColor: colors.text,

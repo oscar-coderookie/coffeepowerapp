@@ -101,88 +101,113 @@ export default function CategoryScreen({ route }) {
         title={category.name}
         showBack={true}
       />
-      {/* BOTÓN DORADO */}
 
 
-      {loading ? (<LoadingScreen />) : (<View style={[styles.overlay, { backgroundColor: colors.background }]}>
-        {category.legend && (
-          <Text style={[styles.legend, { color: colors.text }]}>{category.legend}</Text>
-        )}
+      {loading ? (<LoadingScreen />
+      ) : (
+        <View style={[styles.overlay, { backgroundColor: colors.background }]}>
+          <View
+            style={{
+              borderBottomColor: colors.border,
+              borderBottomWidth: 0.5,
+              marginBottom: 10,
+              paddingHorizontal: 10,
+              alignItems: "center", // centra verticalmente
+              justifyContent: "center",
+            }}
+          >
+            {category.legend && (
+              <Text
+                style={[
+                  {
+                    color: colors.text,
+                    marginTop:10,
+                    fontSize: 16,
+                    fontFamily: 'Jost_600SemiBold',
+                    textAlign: 'left', // ⚡ opcional: alinea a la izquierda para que ocupe todo el espacio
+                  }
+                ]}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
+                {category.legend}
+              </Text>
+            )}
 
-        <View style={{ borderBottomColor: colors.border, borderBottomWidth: 0.5, marginBottom: 10 }}>
-          <SortButton
-            onPress={() => setSortVisible(true)}
-            sortType={sortType}
+            <SortButton
+              onPress={() => setSortVisible(true)}
+              sortType={sortType}
+              style={{ marginLeft: 8 }} // un poquito de separación
+            />
+          </View>
+
+          {/* MODAL DE SORT */}
+          <SortToolCoffeePower
+            visible={sortVisible}
+            onClose={() => setSortVisible(false)}
+            onSelect={applySort}
           />
-        </View>
+          <FlatList
+            data={coffees}
+            keyExtractor={(item) => item.name.toUpperCase()}
+            style={styles.flatList}
+            contentContainerStyle={{ paddingBottom: 100, marginBottom:100 }}
+            renderItem={({ item, index }) => (
 
-        {/* MODAL DE SORT */}
-        <SortToolCoffeePower
-          visible={sortVisible}
-          onClose={() => setSortVisible(false)}
-          onSelect={applySort}
-        />
-        <FlatList
-          data={coffees}
-          keyExtractor={(item) => item.name.toUpperCase()}
-          style={styles.flatList}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          renderItem={({ item, index }) => (
+              <MotiView
+                from={{ opacity: 0, translateY: 30, scale: 0.95 }}
+                animate={{ opacity: 1, translateY: 0, scale: 1 }}
 
-            <MotiView
-              from={{ opacity: 0, translateY: 30, scale: 0.95 }}
-              animate={{ opacity: 1, translateY: 0, scale: 1 }}
-           
-              transition={{
-                delay: index * 100, // ⏱ efecto cascada
-                type: 'spring',
-                damping: 20,
-              }}
-            >
-              <LinearGradient
-                colors={[colors.card, colors.gray, colors.card]}
-                start={{x:0.3, y:0}}
-                style={[styles.card]}>
-                <TouchableOpacity
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {
-                    playSound('click');
-                    navigation.navigate("CoffeeDetail", { coffee: item })
-                  }}
-                >
-                  <FavoriteButton cafe={item} />
-                  <View style={styles.cardInfo}>
-                    <Text style={[styles.cardTitle, { color: colors.text }]}>{item.name}</Text>
-                    <Text style={[styles.cardDesc, { color: colors.text }]}>{item.description}</Text>
-                  </View>
+                transition={{
+                  delay: index * 100, // ⏱ efecto cascada
+                  type: 'spring',
+                  damping: 20,
+                }}
+              >
+                <LinearGradient
+                  colors={[colors.card, colors.gray, colors.card]}
+                  start={{ x: 0.3, y: 0 }}
+                  style={[styles.card]}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      playSound('click');
+                      navigation.navigate("CoffeeDetail", { coffee: item, coffeeId: item.id })
+                    }}
+                  >
+                    <FavoriteButton cafe={item} size={40} color="red" />
+                    <View style={styles.cardInfo}>
+                      <Text style={[styles.cardTitle, { color: colors.text }]}>{item.name}</Text>
+                      <Text style={[styles.cardDesc, { color: colors.text }]}>{item.description}</Text>
+                    </View>
 
-                  <View style={styles.imageContainer}>
-                    <Image
-                      resizeMode="contain"
-                      source={{ uri: item.image }}
-                      style={styles.image}
-                    />
-                  </View>
+                    <View style={styles.imageContainer}>
+                      <Image
+                        resizeMode="contain"
+                        source={{ uri: item.image }}
+                        style={styles.image}
+                      />
+                    </View>
 
-                </TouchableOpacity>
-              </LinearGradient>
+                  </TouchableOpacity>
+                </LinearGradient>
 
-            </MotiView>
+              </MotiView>
 
-          )}
-        />
-      </View>)}
+            )}
+          />
+        </View>)}
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   bg: { flex: 1, resizeMode: "cover" },
-  overlay: { flex: 1, paddingHorizontal: 10 },
+  overlay: { flex:1, paddingHorizontal: 10 },
   legend: {
     fontSize: 16,
     textAlign: "center",
@@ -197,6 +222,8 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 14,
+    paddingLeft: 10,
+    paddingRight: 10,
     borderRadius: 42,
     padding: 6,
     shadowColor: "#000000ff",
@@ -204,7 +231,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.6,
     shadowRadius: 2,
     elevation: 1,
-  
+
   },
   cardInfo: {
     width: '65%',

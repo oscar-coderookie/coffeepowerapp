@@ -6,7 +6,8 @@ import {
     TextInput,
     StyleSheet,
     TouchableOpacity,
-    ScrollView
+    ScrollView,
+    Alert
 } from "react-native";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
@@ -15,6 +16,7 @@ import { useTheme } from "@react-navigation/native";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
+import { playSound } from "../../utils/soundPlayer";
 
 export default function EditCoffeeScreen({ route, navigation }) {
     const { coffee } = route.params;
@@ -43,6 +45,36 @@ export default function EditCoffeeScreen({ route, navigation }) {
     const removeArrayItem = (array, setArray, index) => {
         const newArray = array.filter((_, i) => i !== index);
         setArray(newArray);
+    };
+
+    const handleDeleteCoffee = (coffeeId) => {
+        playSound('click')
+        Alert.alert("Confirmar eliminación", "¿Seguro que quieres eliminar este café?", [
+            { text: "Cancelar", style: "cancel" },
+            {
+                text: "Eliminar",
+                style: "destructive",
+                onPress: async () => {
+                    try {
+                        const coffeeRef = doc(db, "coffees", coffeeId);
+                        await deleteDoc(coffeeRef);
+
+                        Toast.show({
+                            type: "error",
+                            text1: "Eliminado",
+                            text2: "Café eliminado correctamente de la base de datos✅",
+                        });
+                    } catch (error) {
+                        console.error("Error al eliminar café:", error);
+                        Toast.show({
+                            type: "error",
+                            text1: "Error",
+                            text2: "No se pudo eliminar el café ❌",
+                        })
+                    }
+                },
+            },
+        ]);
     };
 
     const handleUpdate = async () => {
@@ -81,6 +113,7 @@ export default function EditCoffeeScreen({ route, navigation }) {
     };
 
     const renderArrayEditor = (label, array, setArray) => (
+
         <View style={styles.arrayContainer}>
             <Text style={[styles.label, { color: colors.text, textTransform: 'capitalize' }]}>{label}</Text>
 
@@ -158,6 +191,17 @@ export default function EditCoffeeScreen({ route, navigation }) {
                 {renderArrayEditor("Notas de cata:", tasteNotes, setTasteNotes)}
                 {renderArrayEditor("Etiquetas:", tags, setTags)}
                 <ButtonGeneral onTouch={handleUpdate} text="guardar cambios" bckColor={colors.text} textColor={colors.background} />
+                <TouchableOpacity
+                    onPress={() => handleDeleteCoffee(coffee.id)}
+                    style={{
+                        padding: 10,
+                        borderRadius: 40,
+                        backgroundColor: "red",
+                        marginLeft: 10,
+                    }}
+                >
+                    <MaterialIcons name="delete" size={24} color={colors.background} />
+                </TouchableOpacity>
             </ScrollView>
         </View>
     );

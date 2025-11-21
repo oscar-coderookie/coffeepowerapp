@@ -16,60 +16,15 @@ import { MotiView } from "moti"; // 👈 Importamos MotiView
 import LoadingScreen from "../../components/LoadingScreen";
 import { playSound } from "../../utils/soundPlayer";
 import { useDrawerStatus } from "@react-navigation/drawer";
+import { useUser } from "../../context/UserContext";
 
 export default function UserAreaScreen({ navigation }) {
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const { userData, loadingUser, fetchAddresses, addresses } = useUser();
   const [avatar, setAvatar] = useState(null);
-  const [addresses, setAddresses] = useState([]);
   const [editingId, setEditingId] = useState(null);
-  const [loading, setLoading] = useState(true);
+
   const { colors } = useTheme();
   const { user } = useContext(AuthContext);
-
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (!user) {
-        return navigation.replace("Login");
-      }
-
-      try {
-        const userRef = doc(db, "users", user.uid);
-        let userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists()) {
-          setUserName("Usuario");
-          setUserEmail(user.email || "");
-          setLoading(false);
-          return;
-        }
-        const data = userSnap.data();
-        setUserName(data.name || "Usuario");
-        setUserEmail(user.email || "No definido");
-        await fetchAddresses(user.uid);
-      } catch (err) {
-        console.error("❌ Error cargando datos del usuario:", err);
-        // ⚠️ Si Firestore dice que no hay permisos, el user YA NO EXISTE
-        if (err.code === "permission-denied") {
-          return navigation.replace("Login");
-        }
-      } finally {
-        setLoading(false); // ✅ termina la carga
-      }
-    };
-    loadUserData();
-  }, [user]);
-
-  const fetchAddresses = async (uid = user?.uid) => {
-    if (!uid) return;
-    try {
-      const snapshot = await getDocs(collection(db, `users/${uid}/addresses`));
-      setAddresses(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.log("Error cargando direcciones:", error);
-    }
-  };
 
   const handleAddAddress = async () => {
     if (!user) return;
@@ -94,10 +49,9 @@ export default function UserAreaScreen({ navigation }) {
   const handleDeleted = (id) => setAddresses((prev) => prev.filter((a) => a.id !== id));
   const handleUpdated = () => fetchAddresses();
 
-
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  if (loadingUser) {
+  return <LoadingScreen />;
+}
 
   return (
     <View style={styles.container}>
@@ -125,7 +79,7 @@ export default function UserAreaScreen({ navigation }) {
                 Bienvenido:
               </Text>
               <Text style={{ textTransform: "capitalize", fontFamily: "Jost_400Regular", color: colors.text }}>
-                {userName}
+                {userData?.name ?? "Usuario"}
               </Text>
             </View>
           </MotiView>
@@ -146,7 +100,7 @@ export default function UserAreaScreen({ navigation }) {
                 Correo registrado:
               </Text>
               <Text style={{ fontFamily: "Jost_400Regular", color: colors.text }}>
-                {userEmail || "No definido"}
+               {userData?.email ?? "No definido"}
               </Text>
             </View>
           </MotiView>

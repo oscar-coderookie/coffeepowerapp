@@ -63,34 +63,7 @@ export default function UsersAdminScreen({ navigation }) {
     ).start();
   }, [users]);
 
-  // Eliminar usuario
-  const handleDeleteUser = (userId) => {
-    playSound('click')
-    Alert.alert("Confirmar eliminación", "¿Seguro que quieres eliminar este usuario?", [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Eliminar",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteDoc(doc(db, "users", userId));
-            Toast.show({
-              type: "success",
-              text1: "Eliminación Exitosa",
-              text2: "Usuario eliminado correctamente ✅",
-            });
-          } catch (error) {
-            console.error("Error al eliminar usuario:", error);
-            Toast.show({
-              type: "error",
-              text1: "Error",
-              text2: "No se pudo eliminar el usuario ❌",
-            })
-          }
-        },
-      },
-    ]);
-  };
+
 
   // Render de cada item
   const renderItem = ({ item, index }) => {
@@ -119,11 +92,9 @@ export default function UsersAdminScreen({ navigation }) {
       >
         <View style={styles.info}>
           <Text style={[styles.name, { color: colors.text }]}>
-            {item.name || "Sin nombre"}
+            {item.name}
           </Text>
-          <Text style={[styles.email, { color: colors.text }]}>
-            {item.email || "Sin correo"}
-          </Text>
+  
         </View>
 
         <TouchableOpacity
@@ -136,17 +107,7 @@ export default function UsersAdminScreen({ navigation }) {
           <MaterialIcons name="mode-edit" size={24} color={colors.background} />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => handleDeleteUser(item.id)}
-          style={{
-            padding: 10,
-            borderRadius: 10,
-            backgroundColor: "red",
-            marginLeft: 10,
-          }}
-        >
-          <MaterialIcons name="delete" size={24} color={colors.background} />
-        </TouchableOpacity>
+
       </Animated.View>
     );
   };
@@ -174,7 +135,7 @@ const styles = StyleSheet.create({
   list: { paddingBottom: 80 },
   card: {
     flexDirection: "row",
-    borderRadius: 14,
+    borderRadius: 30,
     padding: 10,
     marginBottom: 10,
     alignItems: "center",
@@ -184,6 +145,7 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: "Jost_400Regular",
     textTransform: "capitalize",
+    marginLeft: 10
   },
   email: {
     fontFamily: "Jost_600SemiBold",

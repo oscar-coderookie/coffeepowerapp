@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { onRequest } = require("firebase-functions/v2/https");
+const { onRequest, } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2/options");
 const { defineSecret } = require("firebase-functions/params");
 const { auth } = require("firebase-functions/v1"); // <-- CAMBIO CLAVE AQUÍ// <-- Importa el módulo completo de v2
@@ -57,15 +57,15 @@ exports.replicateMassMessage = functions.https.onRequest(async (req, res) => {
   }
 });
 
-
-exports.deleteAccount = auth.user().onDelete(async(user)=>{
-const uid = user.uid; // En v1, el UID está directamente en user.uid
+//borrar datos de usuario eliminado de auth:
+exports.deleteAccount = auth.user().onDelete(async (user) => {
+  const uid = user.uid; // En v1, el UID está directamente en user.uid
 
   // Referencia a la colección de usuarios en Firestore
   const userDocRef = admin.firestore().collection('users').doc(uid);
 
   try {
-    await userDocRef.delete();
+    await admin.firestore().recursiveDelete(userDocRef);
     console.log(`Documento del usuario ${uid} eliminado exitosamente de Firestore.`);
     return null;
   } catch (error) {
@@ -73,8 +73,36 @@ const uid = user.uid; // En v1, el UID está directamente en user.uid
     return null;
   }
 })
+//funcion de correo y mensaje de bienvenida:
+exports.welcomeMessages = auth.user().onCreate(async (user) => {
+  const userId = user.uid;
+  try {
 
+    await new Promise(res => setTimeout(res, 300));
 
+    // 🔍 Leer el nombre desde Firestore (siempre llega correcto)
+    const userDoc = await admin.firestore().collection("users").doc(userId).get();
+    const userName = userDoc.exists ? userDoc.data().name : "Usuario";
+
+    const welcomeMessage = {
+      title: "Bienvenido a Coffee Power App",
+      body: `Hola ${userName}! Te damos una calurosa bienvenida a la familia de Coffee Power. ¿Estás listo para probar el mejor café del mundo?`,
+      type: "inform",
+      read: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    await admin.firestore()
+      .collection("users")
+      .doc(userId)
+      .collection("messages")
+      .add(welcomeMessage);
+
+    console.log(`Mensaje de bienvenida agregado para el usuario ${userId}`);
+  } catch (error) {
+    console.error("Error al agregar el mensaje de bienvenida:", error);
+  }
+});
 // 🔹 Helper: crear o recuperar cliente de Stripe
 // -------------------------------
 async function getOrCreateCustomer(stripe, uid, email) {

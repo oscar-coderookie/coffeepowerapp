@@ -1,42 +1,31 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, Image, ImageBackground, ActivityIndicator } from "react-native";
 import { MotiView } from "moti";
 import { useTheme } from "@react-navigation/native";
-import logo from "../assets/icon.png";
-import background from '../assets/images/splash.jpg'
+import logo from "../assets/images/logo-nuevo.png";
+import background from "../assets/images/splash.jpg";
 
 export default function LoadingScreen({ message = "Cargando..." }) {
   const { colors } = useTheme();
 
   return (
-    <ImageBackground source={background} resizeMode="cover" style={[styles.container]}>
-      {/* 💥 Logo con efecto de pulso */}
-      <MotiView
-        from={{ scale: 1 }}
-        animate={{ scale: 1.15 }}
-        transition={{
-          type: "timing",
-          duration: 900,
-          repeat: Infinity,
-          repeatReverse: true,
-        }}
-        style={styles.iconWrapper}
-      >
+    <ImageBackground source={background} resizeMode="cover" style={styles.container}>
+
+
+      {/* Logo fijo */}
+      <View style={styles.iconWrapper}>
         <Image
           source={logo}
-          style={[styles.image, { width: 160, height: 160 }]}
+          style={styles.logo}
           resizeMode="contain"
         />
-      </MotiView>
+      </View>
 
-      {/* Texto de carga */}
-      <MotiView
-        from={{ opacity: 0, translateY: 10 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "timing", duration: 800, delay: 400 }}
-      >
-        <Text style={[styles.text]}>{message}</Text>
-      </MotiView>
+      {/* Spinner bonito */}
+      <View style={{ marginTop: 25 }}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+
     </ImageBackground>
   );
 }
@@ -44,30 +33,32 @@ export default function LoadingScreen({ message = "Cargando..." }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width:'100%',
-    height:'100%',
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
+
+  /* Resplandor animado */
+  glowWrapper: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+    borderRadius: 200,
+    backgroundColor: "rgba(255,255,255,0.4)",
+    shadowColor: "white",
+    shadowRadius: 40,
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 0 },
+  },
+
   iconWrapper: {
     justifyContent: "center",
     alignItems: "center",
   },
-  text: {
-    marginTop: 6,
-    fontSize: 20,
-    color:'white',
-    fontFamily: "Jost_600SemiBold",
-    textAlign: "center",
-    textShadowColor: "rgba(0,0,0,0.4)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 4,
+
+  logo: {
+    width: 160,
+    height: 160,
   },
-  image:{
-     shadowColor: "#ffffffff", // color del resplandor
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.7,
-    shadowRadius: 10,
-    elevation: 10,
-  }
 });

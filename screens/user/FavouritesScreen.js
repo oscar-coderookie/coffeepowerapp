@@ -5,8 +5,9 @@ import {
   StyleSheet,
   FlatList,
   Image,
+  TouchableOpacity,
 } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import CustomHeader from "../../components/CustomHeader";
 import { FavoritesContext } from "../../context/FavoritesContext";
 import { MotiView } from "moti";
@@ -30,15 +31,24 @@ async function prefetchImages(favorites) {
 }
 
 export default function FavoritesScreen() {
-  const { favorites, deleteFavorite } = useContext(FavoritesContext);
+  const { favorites = [], deleteFavorite } = useContext(FavoritesContext);
   const { colors } = useTheme();
   const [loading, setLoading] = useState(true);
-  const swipeableRefs = useRef(new Map());
-  const user = auth.currentUser;
+  const navigation = useNavigation();
+
+  const goToDetail = (item) => {
+    navigation.navigate("Nuestros Cafés", {
+      screen: "CoffeeDetail",
+      params: { coffeeId: item.id },
+    });
+  };
 
   useEffect(() => {
     const loadData = async () => {
-      if (!favorites) return;
+      if (!favorites || favorites.length === 0) {
+        setLoading(false); // ⚡ importante
+        return;
+      }
       await prefetchImages(favorites);
       setLoading(false);
     };
@@ -48,6 +58,7 @@ export default function FavoritesScreen() {
   if (loading) return <LoadingScreen />;
 
   if (!favorites || favorites.length === 0) {
+
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <CustomHeader title="Mis Favoritos" />
@@ -63,35 +74,40 @@ export default function FavoritesScreen() {
     <View style={[styles.containerList, { backgroundColor: colors.background }]}>
       <CustomHeader title="Mis Favoritos" />
       <View style={{ marginHorizontal: 10 }}>
-        <Text style={{ fontFamily: "Jost_400Regular", textAlign: "center", marginTop: 10, color: colors.text }}>
-          Desliza hacia la derecha para eliminar un favorito:
-        </Text>
+        {favorites.length > 0 && (
+          <Text style={{ fontFamily: "Jost_400Regular", textAlign: "center", marginTop: 10, color: colors.text }}>
+           ➔ Desliza hacia la derecha para eliminar un favorito ➔
+          </Text>
+        )}
 
         <FlatList
-          style={{ marginTop: 20 }}
-          data={favorites}
+     
+          data={favorites || []}
           keyExtractor={(item, index) => item.id || index.toString()}
           renderItem={({ item, index }) => (
-            <SwipeToDelete
-              itemId={item.id}
-              index={index}
-              onSwipe={() => deleteFavorite(item.id, item.name)}
-              borderRadius={35}
-           
-            >
-              <LinearGradient
-                colors={["#000000ff", "#2b2b2bff", "#000000ff", "#303030ff", "#000000ff"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[styles.card]}
+            <TouchableOpacity onPress={() => goToDetail(item)} style={{ marginVertical: 6 }}>
+              <SwipeToDelete
+                itemId={item.id}
+                index={index}
+                onSwipe={() => deleteFavorite(item.id, item.name)}
+                borderRadius={35}
+                icon="trash"
+                colors={["#cc0000ff", "#cc0000ff", "#cc000021"]}
               >
-                <Image resizeMode="contain" source={{ uri: item.image }} style={styles.image} />
-                <View style={styles.info}>
-                  <Text style={styles.name}>{item.name}</Text>
-                  <Text style={styles.desc}>{item.description}</Text>
-                </View>
-              </LinearGradient>
-            </SwipeToDelete>
+                <LinearGradient
+                  colors={["#000000ff", "#2b2b2bff", "#000000ff", "#303030ff", "#000000ff"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[styles.card]}
+                >
+                  <Image resizeMode="contain" source={{ uri: item.image }} style={styles.image} />
+                  <View style={styles.info}>
+                    <Text style={styles.name}>{item.name}</Text>
+                    <Text style={styles.desc}>{item.description}</Text>
+                  </View>
+                </LinearGradient>
+              </SwipeToDelete>
+            </TouchableOpacity>
           )}
         />
       </View>

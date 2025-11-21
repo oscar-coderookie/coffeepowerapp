@@ -1,19 +1,43 @@
 import { View, Text, StyleSheet, Animated, Dimensions, ImageBackground } from "react-native";
-import { useContext, useRef, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { CartContext } from "../context/CartContext";
+import { useEffect, useRef, useState } from "react";
 import CustomHeader from "../components/CustomHeader";
 import { MotiView } from 'moti';
 import { Easing } from "react-native-reanimated";
 import LoadingScreen from "../components/LoadingScreen";
 import AddToCart from "../components/AddToCart";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import Ratings from "../components/Ratings";
+import { useTheme } from "@react-navigation/native";
+import FavouriteButton from "../components/FavouriteButton";
 
 const { width, height } = Dimensions.get("window");
 
 export default function CoffeeDetailScreen({ route }) {
-  const { coffee } = route.params;
+  const [coffee, setCoffee] = useState(null);
+  const { coffeeId, coffee: coffeeParam } = route.params;
   const [bgLoaded, setBgLoaded] = useState(false);
   const [section2Top, setSection2Top] = useState(0);
+
+  useEffect(() => {
+    if (coffeeParam) {
+      setCoffee(coffeeParam);
+      return;
+    }
+
+    const loadCoffee = async () => {
+      try {
+        const ref = doc(db, "coffees", coffeeId);
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) setCoffee({ id: snap.id, ...snap.data() });
+      } catch (err) {
+        console.log("Error cargando café:", err);
+      }
+    };
+
+    loadCoffee();
+  }, [coffeeId, coffeeParam]);
   // declaración recomendada (estable entre renders)
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -37,7 +61,9 @@ export default function CoffeeDetailScreen({ route }) {
   });
 
 
-
+  if (!coffee) {
+    return <LoadingScreen />;
+  }
 
 
   return (
@@ -121,6 +147,9 @@ export default function CoffeeDetailScreen({ route }) {
 
         <Animated.View
           style={[styles.imageContainer]}>
+          <View style={{ alignItems: "center", marginTop: 10 }}>
+            <FavouriteButton cafe={coffee} size={50} color='red' />
+          </View>
           <Animated.Image
 
             source={{ uri: coffee.image }}
@@ -130,7 +159,7 @@ export default function CoffeeDetailScreen({ route }) {
             }]}
             resizeMode="contain"
           />
-
+          <Ratings coffeeId={coffee.id} />
           <AddToCart title="añadir" coffee={coffee} />
         </Animated.View>
       </Animated.ScrollView>
@@ -186,7 +215,7 @@ const styles = StyleSheet.create({
   package: {
     width: width,
     height: 400,
-    transform: [{ translateX: -20 }]
+    transform: [{ translateX: -50 }]
   },
 
 

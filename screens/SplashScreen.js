@@ -14,7 +14,7 @@ import {
     useFonts,
     ShadowsIntoLightTwo_400Regular,
 } from "@expo-google-fonts/shadows-into-light-two";
-import logotipo from "../assets/splash-icon.png";
+import logotipo from "../assets/images/logo-nuevo.png";
 import background from '../assets/images/splash.jpg'
 
 
