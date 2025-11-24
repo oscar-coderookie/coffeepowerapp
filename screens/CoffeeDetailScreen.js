@@ -10,6 +10,7 @@ import { db } from "../config/firebase";
 import Ratings from "../components/Ratings";
 import { useTheme } from "@react-navigation/native";
 import FavouriteButton from "../components/FavouriteButton";
+import ReviewsSection from "../components/ReviewsSection";
 
 const { width, height } = Dimensions.get("window");
 
@@ -161,6 +162,10 @@ export default function CoffeeDetailScreen({ route }) {
           />
           <Ratings coffeeId={coffee.id} />
           <AddToCart title="añadir" coffee={coffee} />
+        </Animated.View>
+        <Animated.View
+        style={{flex: 1, height: 700}}>
+          <ReviewsSection coffeeId={coffee.id} />
         </Animated.View>
       </Animated.ScrollView>
     </View>

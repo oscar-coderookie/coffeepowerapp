@@ -22,8 +22,9 @@ export default function LoadingScreen({ message = "Cargando..." }) {
       </View>
 
       {/* Spinner bonito */}
-      <View style={{ marginTop: 25 }}>
+      <View style={{ marginTop: 25, flexDirection:'row', alignItems:'center' }}>
         <ActivityIndicator size="large" color="#fff" />
+        <Text style={{fontFamily:'Jost_600SemiBold', color: 'white', fontSize: 20, marginLeft:10}}>Cargando...</Text>
       </View>
 
     </ImageBackground>

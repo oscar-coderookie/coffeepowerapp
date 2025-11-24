@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [authError, setAuthError] = useState(null);
 
+
   // 🔹 Detecta cambios de usuario
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -240,11 +241,60 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+  const loadUserProfile = async () => {
+    if (!user?.uid) {
+      setUserData(null);
+      return;
+    }
 
+    try {
+      const docRef = doc(db, "users", user.uid);
+      const snap = await getDoc(docRef);
+
+      if (snap.exists()) {
+        setUserData(snap.data());
+      } else {
+        setUserData(null);
+      }
+    } catch (error) {
+      console.log("Error cargando datos de Firestore:", error);
+    }
+  };
+
+  loadUserProfile();
+}, [user]);
+
+const [userData, setUserData] = useState(null);
+
+// cargar datos desde Firestore
+useEffect(() => {
+  const loadUserProfile = async () => {
+    if (!user?.uid) {
+      setUserData(null);
+      return;
+    }
+
+    try {
+      const docRef = doc(db, "users", user.uid);
+      const snap = await getDoc(docRef);
+
+      if (snap.exists()) {
+        setUserData(snap.data());
+      } else {
+        setUserData(null);
+      }
+    } catch (error) {
+      console.log("Error cargando datos de Firestore:", error);
+    }
+  };
+
+  loadUserProfile();
+}, [user]);
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoadingUser, authError, register, login, logout, resetPassword, changeEmailFirestore, changeEmail, handleDeleteAccount }}
+      value={{ user, isLoadingUser, authError, register, login, logout, resetPassword, changeEmailFirestore, changeEmail, handleDeleteAccount, userData }}
     >
       {children}
     </AuthContext.Provider>
