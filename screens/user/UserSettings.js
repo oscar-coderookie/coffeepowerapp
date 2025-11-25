@@ -14,7 +14,7 @@ import { MotiView } from "moti"; // 👈 animaciones
 import { playSound } from "../../utils/soundPlayer";
 import Toast from "react-native-toast-message";
 
-const UserSettings = () => {
+const UserSettings = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showChange2Email, setShowChange2Email] = useState(false);
@@ -95,7 +95,20 @@ const UserSettings = () => {
                 playSound('click'),
                   setShowChange2Email(!showChange2Email)
               },
+
+
             },
+            {
+              key: "editAddresses",
+              text: "Editar direcciones",
+            borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
+              color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
+              textColor: "white",
+              onTouch: () => {
+                playSound("click");
+                navigation.navigate("EditAddressScreen");
+              },
+            }
           ].map((btn, index) => (
             <MotiView
               key={btn.key}

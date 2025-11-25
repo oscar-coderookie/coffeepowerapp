@@ -3,7 +3,7 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useTheme } from "@react-navigation/native";
 import UserAreaScreen from "../screens/user/UserAreaScreen";
-import UserSettings from "../screens/user/UserSettings";
+import UserSettingsStack from "./UserSettingsStack";
       // Ajustes
 
 const TopTab = createMaterialTopTabNavigator();
@@ -39,7 +39,7 @@ export default function PerfilTopTabs() {
       />
       <TopTab.Screen
         name="Ajustes"
-        component={UserSettings}
+        component={UserSettingsStack}
       />
     </TopTab.Navigator>
   );

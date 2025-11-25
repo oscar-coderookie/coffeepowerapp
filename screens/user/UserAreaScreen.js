@@ -17,6 +17,8 @@ import LoadingScreen from "../../components/LoadingScreen";
 import { playSound } from "../../utils/soundPlayer";
 import { useDrawerStatus } from "@react-navigation/drawer";
 import { useUser } from "../../context/UserContext";
+import UserAddresses from "./userArea/UserAddresses";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 
 export default function UserAreaScreen({ navigation }) {
   const { userData, loadingUser, fetchAddresses, addresses } = useUser();
@@ -25,6 +27,12 @@ export default function UserAreaScreen({ navigation }) {
 
   const { colors } = useTheme();
   const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    const unsub = fetchAddresses();
+
+    return () => unsub && unsub();  // limpia el listener cuando sales de la pantalla
+  }, []);
 
   const handleAddAddress = async () => {
     if (!user) return;
@@ -50,8 +58,8 @@ export default function UserAreaScreen({ navigation }) {
   const handleUpdated = () => fetchAddresses();
 
   if (loadingUser) {
-  return <LoadingScreen />;
-}
+    return <LoadingScreen />;
+  }
 
   return (
     <View style={styles.container}>
@@ -87,55 +95,62 @@ export default function UserAreaScreen({ navigation }) {
           {/* 🧱 Secciones animadas al hacer scroll */}
 
           <Text style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}>
-            Datos de contacto:
+            Correo registrado:
           </Text>
           <MotiView
             from={{ opacity: 0, translateY: 30 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "timing", duration: 800, delay: 200 }}
-            style={styles.infoContainer}
+            style={[styles.infoContainer, {marginVertical:20, alignItems:'center'}]}
           >
-            <View style={{ alignItems: "center", marginVertical: 10 }}>
-              <Text style={{ fontFamily: "Jost_600SemiBold", textTransform: "uppercase", color: colors.text }}>
-                Correo registrado:
-              </Text>
-              <Text style={{ fontFamily: "Jost_400Regular", color: colors.text }}>
-               {userData?.email ?? "No definido"}
-              </Text>
-            </View>
-          </MotiView>
-          <Text style={[styles.text, { color: colors.text }]}>
-            Aquí puedes gestionar tus datos de envío para tus pedidos:
-          </Text>
 
+              <Text style={{ fontFamily: "Jost_600SemiBold", color: colors.text }}>
+                {userData?.email ?? "No definido"}
+              </Text>
+          </MotiView>
+          <Text style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}>
+            Direcciones registradas:
+          </Text>
           <View style={styles.field}>
-            {addresses.map((item) => (
+            {addresses.map((item, index) => (
               <MotiView
                 key={item.id}
                 from={{ opacity: 0, translateY: 15 }}
                 animate={{ opacity: 1, translateY: 0 }}
                 transition={{ type: "timing", duration: 1200, delay: 400 }}
               >
-                <AddressBlock
-                  addressId={item.id}
-                  initialData={item}
-                  onDeleted={handleDeleted}
-                  onUpdated={handleUpdated}
-                />
+                <UserAddresses address={item} index={index} key={index} />
               </MotiView>
             ))}
 
-            <ButtonGeneral
-              bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
-              text="+ Añadir dirección"
-              textColor="white"
-              onTouch={handleAddAddress}
-              borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
-              soundType="click"
-            />
-
-            <WhatsappBlock />
           </View>
+          <Text style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}>
+            <FontAwesome name="whatsapp" size={24} color={colors.background} /> Whatsapp Personal:
+          </Text>
+          <MotiView
+            from={{ opacity: 0, translateY: 30 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: "timing", duration: 800, delay: 200 }}
+            style={[styles.infoContainer, {flexDirection:'row', justifyContent:'center', marginVertical:20}]}
+          >
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={[styles.subtitle, { color: colors.text }]}>
+               Código:
+              </Text>
+              <Text style={[styles.text, { color: colors.text, marginLeft: 10 }]}>
+                +{userData.phone.codigo}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row' , marginLeft:20}}>
+              <Text style={[styles.subtitle, { color: colors.text }]}>
+                Número:
+              </Text>
+              <Text style={[styles.text, { color: colors.text, marginLeft: 10 }]}>
+                {userData.phone.numero}
+              </Text>
+            </View>
+          </MotiView>
+
 
           <Text style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}>
             Métodos de pago:
@@ -179,16 +194,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Jost_700Bold",
     padding: 10,
+    justifyContent: 'center'
+  },
+  subtitle: {
+    fontFamily: 'Jost_600SemiBold'
   },
   text: {
     textAlign: "center",
     fontFamily: "Jost_400Regular",
   },
-  infoContainer: { width: "100%" },
+  infoContainer: { marginHorizontal: 10, marginVertical: 10, },
   field: {
-    width: "100%",
-    justifyContent: "center",
-    padding: 10,
+
+
+
+    marginHorizontal: 10
   },
   paymentMethods: {
     justifyContent: "center",

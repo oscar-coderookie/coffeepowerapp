@@ -194,8 +194,6 @@ export default function ReviewsSection({ coffeeId }) {
                     />
                 </>
             )}
-
-
         </View>
     );
 }

@@ -1,7 +1,7 @@
 // context/UserContext.js
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../config/firebase";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
 
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
@@ -11,15 +11,19 @@ export const UserProvider = ({ children }) => {
   const [addresses, setAddresses] = useState([]);      // subcolección
   const [loadingUser, setLoadingUser] = useState(true); // loading global
 
-  const fetchAddresses = async (uid = userData.uid) => {
-    if (!uid) return;
-    try {
-      const snapshot = await getDocs(collection(db, `users/${uid}/addresses`));
-      setAddresses(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    } catch (error) {
-      console.log("Error cargando direcciones:", error);
-    }
-  };
+const fetchAddresses = (uid = userData?.uid) => {
+  if (!uid) return;
+
+  const ref = collection(db, `users/${uid}/addresses`);
+
+  const unsubscribe = onSnapshot(ref, (snapshot) => {
+    setAddresses(
+      snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    );
+  });
+
+  return unsubscribe;
+};
 
   const loadUserData = async (firebaseUser) => {
     if (!firebaseUser) {
@@ -51,7 +55,7 @@ export const UserProvider = ({ children }) => {
         email: firebaseUser.email || "No definido",
         ...data,
       });
-      fetchAddresses(firebaseUser.uid);
+  
 
     } catch (err) {
       console.error("❌ Error en loadUserData:", err);
