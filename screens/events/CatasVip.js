@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { MotiView } from "moti";
 import imageBck from "../../assets/images/catas-movil.webp";
-import iconBasic from "../../assets/images/catas-inicial.png";
-import iconIntermediate from "../../assets/images/catas-intermediate.png";
-import iconVip from "../../assets/images/catas-exclusive.png";
+import iconBasic from "../../assets/images/webp/catas-inicial.webp";
+import iconIntermediate from "../../assets/images/webp/catas-intermediate.webp";
+import iconVip from "../../assets/images/webp/catas-exclusive.webp";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import { useTheme } from "@react-navigation/native";
 

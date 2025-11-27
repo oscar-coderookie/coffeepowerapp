@@ -4,32 +4,21 @@ import CustomHeader from "../../components/CustomHeader";
 import { useTheme } from "@react-navigation/native";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import LoadingScreen from "../../components/LoadingScreen";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withDelay,
-} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MotiView } from "moti";
+import { useUser } from "../../context/UserContext";
+import { createOrder } from "../../services/checkoutService";
 
 export default function PayoutScreen({ navigation, route }) {
   const { colors } = useTheme();
   const { cartItems = [], shippingData = {}, paymentData = {} } = route.params || {};
   const appliedCoupon = shippingData?.appliedCoupon || null;
-
+  const { userData } = useUser()
   const [shippingCost, setShippingCost] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-
-  // 🔹 Reanimated shared values
-  const block1 = useSharedValue(-100);
-  const block2 = useSharedValue(-100);
-  const block3 = useSharedValue(-100);
-  const opacity1 = useSharedValue(0);
-  const opacity2 = useSharedValue(0);
-  const opacity3 = useSharedValue(0);
 
   useEffect(() => {
     try {
@@ -50,59 +39,43 @@ export default function PayoutScreen({ navigation, route }) {
       setDiscountAmount(discountValue);
       setTotal(totalWithDiscount);
 
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+      setTimeout(() => setLoading(false), 1000);
     } catch (error) {
       console.error("Error calculando totales:", error);
       setLoading(false);
     }
   }, [cartItems, shippingData]);
 
-  useEffect(() => {
-    if (!loading) {
-      // Animaciones escalonadas
-      block1.value = withTiming(0, { duration: 500 });
-      opacity1.value = withTiming(1, { duration: 600 });
+  const handleFinish = async () => {
+    try {
+      const orderId = await createOrder(
+        userData.uid,
+        userData,
+        shippingData,
+        paymentData,
+        cartItems,
+        { subtotal, discountAmount, shippingCost, total }
+      );
 
-      block2.value = withDelay(400, withTiming(0, { duration: 500 }));
-      opacity2.value = withDelay(400, withTiming(1, { duration: 600 }));
-
-      block3.value = withDelay(800, withTiming(0, { duration: 500 }));
-      opacity3.value = withDelay(800, withTiming(1, { duration: 600 }));
+      navigation.navigate("OrderSuccess", { userId: userData.uid, orderId });
+    } catch (err) {
+      console.error(err);
     }
-  }, [loading]);
-
-  const style1 = useAnimatedStyle(() => ({
-    transform: [{ translateX: block1.value }],
-    opacity: opacity1.value,
-  }));
-
-  const style2 = useAnimatedStyle(() => ({
-    transform: [{ translateX: block2.value }],
-    opacity: opacity2.value,
-  }));
-
-  const style3 = useAnimatedStyle(() => ({
-    transform: [{ translateX: block3.value }],
-    opacity: opacity3.value,
-  }));
-
-  const handleFinish = () => {
-    navigation.navigate("OrderSuccess", { total });
   };
 
   if (loading) return <LoadingScreen />;
 
   return (
-    <SafeAreaView
-      style={[styles.container]}
-      edges={['bottom']} // ✅ quitamos el top
-    >
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <CustomHeader title="Completar orden" showBack={true} />
       <ScrollView contentContainerStyle={{ paddingBottom: 30, marginHorizontal: 10 }}>
-        {/* 🟤 BLOQUE 1 - Resumen */}
-        <Animated.View style={[style1]}>
+
+        {/* BLOQUE 1 - Resumen */}
+        <MotiView
+          from={{ translateX: -100, opacity: 0 }}
+          animate={{ translateX: 0, opacity: 1 }}
+          transition={{ type: 'timing', duration: 500 }}
+        >
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Resumen del pedido</Text>
           {cartItems.map((item, idx) => (
             <View key={idx} style={styles.item}>
@@ -114,12 +87,16 @@ export default function PayoutScreen({ navigation, route }) {
               </Text>
             </View>
           ))}
-        </Animated.View>
+        </MotiView>
 
         <View style={styles.divider} />
 
-        {/* 🟤 BLOQUE 2 - Datos de envío */}
-        <Animated.View style={[style2]}>
+        {/* BLOQUE 2 - Datos de envío */}
+        <MotiView
+          from={{ translateX: -100, opacity: 0 }}
+          animate={{ translateX: 0, opacity: 1 }}
+          transition={{ type: 'timing', duration: 500, delay: 400 }}
+        >
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Datos de envío y pago</Text>
           <View style={styles.row}>
             <Text style={[styles.subtitle, { color: colors.text }]}>Dirección:</Text>
@@ -145,12 +122,16 @@ export default function PayoutScreen({ navigation, route }) {
               {paymentData?.method || "No seleccionado"}
             </Text>
           </View>
-        </Animated.View>
+        </MotiView>
 
         <View style={styles.divider} />
 
-        {/* 🟤 BLOQUE 3 - Totales */}
-        <Animated.View style={[style3]}>
+        {/* BLOQUE 3 - Totales */}
+        <MotiView
+          from={{ translateX: -100, opacity: 0 }}
+          animate={{ translateX: 0, opacity: 1 }}
+          transition={{ type: 'timing', duration: 500, delay: 800 }}
+        >
           <View style={styles.row}>
             <Text style={[styles.label, { color: colors.text }]}>Subtotal:</Text>
             <Text style={[styles.value, { color: colors.text }]}>€{subtotal.toFixed(2)}</Text>
@@ -169,9 +150,7 @@ export default function PayoutScreen({ navigation, route }) {
 
           <View style={styles.row}>
             <Text style={[styles.label, { color: colors.text }]}>Gastos de envío:</Text>
-            <Text style={[styles.value, { color: colors.text }]}>
-              €{shippingCost.toFixed(2)}
-            </Text>
+            <Text style={[styles.value, { color: colors.text }]}>€{shippingCost.toFixed(2)}</Text>
           </View>
 
           <View style={styles.row}>
@@ -183,9 +162,9 @@ export default function PayoutScreen({ navigation, route }) {
             text="Finalizar Pedido"
             textColor="#000000ff"
             bckColor={[colors.gold, colors.goldSecondary, colors.gold, colors.goldSecondary, colors.gold]}
-            onPress={handleFinish}
+            onTouch={handleFinish}
           />
-        </Animated.View>
+        </MotiView>
       </ScrollView>
     </SafeAreaView>
   );

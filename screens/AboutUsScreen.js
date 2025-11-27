@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, ScrollView, Dimensions, ImageBackground, Animated } from "react-native";
-import aboutUsImgMovil from "../assets/images/aboutus-movil.jpg";
+import aboutUsImgMovil from "../assets/images/webp/aboutus-movil.webp";
 import VideoPlayer from "../components/VideoPlayer";
 import { useTheme } from "@react-navigation/native";
 import { useRef } from "react";

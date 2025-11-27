@@ -9,8 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MotiView } from "moti";
-import imageBck from "../assets/images/nuestros-cafes-movil.jpg";
-import chef from '../assets/images/chef-movil.jpg';
+import chef from '../assets/images/webp/chef-movil.webp';
 import { coffeeCategories } from "../data/CoffesCategories";
 import SearchBar from "../components/SearchBar";
 import { collection, getDocs } from "firebase/firestore";

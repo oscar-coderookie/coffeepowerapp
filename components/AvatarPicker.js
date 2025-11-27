@@ -214,7 +214,7 @@ export default function AvatarPicker({ size = 100 }) {
               source={
                 avatar
                   ? { uri: avatar }
-                  : require("../assets/images/default-avatar.png")
+                  : require("../assets/images/webp/default-avatar.webp")
               }
               style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, aspectRatio: 1 }]}
             />

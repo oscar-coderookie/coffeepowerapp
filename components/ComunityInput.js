@@ -21,7 +21,7 @@ export default function ComunidadProvinciaPicker({ label, value, options, onChan
   };
 
   return (
-    <View style={{ marginBottom: 15 }}>
+    <View >
       <Text style={[styles.label, {color:colors.text}]}>{label}</Text>
       <TouchableOpacity
         style={[styles.selector, {color: colors.text}]}

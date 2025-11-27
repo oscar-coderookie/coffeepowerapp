@@ -2,8 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, Image, ImageBackground, ActivityIndicator } from "react-native";
 import { MotiView } from "moti";
 import { useTheme } from "@react-navigation/native";
-import logo from "../assets/images/logo-nuevo.png";
-import background from "../assets/images/splash.jpg";
+import logo from "../assets/images/webp/logo-nuevo.webp";
+import background from "../assets/images/webp/splash.webp";
 
 export default function LoadingScreen({ message = "Cargando..." }) {
   const { colors } = useTheme();

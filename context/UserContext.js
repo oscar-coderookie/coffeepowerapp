@@ -1,88 +1,70 @@
 // context/UserContext.js
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../config/firebase";
-import { doc, getDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
+import { doc, collection, onSnapshot } from "firebase/firestore";
 
 const UserContext = createContext();
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
-  const [userData, setUserData] = useState(null);      // datos del documento Firestore
-  const [addresses, setAddresses] = useState([]);      // subcolección
-  const [loadingUser, setLoadingUser] = useState(true); // loading global
+  const [userData, setUserData] = useState(null);
+  const [addresses, setAddresses] = useState([]);
+  const [loadingUser, setLoadingUser] = useState(true);
 
-const fetchAddresses = (uid = userData?.uid) => {
-  if (!uid) return;
+  useEffect(() => {
+    let unsubscribeUser = () => {};
+    let unsubscribeAddresses = () => {};
 
-  const ref = collection(db, `users/${uid}/addresses`);
+    const unsubscribeAuth = auth.onAuthStateChanged((firebaseUser) => {
+      // 🔹 Limpiamos cualquier listener previo
+      unsubscribeUser();
+      unsubscribeAddresses();
 
-  const unsubscribe = onSnapshot(ref, (snapshot) => {
-    setAddresses(
-      snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-    );
-  });
-
-  return unsubscribe;
-};
-
-  const loadUserData = async (firebaseUser) => {
-    if (!firebaseUser) {
-      setUserData(null);
-      setAddresses([]);
-      setLoadingUser(false);
-      return;
-    }
-
-    try {
-      const userRef = doc(db, "users", firebaseUser.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists()) {
-        setUserData({
-          uid: firebaseUser.uid,
-          name: "Usuario",
-          email: firebaseUser.email || "",
-        });
+      if (!firebaseUser) {
+        setUserData(null);
         setAddresses([]);
+        setLoadingUser(false);
         return;
       }
 
-      const data = userSnap.data();
+      const userRef = doc(db, "users", firebaseUser.uid);
 
-      setUserData({
-        uid: firebaseUser.uid,
-        name: data.name || "Usuario",
-        email: firebaseUser.email || "No definido",
-        ...data,
-      });
-  
+      // 🔹 Listener en tiempo real del documento de usuario
+      unsubscribeUser = onSnapshot(
+        userRef,
+        (snap) => {
+          if (!snap.exists()) {
+            setUserData({ uid: firebaseUser.uid, email: firebaseUser.email ?? "" });
+          } else {
+            setUserData({ uid: firebaseUser.uid, email: firebaseUser.email ?? "", ...snap.data() });
+          }
+          setLoadingUser(false);
 
-    } catch (err) {
-      console.error("❌ Error en loadUserData:", err);
-      if (err.code === "permission-denied") {
-        setUserData(null); // forzamos logout indirecto
-      }
-    } finally {
-      setLoadingUser(false);
-    }
-  };
-
-  // 🔥 Listener de Auth
-  useEffect(() => {
-    const unsub = auth.onAuthStateChanged((firebaseUser) => {
-      loadUserData(firebaseUser);
+          // 🔹 Listener en tiempo real de direcciones solo después de tener userData
+          const addressesRef = collection(db, `users/${firebaseUser.uid}/addresses`);
+          unsubscribeAddresses = onSnapshot(addressesRef, (snapshot) => {
+            setAddresses(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+          });
+        },
+        (err) => {
+          console.error("❌ Error en snapshot de usuario:", err);
+        }
+      );
     });
-    return unsub;
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeUser();
+      unsubscribeAddresses();
+    };
   }, []);
 
   return (
     <UserContext.Provider
       value={{
         userData,
-        fetchAddresses,
         addresses,
         loadingUser,
-        reloadUser: () => loadUserData(auth.currentUser),
       }}
     >
       {children}

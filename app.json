@@ -2,7 +2,7 @@
   "expo": {
     "name": "Coffee Power",
     "scheme": "mycoffeepower",
-    "slug": "coffee-power",
+    "slug": "coffee-power-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -39,7 +39,7 @@
     "plugins": [
       "expo-video",
       "expo-font",
-      "expo-audio",
+      "expo-av",
       "expo-web-browser"
     ],
     "extra": {

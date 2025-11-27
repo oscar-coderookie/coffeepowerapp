@@ -7,7 +7,7 @@ import {
     ImageBackground,
     TouchableOpacity
 } from "react-native";
-import BckImage from '../assets/images/accesorios-pro.png'
+import BckImage from '../assets/images/webp/accesorios-pro.webp'
 
 const AccesoriesPro = () => {
     return (

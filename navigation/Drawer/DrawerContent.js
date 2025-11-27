@@ -9,7 +9,7 @@ import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawe
 import { Image, View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import logoMenu from "../../assets/images/logo-nuevo.png";
+import logoMenu from "../../assets/images/webp/logo-nuevo.webp";
 import { Switch } from "react-native";
 
 

@@ -4,7 +4,7 @@ import { useTheme } from "@react-navigation/native";
 import { auth, db } from "../../config/firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import CustomHeader from "../../components/CustomHeader";
-import logo from "../../assets/icon.png";
+import logo from "../../assets/images/webp/logo-nuevo.webp";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
 import LoadingScreen from "../../components/LoadingScreen";

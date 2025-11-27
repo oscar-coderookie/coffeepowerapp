@@ -16,12 +16,14 @@ import ButtonGeneral from "./ButtonGeneral";
 import { playSound } from "../utils/soundPlayer";
 import Toast from "react-native-toast-message";
 import { useTheme } from "@react-navigation/native";
+import { useAddresses } from "../services/addresses";
 
 export default function AddressBlock({
   addressId,
   initialData = {},
   onDeleted,
   onUpdated,
+  onClose
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [address, setAddress] = useState({
@@ -34,83 +36,27 @@ export default function AddressBlock({
     piso: "",
     referencia: "",
   });
+  const { handleSave, handleDelete } = useAddresses(
+    addressId,
+    address,
+    setIsEditing,
+    onUpdated,
+    onDeleted
+  );
 
   const { colors } = useTheme();
 
   useEffect(() => {
-    if (initialData) setAddress(initialData);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 👈 ejecuta solo al montar
-
-  // guardar dirección
-  const handleSave = async () => {
-    const user = auth.currentUser;
-    if (!user) return Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: "Debes iniciar sesión.",
-    });;
-
-    try {
-      const ref = doc(db, `users/${user.uid}/addresses/${addressId}`);
-      await setDoc(ref, address, { merge: true });
-      Toast.show({
-        type: "success",
-        text1: "Guardado",
-        text2: "Dirección actualizada correctamente ✅",
-      });
-      setIsEditing(false);
-      onUpdated?.();
-    } catch (err) {
-      console.log("Error guardando dirección:", err);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "No se pudo guardar la dirección.",
-      });
+    if (initialData && Object.keys(initialData).length > 0) {
+      setAddress(initialData);
     }
-  };
-
-  // eliminar dirección
-  const handleDelete = async () => {
-    Alert.alert(
-      "Eliminar dirección",
-      "¿Estás seguro de eliminar esta dirección?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const user = auth.currentUser;
-              const ref = doc(db, `users/${user.uid}/addresses/${addressId}`);
-              await deleteDoc(ref);
-              onDeleted?.(addressId);
-              Toast.show({
-                type: "error",
-                text1: "Eliminada",
-                text2: "La dirección fue eliminada ✅",
-              });
-            } catch (err) {
-              console.log("Error eliminando dirección:", err);
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: "No se pudo eliminar la dirección.",
-              });
-            }
-          },
-        },
-      ]
-    );
-  };
+  }, []);
+  // guardar dirección
 
   return (
     <View
       style={styles.addressBox}
     >
-
       {/* Calle y numero */}
       <View style={{ flexDirection: "row", justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -241,48 +187,57 @@ export default function AddressBlock({
           }
         />
       </View>
-
-      {/* Botón guardar */}
-      <ButtonGeneral
-        text="guardar dirección"
-        textColor="white"
-        bckColor={[
-          "#000000ff",
-          "#535353ff",
-          "#000000ff",
-          "#6b6b6bff",
-          "#000000ff",
-        ]}
-        borderColors={[
-          "#535353ff",
-          "#000000ff",
-          "#535353ff",
-          "#000000ff",
-          "#535353ff",
-        ]}
-        onTouch={handleSave}
-        soundType="click"
-      />
-
-      {/* Botones editar y eliminar */}
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={[styles.iconBtn, { backgroundColor: "#555" }]}
-          onPress={() => {
-            playSound('click')
-            setIsEditing(true)
+      <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+        {/* Botón guardar */}
+        <ButtonGeneral
+          text="guardar dirección"
+          textColor="white"
+          bckColor={[
+            "#000000ff",
+            "#535353ff",
+            "#000000ff",
+            "#6b6b6bff",
+            "#000000ff",
+          ]}
+          borderColors={[
+            "#535353ff",
+            "#000000ff",
+            "#535353ff",
+            "#000000ff",
+            "#535353ff",
+          ]}
+          onTouch={() => {
+            handleSave();
+            onClose?.();        // 👈 CIERRE DEL MODAL DESPUÉS DE GUARDAR
           }}
-        >
-          <Icon name="pencil" size={18} color="#fff" />
-        </TouchableOpacity>
+          soundType="click"
+        />
+        <ButtonGeneral
+          text="eliminar dirección"
+          textColor="white"
+          bckColor={[
+            "#7A0000",
+            "#A30000",
+            "#7A0000",
+            "#C00000",
+            "#7A0000",
+          ]}
+          borderColors={[
+            "#A30000",
+            "#7A0000",
+            "#A30000",
+            "#7A0000",
+            "#A30000",
+          ]}
+          onTouch={() => {
 
-        <TouchableOpacity
-          style={[styles.iconBtn, { backgroundColor: "#d9534f" }]}
-          onPress={handleDelete}
-        >
-          <Icon name="trash" size={18} color="#fff" />
-        </TouchableOpacity>
+            handleDelete(addressId)
+            onClose()
+          }}
+          soundType="click"
+        />
       </View>
+
     </View>
   );
 }
@@ -290,12 +245,6 @@ export default function AddressBlock({
 const styles = StyleSheet.create({
   addressBox: {
     marginTop: 10,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
     marginHorizontal: 10
   },
   input: {

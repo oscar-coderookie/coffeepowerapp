@@ -9,37 +9,37 @@ export default function PaymentSelector({ selectedMethod, onSelect }) {
     {
       id: "bizum",
       label: "Bizum",
-      logo: require("../assets/icons/bizum-logo.png"), // 🟢 Asegúrate de tener este logo
+      logo: require("../assets/icons/bizum-logo.webp"), // 🟢 Asegúrate de tener este logo
     },
     { 
       id: "visa",
       label: "Tarjeta Visa",
-      logo: require("../assets/icons/visa.png"),
+      logo: require("../assets/icons/visa.webp"),
     },
     {
       id: "mastercard",
       label: "Tarjeta Mastercard",
-      logo: require("../assets/icons/mastercard.png"),
+      logo: require("../assets/icons/mastercard.webp"),
     },
     {
       id: "amex",
       label: "American Express",
-      logo: require("../assets/icons/amexpress.png"),
+      logo: require("../assets/icons/amexpress.webp"),
     },
     {
       id: "gpay",
       label: "Google Pay",
-      logo: require("../assets/icons/gpay.png"),
+      logo: require("../assets/icons/gpay.webp"),
     },
     {
       id: "applepay",
       label: "Apple Pay",
-      logo: require("../assets/icons/applepay.png"),
+      logo: require("../assets/icons/applepay.webp"),
     },
     {
       id: "sepa",
       label: "Transferencia SEPA",
-      logo: require("../assets/icons/sepa.png"),
+      logo: require("../assets/icons/sepa.webp"),
     },
      
   ];

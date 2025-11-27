@@ -21,45 +21,14 @@ import UserAddresses from "./userArea/UserAddresses";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 
 export default function UserAreaScreen({ navigation }) {
-  const { userData, loadingUser, fetchAddresses, addresses } = useUser();
+  const { userData, loadingUser, addresses } = useUser();
   const [avatar, setAvatar] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
   const { colors } = useTheme();
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    const unsub = fetchAddresses();
 
-    return () => unsub && unsub();  // limpia el listener cuando sales de la pantalla
-  }, []);
-
-  const handleAddAddress = async () => {
-    if (!user) return;
-    try {
-      const ref = collection(db, `users/${user.uid}/addresses`);
-      const docRef = await addDoc(ref, {
-        CA: "",
-        provincia: "",
-        codigoPostal: "",
-        calle: "",
-        numero: "",
-        piso: "",
-        referencia: "",
-      });
-      setEditingId(docRef.id);
-      fetchAddresses();
-    } catch (error) {
-      console.log("Error añadiendo dirección:", error);
-    }
-  };
-
-  const handleDeleted = (id) => setAddresses((prev) => prev.filter((a) => a.id !== id));
-  const handleUpdated = () => fetchAddresses();
-
-  if (loadingUser) {
-    return <LoadingScreen />;
-  }
 
   return (
     <View style={styles.container}>
@@ -101,12 +70,12 @@ export default function UserAreaScreen({ navigation }) {
             from={{ opacity: 0, translateY: 30 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "timing", duration: 800, delay: 200 }}
-            style={[styles.infoContainer, {marginVertical:20, alignItems:'center'}]}
+            style={[styles.infoContainer, { marginVertical: 20, alignItems: 'center' }]}
           >
 
-              <Text style={{ fontFamily: "Jost_600SemiBold", color: colors.text }}>
-                {userData?.email ?? "No definido"}
-              </Text>
+            <Text style={{ fontFamily: "Jost_600SemiBold", color: colors.text }}>
+              {userData?.email ?? "No definido"}
+            </Text>
           </MotiView>
           <Text style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}>
             Direcciones registradas:
@@ -127,29 +96,32 @@ export default function UserAreaScreen({ navigation }) {
           <Text style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}>
             <FontAwesome name="whatsapp" size={24} color={colors.background} /> Whatsapp Personal:
           </Text>
+
           <MotiView
             from={{ opacity: 0, translateY: 30 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "timing", duration: 800, delay: 200 }}
-            style={[styles.infoContainer, {flexDirection:'row', justifyContent:'center', marginVertical:20}]}
+            style={[styles.infoContainer, { flexDirection: 'row', justifyContent: 'center', marginVertical: 20 }]}
           >
             <View style={{ flexDirection: 'row' }}>
               <Text style={[styles.subtitle, { color: colors.text }]}>
-               Código:
+                Código:
               </Text>
               <Text style={[styles.text, { color: colors.text, marginLeft: 10 }]}>
-                +{userData.phone.codigo}
+               +{userData?.phone?.codigo ?? "000"}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row' , marginLeft:20}}>
+
+            <View style={{ flexDirection: 'row', marginLeft: 20 }}>
               <Text style={[styles.subtitle, { color: colors.text }]}>
                 Número:
               </Text>
               <Text style={[styles.text, { color: colors.text, marginLeft: 10 }]}>
-                {userData.phone.numero}
+               {userData?.phone?.numero ?? "000000000"}
               </Text>
             </View>
           </MotiView>
+
 
 
           <Text style={[styles.title, { backgroundColor: colors.text, color: colors.background }]}>

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, ImageBackground, TouchableOpacity } from "react-native";
 import { MotiView } from "moti";
-import bckImage from "../assets/images/contacto-movil.png";
-import btnEmail from "../assets/icons/email.png";
-import btnInsta from "../assets/icons/insta.png";
-import btnUbi from "../assets/icons/ubi.png";
-import WhatsappBtn from "../assets/icons/whatsapp.png";
+import bckImage from "../assets/images/webp/contacto-movil.webp";
+import btnEmail from "../assets/icons/email.webp";
+import btnInsta from "../assets/icons/insta.webp";
+import btnUbi from "../assets/icons/ubi.webp";
+import WhatsappBtn from "../assets/icons/whatsapp.webp";
 import LoadingScreen from "../components/LoadingScreen";
 
 const AnimatedButton = ({ source, text, delay }) => (

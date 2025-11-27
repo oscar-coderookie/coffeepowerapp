@@ -14,15 +14,11 @@ import { MotiView } from "moti"; // 👈 animaciones
 import { playSound } from "../../utils/soundPlayer";
 import Toast from "react-native-toast-message";
 
-const UserSettings = ({navigation}) => {
+const UserSettings = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
-  const [showChange2Email, setShowChange2Email] = useState(false);
   const [notificationEmail, setNotificationEmail] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const { colors } = useTheme();
-  const { user, changeEmail, handleDeleteAccount } = useContext(AuthContext);
+  const { user, handleDeleteAccount } = useContext(AuthContext);
 
   // 🔹 Escuchar cambios en Firestore
   useEffect(() => {
@@ -33,29 +29,7 @@ const UserSettings = ({navigation}) => {
     return () => unsubscribe();
   }, [user]);
 
-  const handleChangeEmail = async () => {
-    if (!newEmail || !currentPassword)
-      return Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Debes completar todos los campos.",
-      });
 
-    const result = await changeEmail(newEmail, currentPassword);
-    if (result.success) {
-      Toast.show({
-        type: "success",
-        text1: "Éxito",
-        text2: result.message,
-      })
-      setNewEmail("");
-      setCurrentPassword("");
-    } else Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: result.message,
-    });
-  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -82,18 +56,18 @@ const UserSettings = ({navigation}) => {
               textColor: "white",
               onTouch: () => {
                 playSound('click')
-                setShowChangePassword(!showChangePassword)
+                navigation.navigate("ChangePass");
               },
             },
             {
               key: "changeEmail",
-              text: showChange2Email ? "Cancelar" : "Cambiar correo registrado",
+              text: "Cambiar correo registrado",
               borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
               color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
               textColor: "white",
               onTouch: () => {
                 playSound('click'),
-                  setShowChange2Email(!showChange2Email)
+                  navigation.navigate('ChangeEmail')
               },
 
 
@@ -101,12 +75,23 @@ const UserSettings = ({navigation}) => {
             {
               key: "editAddresses",
               text: "Editar direcciones",
-            borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
+              borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
               color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
               textColor: "white",
               onTouch: () => {
                 playSound("click");
                 navigation.navigate("EditAddressScreen");
+              },
+            },
+            {
+              key: "NewAdress",
+              text: "Crear Nueva Direccion",
+              borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
+              color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
+              textColor: "white",
+              onTouch: () => {
+                playSound("click");
+                navigation.navigate("NewAdress");
               },
             }
           ].map((btn, index) => (
@@ -133,49 +118,6 @@ const UserSettings = ({navigation}) => {
           ))}
         </View>
 
-        {/* 🔐 Cambiar contraseña */}
-        {showChangePassword && (
-          <MotiView
-            from={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "timing", duration: 400 }}
-          >
-            <ChangePasswordDirect onSuccess={() => setShowChangePassword(false)} />
-          </MotiView>
-        )}
-
-        {/* ✉️ Cambiar correo */}
-        {showChange2Email && (
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "timing", duration: 400 }}
-            style={{ marginHorizontal: 10 }}
-          >
-            <TextInput
-              placeholder="Nuevo correo"
-              value={newEmail}
-              onChangeText={setNewEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              style={{
-                borderWidth: 1,
-                borderColor: colors.text,
-                borderRadius: 8,
-                padding: 8,
-                marginBottom: 10,
-                color: colors.text,
-              }}
-            />
-            <PassInput password={currentPassword} setPassword={setCurrentPassword} />
-            <ButtonGeneral
-              text="Actualizar correo"
-              bckColor={colors.text}
-              textColor={colors.background}
-              onTouch={handleChangeEmail}
-            />
-          </MotiView>
-        )}
       </ScrollView>
 
       <ConfirmDeleteModal

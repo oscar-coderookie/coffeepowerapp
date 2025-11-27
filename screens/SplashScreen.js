@@ -14,8 +14,8 @@ import {
     useFonts,
     ShadowsIntoLightTwo_400Regular,
 } from "@expo-google-fonts/shadows-into-light-two";
-import logotipo from "../assets/images/logo-nuevo.png";
-import background from '../assets/images/splash.jpg'
+import logotipo from "../assets/images/webp/logo-nuevo.webp";
+import background from '../assets/images/webp/splash.webp'
 
 
 const { width } = Dimensions.get("window");

@@ -3,8 +3,8 @@ import { View, Image, TouchableOpacity } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { playSound } from "../../utils/soundPlayer";
-import logoMenu from "../../assets/images/logo-nuevo.png";
-import cartIcon from "../../assets/icons/cart.png";
+import logoMenu from "../../assets/images/webp/logo-nuevo.webp";
+import cartIcon from "../../assets/icons/cart.webp";
 import BadgeWrapper from "../../components/BadgeWrapper";
 import { useCart } from "../../context/CartContext";
 
