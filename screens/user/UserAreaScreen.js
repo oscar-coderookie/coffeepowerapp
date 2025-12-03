@@ -1,33 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, View, Text, ScrollView, StyleSheet } from "react-native";
-import { doc, getDoc, setDoc, collection, getDocs, addDoc } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import React, { useEffect, useState } from "react";
+import { KeyboardAvoidingView, Platform, View, Text, ScrollView, StyleSheet, FlatList } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import CustomHeader from "../../components/CustomHeader";
-import { CartContext } from "../../context/CartContext";
 import AvatarPicker from "../../components/AvatarPicker";
-import AddressBlock from "../../components/AddressBlock";
-import WhatsappBlock from "../../components/CaptureWhatsapp";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import VerifyEmailBlock from "../../components/VerifyEmail";
-import PaymentMethods from "../PaymentMethods";
-import { AuthContext } from "../../context/AuthContext";
 import { MotiView } from "moti"; // 👈 Importamos MotiView
-import LoadingScreen from "../../components/LoadingScreen";
 import { playSound } from "../../utils/soundPlayer";
-import { useDrawerStatus } from "@react-navigation/drawer";
 import { useUser } from "../../context/UserContext";
 import UserAddresses from "./userArea/UserAddresses";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { usePayments } from "../../context/PaymentsContext";
 
 export default function UserAreaScreen({ navigation }) {
-  const { userData, loadingUser, addresses } = useUser();
+  const { userData, addresses } = useUser();
   const [avatar, setAvatar] = useState(null);
-  const [editingId, setEditingId] = useState(null);
-
   const { colors } = useTheme();
-  const { user } = useContext(AuthContext);
+  const { paymentMethods } = usePayments()
 
+  // 🔹 Cargar métodos de pago del usuario al montar
 
 
   return (
@@ -108,7 +98,7 @@ export default function UserAreaScreen({ navigation }) {
                 Código:
               </Text>
               <Text style={[styles.text, { color: colors.text, marginLeft: 10 }]}>
-               +{userData?.phone?.codigo ?? "000"}
+                +{userData?.phone?.codigo ?? "000"}
               </Text>
             </View>
 
@@ -117,7 +107,7 @@ export default function UserAreaScreen({ navigation }) {
                 Número:
               </Text>
               <Text style={[styles.text, { color: colors.text, marginLeft: 10 }]}>
-               {userData?.phone?.numero ?? "000000000"}
+                {userData?.phone?.numero ?? "000000000"}
               </Text>
             </View>
           </MotiView>
@@ -134,9 +124,40 @@ export default function UserAreaScreen({ navigation }) {
             transition={{ type: "timing", duration: 1200, delay: 500 }}
             style={styles.paymentMethods}
           >
-            <PaymentMethods />
           </MotiView>
+          {paymentMethods.length > 0 && (
+            <View style={{ marginTop: 20, marginHorizontal: 10 }}>
+              <FlatList
+                data={paymentMethods}
+                keyExtractor={(item) => item.id}
+                scrollEnabled={false}
+                renderItem={({ item }) => (
+                  <View style={{flexDirection:'row', alignItems:'center', borderRadius: 20, borderColor: colors.text, borderWidth:0.5, padding: 10, justifyContent:'space-between'}} >
+                    <FontAwesome5
+                      name={
+                        item.card.brand === "visa"
+                          ? "cc-visa"
+                          : item.card.brand === "mastercard"
+                            ? "cc-mastercard"
+                            : item.card.brand === "amex"
+                              ? "cc-amex"
+                              : "cc-credit-card"
 
+                      }
+                      size={40}
+                      color={colors.text}
+                      style={{marginLeft:20}}
+
+                    />
+                    <Text style={[styles.text, {color: colors.text, marginLeft: 10, fontFamily: 'Jost_600SemiBold'}]}>
+                     Terminada en: {item.card.last4}{" "}
+                    </Text>
+                  </View>
+                )}
+
+              />
+            </View>
+          )}
         </ScrollView>
 
         <ButtonGeneral

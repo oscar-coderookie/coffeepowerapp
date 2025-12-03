@@ -54,7 +54,6 @@ const CouponsClientScreen = () => {
   if (coupons.length === 0) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <CustomHeader title="Mis Cupones" showBack={false} />
         <View style={{ alignItems: "center", flex: 1, justifyContent: "center" }}>
           <Text style={[styles.text, { color: colors.text }]}>
             ☕ Aún no tienes descuentos activos ☕
@@ -67,8 +66,6 @@ const CouponsClientScreen = () => {
   // 🔹 Lista
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader title="Mis Cupones" showBack={false} />
-
       <FlatList
         data={coupons}
         keyExtractor={(item) => item.id}

@@ -6,6 +6,7 @@ import { playSound } from "../utils/soundPlayer";
 import { LinearGradient } from "expo-linear-gradient";
 import CampaignsTopTabs from "./CampaignsTopTabs";
 import EditorTopTabs from "./EditorTopTabs";
+import OrdersStack from "./OrdersStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +31,7 @@ const AdminTabs = () => {
           let iconName;
           if (route.name === "Editor") iconName = 'playlist-add-circle'
           else if (route.name === "Campañas") iconName = 'supervised-user-circle'
+           else if (route.name === "Pedidos: admin") iconName = 'shopping-cart'
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
@@ -47,7 +49,12 @@ const AdminTabs = () => {
         listeners={{
           tabPress: () => playSound("click"),
         }} />
-
+      <Tab.Screen
+        name="Pedidos: admin"
+        component={OrdersStack}
+        listeners={{
+          tabPress: () => playSound("click"),
+        }} />
     </Tab.Navigator>
   );
 };

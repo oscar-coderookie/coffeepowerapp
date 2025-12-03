@@ -1,15 +1,15 @@
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from "@react-navigation/native";
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
 import FavoritesScreen from '../screens/user/FavouritesScreen';
-import CouponsClientScreen from '../screens/user/CouponsClientScreen';
 import { playSound } from '../utils/soundPlayer';
 import PerfilTopTabs from './PerfilTopTabs';
 import MessagesStack from './MessagesStack';
 import BadgeWrapper from '../components/BadgeWrapper';
+import BuyTopTabs from './BuyTopTabs';
 
 
 const Tab = createBottomTabNavigator();
@@ -35,8 +35,8 @@ const UserTabs = () => {
                         iconName = focused ? 'person-circle-sharp' : 'person-circle-outline';
                     } else if (route.name === 'Favoritos') {
                         iconName = focused ? 'heart-sharp' : 'heart-outline'
-                    } else if (route.name === "Cupones") {
-                        iconName = focused ? 'pricetag' : 'pricetag-outline'
+                    } else if (route.name === "compras") {
+                        iconName = focused ? 'bag-handle-sharp' : 'bag-handle-outline'
                     } else if (route.name === "Mensajes") {
                         iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
                         return (
@@ -68,8 +68,8 @@ const UserTabs = () => {
                     tabPress: () => playSound("click"),
                 }} />
             <Tab.Screen
-                name="Cupones"
-                component={CouponsClientScreen}
+                name="compras"
+                component={BuyTopTabs}
                 listeners={{
                     tabPress: () => playSound("click"),
                 }} />

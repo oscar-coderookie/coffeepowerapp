@@ -2,7 +2,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert 
 import { useEffect, useState } from "react";
 import { useTheme } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../../config/firebase";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import Icon2 from "react-native-vector-icons/FontAwesome";
@@ -13,10 +13,13 @@ import CouponSelectorModal from "../../components/CouponsSelectorModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { MotiView } from "moti";
+import { listenUserCoupons } from "../../services/couponsService";
+import { useCart } from "../../context/CartContext";
 
-export default function CheckoutScreen({ navigation, route }) {
+
+export default function CheckoutScreen({ navigation }) {
   const { colors } = useTheme();
-  const { cartItems } = route.params;
+  const { cartItems } = useCart();
   const [selected, setSelected] = useState(null);
   const [user, setUser] = useState(null);
   const [deliveryType, setDeliveryType] = useState("normal");
@@ -31,40 +34,39 @@ export default function CheckoutScreen({ navigation, route }) {
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [availableCoupons, setAvailableCoupons] = useState([]);
 
-const handleApplyCoupon = async () => {
-  if (!user) {
-    Alert.alert("Inicia sesión", "Debes iniciar sesión para aplicar cupones.");
-    return;
-  }
+  //fetch:
+  useEffect(() => {
+    if (!user) return;
 
-  try {
-    // Ahora sí: leer subcolección
-    const couponsRef = collection(db, "users", user.uid, "coupons");
-    const snapshot = await getDocs(couponsRef);
-
-    const coupons = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    const validCoupons = coupons.filter(c =>
-      !c.used &&
-      (!c.expiresAt || new Date(c.expiresAt) > new Date())
-    );
-
-    setAvailableCoupons(validCoupons);
-    setShowCouponModal(true);
-
-  } catch (error) {
-    console.error("Error al obtener cupones:", error);
-    Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: "No se pudieron cargar los cupones.",
+    const unsubscribe = listenUserCoupons(user.uid, (coupons) => {
+      const validCoupons = coupons.filter(
+        (c) =>
+          !c.used &&
+          (!c.expiresAt || new Date(c.expiresAt) > new Date())
+      );
+      setAvailableCoupons(validCoupons);
     });
-  }
-};
 
+    return () => unsubscribe && unsubscribe();
+  }, [user]);
+
+  const handleApplyCoupon = () => {
+    if (!user) {
+      Alert.alert("Inicia sesión", "Debes iniciar sesión para aplicar cupones.");
+      return;
+    }
+
+    if (availableCoupons.length === 0) {
+      Toast.show({
+        type: "info",
+        text1: "Sin cupones",
+        text2: "No tienes cupones disponibles.",
+      });
+      return;
+    }
+
+    setShowCouponModal(true);
+  };
 
   const handleContinue = () => {
     const selectedAddress = directions.find((dir) => dir.id === selected);
@@ -180,6 +182,7 @@ const handleApplyCoupon = async () => {
               <Text style={{ color: colors.text, fontFamily: "Jost_400Regular" }}>
                 {appliedCoupon ? `Cupón "${appliedCoupon.code}" aplicado (${appliedCoupon.discount}%) 🎉` : "Seleccionar cupón disponible"}
               </Text>
+          
             </TouchableOpacity>
 
             <CouponSelectorModal visible={showCouponModal} onClose={() => setShowCouponModal(false)} coupons={availableCoupons} colors={colors} onSelect={(coupon) => { setAppliedCoupon(coupon); setShowCouponModal(false); Toast.show({ type: "success", text1: "Cupón aplicado", text2: `Descuento del ${coupon.discount}% activado 🎉` }) }} />

@@ -18,7 +18,7 @@ export default function ShopCart() {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const { user } = useContext(AuthContext);
-  const { cartItems, increaseQuantity, decreaseQuantity } = useContext(CartContext);
+  const { cartItems, increaseQuantity, decreaseQuantity,removeFromCart } = useContext(CartContext);
   const [loading, setLoading] = useState(true); // 👈 estado para controlar la carga
 
 
@@ -89,7 +89,7 @@ export default function ShopCart() {
       return;
     }
 
-    navigation.navigate("Checkout", { cartItems });
+    navigation.navigate("Checkout");
   };
 
 
@@ -154,7 +154,7 @@ export default function ShopCart() {
                   quantity={item?.quantity || 0}
                   coffeeName={item.name}
                   onIncrease={
-                    isVerifiedOrGuest ? () => increaseQuantity(item.id) : null
+                    isVerifiedOrGuest ? () => increaseQuantity(item.coffeeId) : null
                   }
                   onDecrease={
                     isVerifiedOrGuest ? () => decreaseQuantity(item.id) : null

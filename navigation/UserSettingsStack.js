@@ -6,6 +6,7 @@ import EditAddressScreen from "../screens/user/EditAddressScreen";
 import NewAddressScreen from "../screens/user/userArea/NewAddressScreen";
 import ChangeEmailScreen from "../screens/user/userArea/ChangeEmailScreen";
 import ChangePassScreen from "../screens/user/userArea/ChangePassScreen";
+import PaymentMethods from "../screens/PaymentMethods";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +26,7 @@ const UserSettingsStack = () => {
           animation: "slide_from_right",
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="NewAdress"
         component={NewAddressScreen}
         options={{
@@ -33,7 +34,7 @@ const UserSettingsStack = () => {
           animation: "slide_from_right",
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="ChangeEmail"
         component={ChangeEmailScreen}
         options={{
@@ -41,9 +42,17 @@ const UserSettingsStack = () => {
           animation: "slide_from_right",
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="ChangePass"
         component={ChangePassScreen}
+        options={{
+          headerShown: false, // ya usas tu CustomHeader
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="MetodosPago"
+        component={PaymentMethods}
         options={{
           headerShown: false, // ya usas tu CustomHeader
           animation: "slide_from_right",

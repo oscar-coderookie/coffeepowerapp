@@ -8,10 +8,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MotiView } from "moti";
 import { useUser } from "../../context/UserContext";
 import { createOrder } from "../../services/checkoutService";
+import { useCart } from "../../context/CartContext";
 
 export default function PayoutScreen({ navigation, route }) {
   const { colors } = useTheme();
-  const { cartItems = [], shippingData = {}, paymentData = {} } = route.params || {};
+  const { clearCart, cartItems } = useCart( )
+  const { shippingData = {}, paymentData = {} } = route.params || {};
   const appliedCoupon = shippingData?.appliedCoupon || null;
   const { userData } = useUser()
   const [shippingCost, setShippingCost] = useState(0);
@@ -47,8 +49,9 @@ export default function PayoutScreen({ navigation, route }) {
   }, [cartItems, shippingData]);
 
   const handleFinish = async () => {
+
     try {
-      const orderId = await createOrder(
+      const result = await createOrder(
         userData.uid,
         userData,
         shippingData,
@@ -56,8 +59,9 @@ export default function PayoutScreen({ navigation, route }) {
         cartItems,
         { subtotal, discountAmount, shippingCost, total }
       );
+      await clearCart(userData.uid)
 
-      navigation.navigate("OrderSuccess", { userId: userData.uid, orderId });
+       navigation.navigate("OrderSuccess", { userId: userData.uid, orderId: result.orderId, orderNumber: result.orderNumber })
     } catch (err) {
       console.error(err);
     }

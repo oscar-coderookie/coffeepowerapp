@@ -93,6 +93,17 @@ const UserSettings = ({ navigation }) => {
                 playSound("click");
                 navigation.navigate("NewAdress");
               },
+            },
+               {
+              key: "MetodosPago",
+              text: "métodos de pago",
+              borderColor: ["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"],
+              color: ["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"],
+              textColor: "white",
+              onTouch: () => {
+                playSound("click");
+                navigation.navigate("MetodosPago");
+              },
             }
           ].map((btn, index) => (
             <MotiView

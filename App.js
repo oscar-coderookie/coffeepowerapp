@@ -26,6 +26,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from './screens/SplashScreen';
 import { MessagesProvider } from "./context/MessagesContext";
 import { UserProvider } from "./context/UserContext";
+import { PaymentProvider } from "./context/PaymentsContext";
 
 
 const Stack = createNativeStackNavigator();
@@ -68,22 +69,19 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-
       <AuthProvider>
         <UserProvider>
           <FavoritesProvider>
-
-
-
-            <MessagesProvider>
-              <CartProvider>
-                <ThemeProvider>
-                  <MainApp />
-                  <Toast config={toastConfig} />
-                </ThemeProvider>
-              </CartProvider>
-            </MessagesProvider>
-
+            <PaymentProvider>
+              <MessagesProvider>
+                <CartProvider>
+                  <ThemeProvider>
+                    <MainApp />
+                    <Toast config={toastConfig} />
+                  </ThemeProvider>
+                </CartProvider>
+              </MessagesProvider>
+            </PaymentProvider>
           </FavoritesProvider>
         </UserProvider>
       </AuthProvider>

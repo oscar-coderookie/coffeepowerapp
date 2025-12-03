@@ -1,7 +1,19 @@
 // context/CartContext.js
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { db } from "../config/firebase";
-import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
+
+import {
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  updateDoc,
+  getDoc,
+  onSnapshot,
+  serverTimestamp,
+  getDocs,
+} from "firebase/firestore";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "./AuthContext";
 
@@ -10,97 +22,160 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
+
   const [cartItems, setCartItems] = useState([]);
   const [isLoadingCart, setIsLoadingCart] = useState(true);
 
-  // Carga inicial del carrito
+  // ------------------------------------------
+  // 🔥 Cargar carrito (Firestore o local)
+  // ------------------------------------------
   useEffect(() => {
-    const loadCart = async () => {
-      setIsLoadingCart(true);
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
+    let unsubscribe = null;
+    setIsLoadingCart(true);
 
-        if (userSnap.exists() && userSnap.data().cart) {
-          setCartItems(userSnap.data().cart);
-        } else {
-          await setDoc(userRef, { cart: [] }, { merge: true });
-          setCartItems([]);
-        }
+    const loadCart = async () => {
+      if (user) {
+        const cartRef = collection(db, "users", user.uid, "cart");
+
+        unsubscribe = onSnapshot(cartRef, (snapshot) => {
+          const items = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setCartItems(items);
+          setIsLoadingCart(false);
+        });
       } else {
         const localCart = await AsyncStorage.getItem("cartItems");
         setCartItems(localCart ? JSON.parse(localCart) : []);
+        setIsLoadingCart(false);
       }
-      setIsLoadingCart(false);
     };
 
     loadCart();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [user]);
 
-  // Guarda el carrito (Firestore o AsyncStorage)
-  const saveCart = async (updatedCart) => {
-    setCartItems(updatedCart);
+  // ------------------------------------------
+  // 🔥 Carrito LOCAL (solo sin login)
+  // ------------------------------------------
+  const saveLocalCart = async (items) => {
+    setCartItems(items);
+    await AsyncStorage.setItem("cartItems", JSON.stringify(items));
+  };
 
-    if (user) {
-      try {
-        const simplifiedCart = updatedCart.map((item) => ({
-          id: item.id,
-          name: item.name,
-          image: item.image,
-          quantity: item.quantity,
-          price: item.price ?? 0,
-          description: item.description ?? "",
-        }));
-        await updateDoc(doc(db, "users", user.uid), { cart: simplifiedCart });
-    
-      } catch (error) {
-        console.error("Error guardando carrito en Firestore:", error)
+  // ------------------------------------------
+  // 🔥 Añadir producto al carrito
+  // ------------------------------------------
+  const addToCart = async (item) => {
+    const { id, name, price, image, quantity, description } = item;
+
+    if (!user) {
+      throw new Error("Debes iniciar sesión para añadir productos al carrito.");
+    }
+
+    const cartRef = doc(db, "users", user.uid, "cart", id);
+
+    try {
+      const snap = await getDoc(cartRef);
+
+      if (snap.exists()) {
+        // Ya existe: solo aumentar
+        const existing = snap.data();
+        await updateDoc(cartRef, {
+          quantity: existing.quantity + quantity,
+          updatedAt: serverTimestamp(),
+        });
+      } else {
+        // Nuevo item en carrito
+        await setDoc(cartRef, {
+          id,
+          name,
+          price,
+          image: image || null,
+          quantity: quantity ?? 1,
+          description,
+          addedAt: serverTimestamp(),
+        });
       }
-    } else {
-      await AsyncStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    } catch (error) {
+      console.error("Error añadiendo al carrito:", error);
+      throw new Error("No se pudo añadir al carrito.");
     }
   };
 
-  // Añadir item al carrito
-  const addToCart = (item) => {
-    const existing = cartItems.find((i) => i.id === item.id);
-    let updatedCart;
-    if (existing) {
-      // Si ya existe, suma la cantidad que envíes
-      updatedCart = cartItems.map((i) =>
-        i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+  // ------------------------------------------
+  // 🔥 Eliminar ítem
+  // ------------------------------------------
+  const removeFromCart = async (id) => {
+    if (!user) {
+      const updated = cartItems.filter((i) => i.id !== id);
+      return saveLocalCart(updated);
+    }
+
+    const ref = doc(db, "users", user.uid, "cart", id);
+    await deleteDoc(ref);
+  };
+
+  // ------------------------------------------
+  // 🔥 Aumentar cantidad
+  // ------------------------------------------
+  const increaseQuantity = async (id) => {
+    const item = cartItems.find((i) => i.id === id);
+    if (!item) return;
+
+    if (!user) {
+      const updated = cartItems.map((i) =>
+        i.id === id ? { ...i, quantity: i.quantity + 1 } : i
       );
-    } else {
-      // Si no existe, agrega el item con su cantidad actual
-      updatedCart = [...cartItems, { ...item }];
+      return saveLocalCart(updated);
     }
-    saveCart(updatedCart);
+
+    const ref = doc(db, "users", user.uid, "cart", id);
+    await updateDoc(ref, { quantity: item.quantity + 1 });
   };
 
-  // Eliminar item del carrito
-  const removeFromCart = (id) => {
-    const updated = cartItems.filter((i) => i.id !== id);
-    saveCart(updated);
+  // ------------------------------------------
+  // 🔥 Disminuir cantidad
+  // ------------------------------------------
+  const decreaseQuantity = async (id) => {
+    const item = cartItems.find((i) => i.id === id);
+    if (!item) return;
+
+    if (!user) {
+      const updated = cartItems.map((i) =>
+        i.id === id
+          ? { ...i, quantity: Math.max(1, i.quantity - 1) }
+          : i
+      );
+      return saveLocalCart(updated);
+    }
+
+    const newQty = Math.max(1, item.quantity - 1);
+    const ref = doc(db, "users", user.uid, "cart", id);
+    await updateDoc(ref, { quantity: newQty });
   };
 
-  // Aumentar cantidad
-  const increaseQuantity = (id) => {
-    const updated = cartItems.map((i) =>
-      i.id === id ? { ...i, quantity: i.quantity + 1 } : i
+  const clearCart = async (uid) => {
+    const cartRef = collection(db, `users/${uid}/cart`);
+    const snapshot = await getDocs(cartRef);
+
+    const deletes = snapshot.docs.map((d) =>
+      deleteDoc(doc(db, `users/${uid}/cart/${d.id}`))
     );
-    saveCart(updated);
+
+    await Promise.all(deletes);
+
+    // También vacía el estado local
+    setCartItems([]);
   };
 
-  // Disminuir cantidad
-  const decreaseQuantity = (id) => {
-    const updated = cartItems.map((i) =>
-      i.id === id
-        ? { ...i, quantity: i.quantity > 1 ? i.quantity - 1 : 1 }
-        : i
-    );
-    saveCart(updated);
-  };
-
+  // ------------------------------------------
+  // PROVIDER
+  // ------------------------------------------
   return (
     <CartContext.Provider
       value={{
@@ -110,6 +185,7 @@ export const CartProvider = ({ children }) => {
         increaseQuantity,
         decreaseQuantity,
         isLoadingCart,
+        clearCart,
         user,
       }}
     >

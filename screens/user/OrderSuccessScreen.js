@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import CustomHeader from "../../components/CustomHeader";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import LoadingScreen from "../../components/LoadingScreen";
+import ButtonGeneral from "../../components/ButtonGeneral";
+import cartIcon from '../../assets/images/cart.png'
 
 export default function OrderSuccessScreen({ navigation, route }) {
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { orderId, userId } = route.params;
+  const { orderId, userId, orderNumber } = route.params;
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -29,89 +31,69 @@ export default function OrderSuccessScreen({ navigation, route }) {
     };
 
     fetchOrder();
+
   }, []);
 
 
   const handleGoHome = () => {
-    navigation.navigate("UserStack", { screen: "UserArea" });
+  
+    navigation.navigate("Cart");
   };
 
   const handleGoToOrders = () => {
-    navigation.navigate("MyOrders");
+      navigation.navigate("Área personal", { screen: "UserArea" });
   };
 
-
+  if (loading) {
+    return (<LoadingScreen />)
+  }
 
   return (
     <View>
-      <CustomHeader title="resumen de compra" showBack />
-      <View style={styles.container}>
+      <CustomHeader title="resumen de compra" />
+      <View style={styles.container} >
         {/* TITLE */}
         <Text style={styles.title}>¡Compra completada!</Text>
-
-        {/* CHECK ICON */}
-        <Text style={styles.bigCheck}>✔️</Text>
-
         {/* ORDER ID */}
-        <Text style={styles.orderId}>
-          Número de orden:
-          {" "}
-          <Text style={styles.bold}>{orderId}</Text>
-        </Text>
-        <Text>{orderData.paymentMethod}</Text>
-        {/* SHORT SUMMARY */}
- <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Resumen del pedido</Text>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>Método de pago:</Text>
-            <Text style={styles.value}>{orderData.paymentMethod}</Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>Entrega:</Text>
-            <Text style={styles.value}>{orderData.shippingMethod}</Text>
-          </View>
-
-          <Text style={[styles.sectionTitle, { marginTop: 15 }]}>Productos</Text>
-
-          {orderData.products.map((p, index) => (
-            <View key={index} style={styles.productRow}>
-              <Text style={styles.productName}>
-                {p.name} × {p.quantity}
-              </Text>
-              <Text style={styles.productSubtotal}>{p.subtotal.toFixed(2)} €</Text>
-            </View>
-          ))}
-        </View> 
-
+        <Text style={{ fontFamily: 'Jost_400Regular', fontSize: 18, textAlign: 'center' }}>Tu café ya va en camino..</Text>
+        <Image source={cartIcon} style={{ width: 250, height: 200 }} resizeMode="contain" />
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={styles.orderId}>
+            Número de orden:
+          </Text>
+          <Text style={styles.bold}> {orderNumber}</Text>
+        </View>
 
         {/* BUTTONS */}
-        <TouchableOpacity style={styles.buttonPrimary} onPress={handleGoToOrders}>
-          <Text style={styles.buttonText}>Ver mis pedidos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.buttonSecondary} onPress={handleGoHome}>
-          <Text style={styles.buttonSecondaryText}>Volver al inicio</Text>
-        </TouchableOpacity>
-
+        <ButtonGeneral
+          text="IR A TUS PEDIDOS"
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+          onTouch={handleGoToOrders}
+          soundType="click"
+        />
+        <ButtonGeneral
+          text="VOLVER AL CARRITO"
+          textColor="white"
+          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+          onTouch={handleGoHome}
+          soundType="click"
+        />
       </View>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-
-    padding: 30,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F7F7F7",
+    marginHorizontal: 10
   },
   title: {
     fontSize: 26,
-    fontWeight: "700",
+    fontFamily: 'Jost_600SemiBold',
     marginBottom: 10,
     textAlign: "center",
   },
