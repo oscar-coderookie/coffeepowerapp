@@ -6,81 +6,58 @@ import { db } from "../../config/firebase";
 import LoadingScreen from "../../components/LoadingScreen";
 import ButtonGeneral from "../../components/ButtonGeneral";
 import cartIcon from '../../assets/images/cart.png'
+import { useTheme } from "@react-navigation/native";
 
 export default function OrderSuccessScreen({ navigation, route }) {
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { orderId, userId, orderNumber } = route.params;
+  const {colors} = useTheme();
 
-  useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const ref = doc(db, "users", userId, "orders", orderId);
-        const snap = await getDoc(ref);
-
-        if (snap.exists()) {
-          setOrderData(snap.data());
-        } else {
-          console.warn("Orden no encontrada");
-        }
-      } catch (err) {
-        console.error("Error obteniendo la orden:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrder();
-
-  }, []);
 
 
   const handleGoHome = () => {
-  
     navigation.navigate("Cart");
   };
 
   const handleGoToOrders = () => {
-      navigation.navigate("Área personal", { screen: "UserArea" });
+    navigation.navigate("Área personal", { screen: "UserArea" });
   };
 
-  if (loading) {
-    return (<LoadingScreen />)
-  }
 
   return (
     <View>
       <CustomHeader title="resumen de compra" />
       <View style={styles.container} >
         {/* TITLE */}
-        <Text style={styles.title}>¡Compra completada!</Text>
+        <Text style={[styles.title,  {color: colors.text}]}>¡Compra completada!</Text>
         {/* ORDER ID */}
-        <Text style={{ fontFamily: 'Jost_400Regular', fontSize: 18, textAlign: 'center' }}>Tu café ya va en camino..</Text>
-        <Image source={cartIcon} style={{ width: 250, height: 200 }} resizeMode="contain" />
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={styles.orderId}>
-            Número de orden:
-          </Text>
-          <Text style={styles.bold}> {orderNumber}</Text>
+        <Text style={{ fontFamily: 'Jost_400Regular', fontSize: 18, textAlign: 'center', color: colors.text }}>Tu café ya va en camino..</Text>
+        <Image source={cartIcon} style={{ width: 250, height: 200, marginBottom: 20 }} resizeMode="contain" />
+        <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+          <Text style={[styles.bold, {color: colors.text}]}>ID Pedido: {orderNumber}</Text>
         </View>
 
         {/* BUTTONS */}
-        <ButtonGeneral
-          text="IR A TUS PEDIDOS"
-          textColor="white"
-          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
-          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
-          onTouch={handleGoToOrders}
-          soundType="click"
-        />
-        <ButtonGeneral
-          text="VOLVER AL CARRITO"
-          textColor="white"
-          bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
-          borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
-          onTouch={handleGoHome}
-          soundType="click"
-        />
+        <View>
+          <ButtonGeneral
+            text="IR A TUS PEDIDOS"
+            textColor="white"
+            bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+            borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+            onTouch={handleGoToOrders}
+            soundType="click"
+          />
+          <ButtonGeneral
+            text="VOLVER AL CARRITO"
+            textColor="white"
+            bckColor={["#000000ff", "#535353ff", "#000000ff", "#6b6b6bff", "#000000ff"]}
+            borderColors={["#535353ff", "#000000ff", "#535353ff", "#000000ff", "#535353ff"]}
+            onTouch={handleGoHome}
+            soundType="click"
+          />
+        </View>
+
       </View>
     </View>
   );
@@ -89,17 +66,15 @@ export default function OrderSuccessScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
-    marginHorizontal: 10
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginTop:30
   },
   title: {
     fontSize: 26,
     fontFamily: 'Jost_600SemiBold',
     marginBottom: 10,
     textAlign: "center",
-  },
-  bigCheck: {
-    fontSize: 60,
-    marginVertical: 20,
   },
   orderId: {
     fontSize: 16,

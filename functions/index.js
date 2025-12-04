@@ -9,7 +9,6 @@ setGlobalOptions({ region: "us-central1" });
 
 // Definimos el secreto
 const STRIPE_SECRET = defineSecret("STRIPE_SECRET");
-
 // -------------------------------
 // ✅ APP EXPRESS
 // -------------------------------
@@ -21,9 +20,44 @@ app.use(express.json());
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
+
 admin.initializeApp();
 const db = admin.firestore();
 
+//funcion para marcar cupon como usado desde el backend (metodo seguro):
+
+exports.markCouponAsUsedHttp = functions.https.onRequest(async (req, res) => {
+  try {
+    const { uid, couponId, orderId, paymentStatus } = req.body;
+    
+    if (!uid || !couponId || !paymentStatus) {
+      return res.status(400).json({ error: "Faltan parámetros: uid, couponId, paymentStatus" });
+    }
+
+    if (paymentStatus !== "succeeded") {
+      return res.status(400).json({ error: "El pago no está confirmado" });
+    }
+
+    const couponRef = admin.firestore().doc(`users/${uid}/coupons/${couponId}`);
+    await admin.firestore().runTransaction(async (tx) => {
+      const snap = await tx.get(couponRef);
+      if (!snap.exists) throw new Error("Cupón no existe");
+      const data = snap.data();
+      if (data.used) throw new Error("Cupón ya ha sido utilizado");
+
+      tx.update(couponRef, {
+        used: true,
+        usedAt: admin.firestore.FieldValue.serverTimestamp(),
+        usedOrderId: orderId || null,
+      });
+    });
+
+    return res.json({ ok: true, message: "Cupón marcado como usado" });
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({ error: err.message });
+  }
+});
 //funcion para mensajes masivos replicados:
 exports.replicateMassMessage = functions.https.onRequest(async (req, res) => {
   try {
@@ -56,7 +90,6 @@ exports.replicateMassMessage = functions.https.onRequest(async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-
 //borrar datos de usuario eliminado de auth:
 exports.deleteAccount = auth.user().onDelete(async (user) => {
   const uid = user.uid; // En v1, el UID está directamente en user.uid
@@ -106,11 +139,37 @@ exports.welcomeMessages = auth.user().onCreate(async (user) => {
 // 🔹 Helper: crear o recuperar cliente de Stripe
 // -------------------------------
 async function getOrCreateCustomer(stripe, uid, email) {
-  const existing = await stripe.customers.list({ email, limit: 1 });
-  if (existing.data.length > 0) return existing.data[0].id;
+  // 1️⃣ Buscar por UID en metadata (LA MANERA CORRECTA)
+  const existingByUID = await stripe.customers.list({
+    limit: 1,
+    expand: [],
+    email: undefined, // nos aseguramos de no filtrar por email
+  });
 
+  // Filtramos manualmente porque Stripe no permite buscar por metadata directamente
+  const customerByUID = existingByUID.data.find(
+    (c) => c.metadata?.firebaseUID === uid
+  );
+
+  if (customerByUID) {
+    return customerByUID.id;
+  }
+
+  // 2️⃣ Si no existe, buscar por email como fallback
+  if (email) {
+    const existingByEmail = await stripe.customers.list({ email, limit: 1 });
+    if (existingByEmail.data.length > 0) {
+      // Actualizamos metadata para vincularlo bien
+      await stripe.customers.update(existingByEmail.data[0].id, {
+        metadata: { firebaseUID: uid },
+      });
+      return existingByEmail.data[0].id;
+    }
+  }
+
+  // 3️⃣ Crear nuevo Customer
   const customer = await stripe.customers.create({
-    email,
+    email: email || undefined,
     metadata: { firebaseUID: uid },
   });
 
@@ -139,7 +198,38 @@ app.post("/createSetupIntent", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// Compra de prueba:
+app.post("/createTestPayment", async (req, res) => {
+  try {
+    const stripe = require("stripe")(STRIPE_SECRET.value());
+    const { amount, currency = "eur" } = req.body;
 
+    // 1️⃣ Crear PaymentIntent y confirmar inmediatamente
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,             // en centavos, ej: 10€ → 1000
+      currency,
+      payment_method: "pm_card_visa",
+      confirm: true,
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: "never", // evita errores de redirección
+      },
+    });
+
+    // 2️⃣ Responder con la info del PaymentIntent
+    return res.status(200).json({
+      id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+      payment_method: paymentIntent.payment_method,
+      created: paymentIntent.created,
+    });
+  } catch (error) {
+    console.error("Error en createTestPayment:", error);
+    return res.status(500).json({ error: error.message });
+  }
+});
 // -------------------------------
 // 🔹 Listar métodos de pago
 // -------------------------------
@@ -181,6 +271,8 @@ app.post("/detachPaymentMethod", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 // -------------------------------
 // ✅ EXPORTAR LA FUNCIÓN HTTPS CON EL SECRETO

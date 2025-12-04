@@ -11,9 +11,42 @@ export const PaymentProvider = ({ children }) => {
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [loading, setLoading] = useState(false);
     
+    const fetchPaymentMethods = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        try {
+            setLoading(true);
+            const res = await fetch(
+                "https://us-central1-chris-rosas-web.cloudfunctions.net/api/listPaymentMethods",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ uid: user.uid, email: user.email }),
+                }
+            );
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setPaymentMethods(data);
+            } else {
+                console.log("Respuesta inesperada:", data);
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        fetchPaymentMethods();
+        const user = auth.currentUser;
+        if (user) fetchPaymentMethods(); // cargar al montar si ya hay usuario
+        const unsub = auth.onAuthStateChanged((user) => {
+            if (user) fetchPaymentMethods();
+        });
+        return unsub;
     }, []);
+
 
     const handleAddPaymentMethod = async () => {
         const user = auth.currentUser;
@@ -119,38 +152,108 @@ export const PaymentProvider = ({ children }) => {
         }
     };
 
-    const fetchPaymentMethods = async () => {
+
+
+    const handleTestPayment = async (amount) => {
         const user = auth.currentUser;
-        if (!user) return;
+        if (!user) {
+            return Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "Debes iniciar sesión",
+            });
+        }
 
         try {
-            setLoading(true);
+            // 1️⃣ Crear PaymentIntent en modo test
             const res = await fetch(
-                "https://us-central1-chris-rosas-web.cloudfunctions.net/api/listPaymentMethods",
+                "https://us-central1-chris-rosas-web.cloudfunctions.net/api/createPaymentIntentTest",
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ uid: user.uid, email: user.email }),
+                    body: JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        // EL paymentMethod que YA tienes guardado:
+                        paymentMethodId: paymentMethods[0]?.id,
+                        amount,
+                    }),
                 }
             );
+
             const data = await res.json();
-            if (Array.isArray(data)) {
-                setPaymentMethods(data);
-            } else {
-                console.log("Respuesta inesperada:", data);
+            const clientSecret = data.client_secret;
+
+            if (!clientSecret) {
+                return Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "No se pudo generar el PaymentIntent",
+                });
             }
+
+            // 2️⃣ Inicializar PaymentSheet para confirmar el pago
+            const init = await initPaymentSheet({
+                paymentIntentClientSecret: clientSecret,
+                merchantDisplayName: "Coffee Power",
+            });
+
+            if (init.error) {
+                console.log(init.error);
+                return Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: init.error.message,
+                });
+            }
+
+            // 3️⃣ Presentar y pagar con la tarjeta de prueba ya guardada en Stripe
+            const result = await presentPaymentSheet();
+
+            if (result.error) {
+                return Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: result.error.message,
+                });
+            }
+
+            // 4️⃣ Pago confirmado ✔
+            Toast.show({
+                type: "success",
+                text1: "Pago exitoso",
+                text2: "El pago se procesó correctamente",
+            });
+
+            // 5️⃣ Retornar IDs para guardar en la orden
+            return {
+                paymentIntentId: data.paymentIntentId,
+                paymentMethodId: data.paymentMethodId,
+                amount,
+                brand: data.card?.brand,
+                last4: data.card?.last4,
+                expMonth: data.card?.exp_month,
+                expYear: data.card?.exp_year,
+            };
+
         } catch (err) {
             console.log(err);
-        } finally {
-            setLoading(false);
+            Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "No se pudo procesar el pago",
+            });
         }
     };
+
     return (
         <PaymentContext.Provider
             value={{
                 handleAddPaymentMethod,
                 handleRemoveMethod,
-                paymentMethods
+                handleTestPayment,
+                paymentMethods,
+                loading
             }}>
             {children}
         </PaymentContext.Provider>

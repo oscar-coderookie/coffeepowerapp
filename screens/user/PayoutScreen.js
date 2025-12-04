@@ -9,10 +9,13 @@ import { MotiView } from "moti";
 import { useUser } from "../../context/UserContext";
 import { createOrder } from "../../services/checkoutService";
 import { useCart } from "../../context/CartContext";
+import { usePayments } from "../../context/PaymentsContext";
+import Toast from "react-native-toast-message";
+import { markCouponUsed } from "../../services/couponsService";
 
 export default function PayoutScreen({ navigation, route }) {
   const { colors } = useTheme();
-  const { clearCart, cartItems } = useCart( )
+  const { clearCart, cartItems } = useCart()
   const { shippingData = {}, paymentData = {} } = route.params || {};
   const appliedCoupon = shippingData?.appliedCoupon || null;
   const { userData } = useUser()
@@ -21,7 +24,9 @@ export default function PayoutScreen({ navigation, route }) {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { paymentMethods } = usePayments();
 
+  //cargar datos:
   useEffect(() => {
     try {
       const baseShipping = shippingData?.deliveryType === "VIP" ? 6 : 3;
@@ -48,22 +53,127 @@ export default function PayoutScreen({ navigation, route }) {
     }
   }, [cartItems, shippingData]);
 
+  //funcion para finalizar la compra:
   const handleFinish = async () => {
-
     try {
-      const result = await createOrder(
-        userData.uid,
-        userData,
-        shippingData,
-        paymentData,
-        cartItems,
-        { subtotal, discountAmount, shippingCost, total }
-      );
-      await clearCart(userData.uid)
+      if (!paymentMethods.length) {
+        return Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Debes tener al menos un método de pago registrado",
+        });
+      }
 
-       navigation.navigate("OrderSuccess", { userId: userData.uid, orderId: result.orderId, orderNumber: result.orderNumber })
+      // 1️⃣ Seleccionamos el método de pago (primer elemento)
+      const paymentMethodId = paymentMethods[0].id;
+
+      // 2️⃣ Creamos PaymentIntent de prueba
+      const res = await fetch(
+        "https://us-central1-chris-rosas-web.cloudfunctions.net/api/createTestPayment",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: Math.round(total * 100), // en centavos
+            currency: "eur",
+            paymentMethodId,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Respuesta no OK:", res.status, text);
+        throw new Error("Error en la función de pago");
+      }
+
+      const paymentResult = await res.json();
+
+      if (paymentResult.error || paymentResult.status !== "succeeded") {
+        return Toast.show({
+          type: "error",
+          text1: "Pago fallido",
+          text2: paymentResult.error || "No se pudo procesar el pago",
+        });
+      }
+
+      const paymentInfo = {
+        id: paymentResult.id,
+        status: paymentResult.status,
+        amount: paymentResult.amount / 100, // 31.50
+        currency: paymentResult.currency,
+        method: paymentResult.payment_method,
+      };
+
+      // 3️⃣ Intentamos crear la orden en Firestore
+      let result;
+      try {
+        result = await createOrder(
+          userData.uid,
+          userData,
+          shippingData,
+          paymentInfo,
+          cartItems,
+          { subtotal, discountAmount, shippingCost, total }
+        );
+
+      } catch (orderError) {
+        console.error("Error creando la orden:", orderError);
+        return Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "No se pudo crear la orden en Firestore",
+        });
+      }
+
+
+      const uid = userData?.uid;
+      const couponId = shippingData?.appliedCoupon?.id;
+      const orderId = result?.orderId;
+      const paymentStatus = paymentInfo?.status;
+      console.log("Enviar a backend →", { uid, couponId, orderId, paymentStatus });
+      // 4️⃣ Marcar cupón como usado SI EXISTE:
+      if (shippingData.appliedCoupon) {
+        try {
+          try {
+            const res = await fetch("https://us-central1-chris-rosas-web.cloudfunctions.net/markCouponAsUsedHttp", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                uid: userData.uid,
+                couponId: shippingData.appliedCoupon.id,
+                orderId: result.orderId,
+                paymentStatus: paymentInfo.status,
+              }),
+            });
+            await res.json();
+          } catch (err) {
+            console.error("❌ Error fetch directo:", err);
+          }
+          // await markCouponUsed(
+          //   uid, couponId, orderId, paymentStatus
+          // );
+          // console.log("Cupón marcado como usado en backend.");
+        } catch (e) {
+          console.log("⚠️ No se pudo marcar cupón, pero la compra sigue");
+        }
+      }
+
+      // 5️⃣ Limpiar carrito y navegar a éxito:
+      await clearCart(userData.uid);
+
+      navigation.navigate("OrderSuccess", {
+        userId: userData.uid,
+        orderId: result.orderId,
+        orderNumber: result.orderNumber,
+      });
     } catch (err) {
-      console.error(err);
+      console.error("Error general en handleFinish:", err);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Ocurrió un problema procesando la orden",
+      });
     }
   };
 
@@ -123,7 +233,7 @@ export default function PayoutScreen({ navigation, route }) {
           <View style={styles.row}>
             <Text style={[styles.subtitle, { color: colors.text }]}>Método de pago:</Text>
             <Text style={[styles.detailsText, { color: colors.text }]}>
-              {paymentData?.method || "No seleccionado"}
+              {paymentData.card.brand || "No seleccionado"}
             </Text>
           </View>
         </MotiView>

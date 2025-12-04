@@ -70,9 +70,10 @@ export default function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <UserProvider>
-          <FavoritesProvider>
-            <PaymentProvider>
+        <PaymentProvider>
+          <UserProvider>
+            <FavoritesProvider>
+
               <MessagesProvider>
                 <CartProvider>
                   <ThemeProvider>
@@ -81,9 +82,10 @@ export default function App() {
                   </ThemeProvider>
                 </CartProvider>
               </MessagesProvider>
-            </PaymentProvider>
-          </FavoritesProvider>
-        </UserProvider>
+
+            </FavoritesProvider>
+          </UserProvider>
+        </PaymentProvider>
       </AuthProvider>
 
     </ErrorBoundary>

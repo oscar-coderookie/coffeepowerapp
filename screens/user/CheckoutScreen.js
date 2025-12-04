@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 import { useTheme } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
@@ -8,13 +8,14 @@ import Icon from "react-native-vector-icons/FontAwesome6";
 import Icon2 from "react-native-vector-icons/FontAwesome";
 import CustomHeader from "../../components/CustomHeader";
 import ButtonGeneral from "../../components/ButtonGeneral";
-import PaymentSelector from "../../components/PaymentSelector";
 import CouponSelectorModal from "../../components/CouponsSelectorModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { MotiView } from "moti";
 import { listenUserCoupons } from "../../services/couponsService";
 import { useCart } from "../../context/CartContext";
+import { usePayments } from "../../context/PaymentsContext";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 
 export default function CheckoutScreen({ navigation }) {
@@ -29,10 +30,11 @@ export default function CheckoutScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [details, setDetails] = useState("");
   const [email, setEmail] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("Tarjeta");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [availableCoupons, setAvailableCoupons] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const { paymentMethods } = usePayments();
 
   //fetch:
   useEffect(() => {
@@ -87,7 +89,8 @@ export default function CheckoutScreen({ navigation }) {
       appliedCoupon,
     };
 
-    const paymentData = { method: paymentMethod };
+    // Construir objeto de pago
+    const paymentData = paymentMethods.find(pm => pm.id === selectedPaymentMethod);
 
     navigation.navigate("Payout", {
       cartItems,
@@ -182,7 +185,7 @@ export default function CheckoutScreen({ navigation }) {
               <Text style={{ color: colors.text, fontFamily: "Jost_400Regular" }}>
                 {appliedCoupon ? `Cupón "${appliedCoupon.code}" aplicado (${appliedCoupon.discount}%) 🎉` : "Seleccionar cupón disponible"}
               </Text>
-          
+
             </TouchableOpacity>
 
             <CouponSelectorModal visible={showCouponModal} onClose={() => setShowCouponModal(false)} coupons={availableCoupons} colors={colors} onSelect={(coupon) => { setAppliedCoupon(coupon); setShowCouponModal(false); Toast.show({ type: "success", text1: "Cupón aplicado", text2: `Descuento del ${coupon.discount}% activado 🎉` }) }} />
@@ -190,7 +193,58 @@ export default function CheckoutScreen({ navigation }) {
 
           {/* Método de pago */}
           <MotiView from={{ opacity: 0, translateY: -20 }} animate={{ opacity: 1, translateY: 0 }} transition={{ delay: 800, duration: 600 }}>
-            <PaymentSelector selectedMethod={paymentMethod} onSelect={setPaymentMethod} />
+            <Text style={[styles.title, { color: colors.text }]}>Selecciona tu método de pago:</Text>
+            {paymentMethods.length > 0 && (
+              <View>
+                <FlatList
+                  data={paymentMethods}
+                  keyExtractor={(item) => item.id}
+                  scrollEnabled={false}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => setSelectedPaymentMethod(item.id)}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        borderRadius: 12,
+                        borderColor: colors.text,
+                        borderWidth: 0.5,
+                        padding: 10,
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <FontAwesome5
+                          name={
+                            item.card.brand === "visa"
+                              ? "cc-visa"
+                              : item.card.brand === "mastercard"
+                                ? "cc-mastercard"
+                                : item.card.brand === "amex"
+                                  ? "cc-amex"
+                                  : "cc-credit-card"
+                          }
+                          size={40}
+                          color={colors.text}
+                          style={{ marginLeft: 20 }}
+                        />
+
+                        <Text style={[styles.text, { color: colors.text, marginLeft: 10, fontFamily: 'Jost_600SemiBold' }]}>
+                          Terminada en: {item.card.last4}
+                        </Text>
+                      </View>
+
+                      {/* Aquí va el puntico de selección */}
+                      <Icon2
+                        name={selectedPaymentMethod === item.id ? "dot-circle-o" : "circle-o"}
+                        size={22}
+                        color={colors.text}
+                      />
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            )}
           </MotiView>
 
           {/* Botón */}
@@ -217,4 +271,8 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 16, marginBottom: 20, fontFamily: "Jost_400Regular" },
   input: { padding: 15, borderRadius: 10, fontSize: 16, borderWidth: 1, marginTop: 10, marginBottom: 10, fontFamily: "Jost_400Regular" },
   form: { paddingTop: 40, padding: 20 },
+  text: {
+    textAlign: "center",
+    fontFamily: "Jost_400Regular",
+  },
 });

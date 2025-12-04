@@ -219,10 +219,8 @@ const styles = StyleSheet.create({
   },
   package: {
     width: width,
-    height: 400,
+    height: 350,
     transform: [{ translateX: -50 }]
   },
-
-
 
 });

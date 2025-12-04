@@ -50,10 +50,6 @@ const PaymentMethods = () => {
 
         </Text>
       </View>
-      <View style={{flexDirection:'row'}}>
-            <Text style={[styles.cardText]}>VALID: {item.card.exp_month} / {item.card.exp_year}</Text>
-            <Text style={[styles.cardText]}>VALID: {item.card.exp_month} / {item.card.exp_year}</Text>
-      </View>
       <TouchableOpacity
         onPress={() => handleRemoveMethod(item.id)}
         style={{ padding: 10, backgroundColor: '#3131316b', borderRadius: 22 }}

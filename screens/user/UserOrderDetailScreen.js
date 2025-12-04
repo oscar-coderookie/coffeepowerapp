@@ -2,16 +2,59 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import CustomHeader from "../../components/CustomHeader";
+import OrderTimeLine from "../../components/OrderTimeLine";
 
 export default function UserOrderDetailScreen({ route }) {
   const { colors } = useTheme();
   const { order } = route.params; // Recibes el pedido completo desde la lista
 
+  const STATUS_MAP = {
+    pending: {
+      label: "En preparación",
+      color: "#E53935" // rojo
+    },
+    tracking: {
+      label: "Despachado",
+      color: "#FB8C00" // naranja
+    },
+    delivered: {
+      label: "Entregado",
+      color: "#43A047" // verde
+    }
+  };
+
+  const PAYMENT_STATUS_MAP = {
+    succeeded: {
+      label: "Pagado",
+      color: "#43A047" // verde
+    },
+    processing: {
+      label: "Pendiente",
+      color: "#FB8C00" // naranja
+    },
+    requires_confirmation: {
+      label: "Pendiente",
+      color: "#FB8C00"
+    },
+    requires_action: {
+      label: "Pendiente",
+      color: "#FB8C00"
+    },
+    requires_payment_method: {
+      label: "Rechazado",
+      color: "#E53935" // rojo
+    },
+    canceled: {
+      label: "Rechazado",
+      color: "#E53935"
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <CustomHeader title="Detalle del pedido" showBack/>
-
+      <CustomHeader title={`Detalle pedido: ${order.orderNumber}`} showBack />
       <ScrollView contentContainerStyle={styles.content}>
+        <OrderTimeLine currentStatus={order.shipmentStatus} />
         {/* Número de pedido */}
         <View style={styles.section}>
           <Text style={[styles.title, { color: colors.text }]}>
@@ -25,11 +68,47 @@ export default function UserOrderDetailScreen({ route }) {
             Información general
           </Text>
 
-          <Item label="Estado" value={order.status} colors={colors} />
-          <Item label="Fecha" value={order.createdAt?.toDate().toLocaleString()} colors={colors} />
+          <Item
+            label="Estado"
+            value={STATUS_MAP[order.shipmentStatus]?.label}
+            colors={{ ...colors, text: STATUS_MAP[order.shipmentStatus]?.color }}
+          />
+          <Item label="Fecha y hora" value={order.createdAt?.toDate().toLocaleString()} colors={colors} />
           <Item label="Método de pago" value={order.paymentMethod} colors={colors} />
-          <Item label="Método de envío" value={order.shippingMethod} colors={colors} />
-          <Item label="Productos distintos" value={order.totalItems ?? order.items?.length} colors={colors} />
+          <Item
+            label="Estado del pago"
+            value={PAYMENT_STATUS_MAP[order.paymentInfo.status]?.label ?? "Desconocido"}
+            colors={{
+              ...colors,
+              text: PAYMENT_STATUS_MAP[order.paymentInfo.status]?.color
+            }}
+          />
+          <Item
+            label="ID pago"
+            value={order.paymentInfo.id}
+            colors={colors}
+          />
+        </View>
+        <View style={[styles.section, styles.box, { backgroundColor: colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Datos de envío (tracking):
+          </Text>
+          <Item
+            label="Empresa de envío"
+            value={order.courier}
+            colors={colors}
+          />
+          <Item
+            label="#Tracking"
+            value={order.courier}
+            colors={colors}
+          />
+          <Item
+            label="Entregado el"
+            value={order.shippedAt}
+            colors={colors}
+          />
+          <Item label="Método de envío" value={`${order.shippingMethod}(de 3-5 días hábiles)`} colors={colors} />
         </View>
 
         {/* Dirección de envío */}
@@ -37,14 +116,24 @@ export default function UserOrderDetailScreen({ route }) {
           <View style={[styles.section, styles.box, { backgroundColor: colors.card }]}>
 
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Dirección de envío
+              Dirección de envío y móvil:
             </Text>
 
             {/* Línea completa de dirección */}
             <Item
               label="Dirección"
-              value={`${order.shippingAddress.calle} ${order.shippingAddress.numero}${order.shippingAddress.piso ? `, Piso ${order.shippingAddress.piso}` : ""
-                }${order.shippingAddress.puerta ? `, Puerta ${order.shippingAddress.puerta}` : ""}`}
+              value={
+                order.shippingAddress
+                  ? [
+                    order.shippingAddress.calle,
+                    order.shippingAddress.numero && `#${order.shippingAddress.numero}`,
+                    order.shippingAddress.piso && `Piso ${order.shippingAddress.piso}`,
+                    order.shippingAddress.puerta && `Puerta ${order.shippingAddress.puerta}`
+                  ]
+                    .filter(Boolean)
+                    .join(", ")
+                  : "No disponible"
+              }
               colors={colors}
             />
 
@@ -57,10 +146,12 @@ export default function UserOrderDetailScreen({ route }) {
 
             {/* Código Postal */}
             <Item
-              label="Código Postal"
+              label="CP"
               value={order.shippingAddress.codigoPostal}
               colors={colors}
             />
+
+
 
             {/* Referencia adicional */}
             {order.shippingAddress.referencia && (
@@ -74,8 +165,8 @@ export default function UserOrderDetailScreen({ route }) {
             {/* Teléfono (si lo guardas ahí) */}
             {order.phone && (
               <Item
-                label="Teléfono"
-                value={order.phone}
+                label="Móvil"
+                value={`+${order.phone.codigo} ${order.phone.numero}`}
                 colors={colors}
               />
             )}
@@ -90,16 +181,19 @@ export default function UserOrderDetailScreen({ route }) {
             Productos del pedido
           </Text>
 
-          {order.products?.map((item, idx) => (
+          {order.items?.map((item, idx) => (
             <View key={idx} style={styles.productItem}>
               <Text style={[styles.productName, { color: colors.text }]}>
                 {item.name}
               </Text>
               <Text style={[styles.productDetails, { color: colors.text }]}>
-                Cantidad: {item.quantity}  •  Precio: €{item.price.toFixed(2)}
+                Cantidad: {item.quantity ?? "—"}  •  Precio: €
+                {item.price ? item.price.toFixed(2) : "0.00"}
               </Text>
-              <Text style={[styles.productSubtotal, { color: colors.text }]}>
-                Subtotal: €{item.subtotal.toFixed(2)}
+
+              <Text style={[styles.productSubtotal, { color: colors.text , borderTopColor: colors.text}]}>
+                Subtotal: €
+                {item.subtotal ? item.subtotal.toFixed(2) : "0.00"}
               </Text>
             </View>
           ))}
@@ -112,11 +206,11 @@ export default function UserOrderDetailScreen({ route }) {
           </Text>
 
           <Item label="Subtotal" value={`€ ${order.subtotal?.toFixed(2)}`} colors={colors} />
-          <Item label="Descuento" value={`€ ${order.discountAmount?.toFixed(2)}`} colors={colors} />
-          <Item label="Envío" value={`€ ${order.shippingCost?.toFixed(2)}`} colors={colors} />
+          <Item label="Descuento" value={`Cupón: ${order.appliedCoupon.code} (${order.appliedCoupon.discount}%) - € ${order.discountAmount?.toFixed(2)}`} colors={colors} />
+          <Item label="Envío" value={`+ € ${order.shippingCost?.toFixed(2)}`} colors={colors} />
           <Item
-            label="Total a pagar"
-            value={`€ ${order.total?.toFixed(2)}`}
+            label="Total pagado"
+            value={`€ ${order.paymentInfo.amount?.toFixed(2)}`}
             bold
             colors={colors}
           />
@@ -179,6 +273,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
+    width: '100%'
   },
 
   itemLabel: {
@@ -192,13 +287,6 @@ const styles = StyleSheet.create({
     fontFamily: "Jost_500Medium",
   },
 
-  productItem: {
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#3333",
-    paddingBottom: 8,
-  },
-
   productName: {
     fontSize: 15,
     fontFamily: "Jost_600SemiBold",
@@ -208,11 +296,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     opacity: 0.7,
     marginTop: 2,
+    marginBottom: 10,
+
   },
 
   productSubtotal: {
     fontSize: 14,
-    marginTop: 4,
+    borderTopWidth: 1,
+    paddingTop: 10,
     fontFamily: "Jost_500Medium",
   },
 });

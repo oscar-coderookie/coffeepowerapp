@@ -1,10 +1,21 @@
 import Toast from "react-native-toast-message";
 import { db } from "../config/firebase";
-import { collection, doc, setDoc, serverTimestamp, where, orderBy, onSnapshot, query, getDocs, updateDoc, runTransaction } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  serverTimestamp,
+  where,
+  orderBy,
+  onSnapshot,
+  query,
+  getDocs,
+  updateDoc,
+  runTransaction
+} from "firebase/firestore";
 
 /**
- * Retorna el siguiente índice de pedido (incrementa de forma atómica).
- * Devuelve Number (ej: 124).
+ * Retorna el siguiente índice de pedido (incrementa de forma atómica)
  */
 export async function getNextOrderIndex() {
   const counterRef = doc(db, "counters", "orders");
@@ -13,7 +24,6 @@ export async function getNextOrderIndex() {
     const snap = await transaction.get(counterRef);
 
     if (!snap.exists()) {
-      // Si no existe, lo crea con 1
       transaction.set(counterRef, { lastOrderIndex: 1 });
       return 1;
     }
@@ -26,8 +36,9 @@ export async function getNextOrderIndex() {
 
   return newIndex;
 }
+
 /**
- * Crea un pedido en Firestore y opcionalmente guarda referencia en el usuario
+ * Crea una orden SOLO en /orders (sin duplicación en /users/{uid}/orders)
  */
 export const createOrder = async (
   uid,
@@ -38,42 +49,42 @@ export const createOrder = async (
   totals
 ) => {
   try {
-    // 🔥 Crear ID en la colección GLOBAL
-    const ordersRef = collection(db, "orders");
-    const orderDoc = doc(ordersRef); // genera ID automático
-    const orderId = orderDoc.id;
-    const orderRef = doc(db, "orders", orderId);
-    //total unidades:
-    const totalUnits = cartItems.reduce((acc, item) => acc + Number(item.quantity || 0), 0);
-    // ✅ Genera orderIndex atómico y seguro
-    const orderIndex = await getNextOrderIndex();
+    // 🔥 Crear ID en la colección global
+    const orderRef = doc(collection(db, "orders"));
+    const orderId = orderRef.id;
 
-    // formatea el número visible al cliente
-    const orderNumber = `CP-${String(orderIndex).padStart(5, "0")}`; // CP-00001
-    // 🔥 Datos completos de la orden
+    // Total unidades
+    const totalUnits = cartItems.reduce(
+      (acc, item) => acc + Number(item.quantity || 0),
+      0
+    );
+
+    // Índice incremental atómico
+    const orderIndex = await getNextOrderIndex();
+    const orderNumber = `CP-${String(orderIndex).padStart(4, "0")}`;
+
+    // 🔥 Datos completos del pedido
     const orderData = {
-      // Identificadores
-      orderId,                 // ID global del pedido
+      orderId,
       orderIndex,
-      orderNumber,              // Número incremental (00123)
+      orderNumber,
       userId: uid,
 
-      // Datos del cliente
+      // Cliente
       userName: userData?.name || "Usuario",
       email: shippingData?.email || userData?.email || "",
       phone: shippingData?.phone || userData?.phone || "",
 
       // Dirección
       shippingAddress: shippingData?.address || {},
-      deliveryAddressId: shippingData?.address?.id || null,
 
       fullAddressFormatted: `
-    ${shippingData.address.calle} ${shippingData.address.numero}, 
-    Piso ${shippingData.address.piso}, Puerta ${shippingData.address.puerta}
-    ${shippingData.address.provincia}, ${shippingData.address.CA}
-    ${shippingData.address.codigoPostal}
-    Referencia: ${shippingData.address.referencia || "N/A"}
-  `.trim(),
+${shippingData.address.calle} ${shippingData.address.numero}, 
+Piso ${shippingData.address.piso}, Puerta ${shippingData.address.puerta}
+${shippingData.address.provincia}, ${shippingData.address.CA}
+${shippingData.address.codigoPostal}
+Referencia: ${shippingData.address.referencia || "N/A"}
+`.trim(),
 
       // Productos
       items: cartItems.map(item => ({
@@ -85,103 +96,75 @@ export const createOrder = async (
       })),
       totalUnits,
 
-      // Costes
+      // Totales
       subtotal: totals.subtotal || 0,
       discountAmount: totals.discountAmount || 0,
       shippingCost: totals.shippingCost || 0,
       total: totals.total || 0,
       currency: "EUR",
 
-      // Envío y pago
       shippingMethod: totals.shippingMethod || "standard",
+
+      // Tracking
+      carrier: null,
+      trackingNumber: null,
+      shipmentStatus: "pending",
+      shippedAt: null,
+      deliveredAt: null,
+
+      // Pago
       paymentMethod: paymentData?.method || "No seleccionado",
       paymentStatus: "pendiente",
+      paymentInfo: paymentData || null,
 
-      // Estado del pedido
-      status: "pendiente",
-      history: [
-        { status: "pendiente", timestamp: null },
-      ],
-
-      // Sistema
+      // Otros
       appliedCoupon: shippingData?.appliedCoupon || null,
       internalNotes: "",
-      deliveredAt: null,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
 
+    // 📌 Guardar en /orders
+    await setDoc(orderRef, orderData);
 
-    // 🌍 1. GUARDAR ORDEN COMPLETA EN /orders
-    await setDoc(orderDoc, orderData);
-    await updateDoc(orderRef, {
-      "history.0.timestamp": serverTimestamp()
-    });
-    // 👤 2. GUARDAR ORDEN RESUMIDA EN /users/{uid}/orders/
-
-
-    const userOrderRef = doc(db, `users/${uid}/orders/${orderId}`);
-
-    await setDoc(userOrderRef, {
-      orderId,
-      orderIndex,
-      orderNumber,
-      status: "pendiente",
-      createdAt: serverTimestamp(),
-      paymentMethod: paymentData?.method || "No especificado",
-      shippingMethod: shippingData?.deliveryType || "Estándar",
-      discountAmount: orderData.discountAmount,
-      shippingCost: orderData.shippingCost,
-      // 🛒 Versión simplificada para la app
-      products: orderData.items.map(item => ({
-        coffeeId: item.coffeeId,
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        subtotal: item.subtotal
-      })),
-      shippingAddress: shippingData?.address,
-      subtotal: orderData.subtotal,
-      total: orderData.total,
-      totalUnits,
-    });
     Toast.show({
       type: "success",
       text1: "Pedido Creado",
-      text2: "Pedido realizado exitosamente, revisa tu historial de pedidos para mas detalles",
+      text2: "Tu pedido se registró correctamente"
     });
 
-    return {
-      orderId,
-      orderIndex,
-      orderNumber
-    };
+    return { orderId, orderIndex, orderNumber };
 
   } catch (error) {
     console.error("❌ Error creando pedido:", error);
     throw error;
   }
-
-
 };
 
+/**
+ * 🔥 Escuchar pedidos del usuario desde /orders
+ * - NO usamos subcolección
+ * - Filtramos por userId
+ * - Ordenamos por fecha
+ */
 export function listenUserOrders(userId, setOrders, setLoading) {
   try {
-    const ref = collection(db, "users", userId, "orders");
+    const ref = collection(db, "orders");
 
     const q = query(
       ref,
-      orderBy("createdAt", "asc")
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
     );
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const data = snapshot.docs.map((doc, index) => ({
+        const data = snapshot.docs.map((doc) => ({
           id: doc.id,
-          orderIndex: index + 1,
           ...doc.data(),
         }));
+
         setOrders(data);
         setLoading(false);
       },
@@ -192,9 +175,9 @@ export function listenUserOrders(userId, setOrders, setLoading) {
     );
 
     return unsubscribe;
+
   } catch (error) {
-    console.error("Error inicializando listener:", error);
+    console.error("Error en listenUserOrders:", error);
     setLoading(false);
-    return null;
   }
 }

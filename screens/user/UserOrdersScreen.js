@@ -20,6 +20,21 @@ export default function UserOrdersScreen({ navigation }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const STATUS_MAP = {
+    pending: {
+      label: "En preparación",
+      color: "#E53935" // rojo
+    },
+    tracking: {
+      label: "Despachado",
+      color: "#FB8C00" // naranja
+    },
+    delivered: {
+      label: "Entregado",
+      color: "#43A047" // verde
+    }
+  };
+
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -30,7 +45,7 @@ export default function UserOrdersScreen({ navigation }) {
     return () => unsubscribe && unsubscribe();
   }, [user]);
 
-  if (orders.length === 0) {
+  if (!loading && orders.length === 0) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
 
@@ -43,7 +58,7 @@ export default function UserOrdersScreen({ navigation }) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={{ color: colors.text, fontFamily: "Jost_500Medium", marginHorizontal:10, padding: 10, textAlign:'justify' }}>
+      <Text style={{ color: colors.text, fontFamily: "Jost_500Medium", marginHorizontal: 10, padding: 10, textAlign: 'justify' }}>
         Aquí se listan todas las compras realizadas dentro de la app, pincha en las tarjetas para ir al seguimiento y detalle:
       </Text>
       <FlatList
@@ -100,7 +115,7 @@ export default function UserOrdersScreen({ navigation }) {
                     {item.shippingMethod}
                   </Text>
                 </View>
-        
+
               </View>
               <View
                 style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -117,8 +132,14 @@ export default function UserOrdersScreen({ navigation }) {
                   <Text style={[styles.label, { color: colors.text }]}>
                     Estado:
                   </Text>
-                  <Text style={[styles.value, { color: colors.text }]}>
-                    {item.status}
+
+                  <Text
+                    style={[
+                      styles.value,
+                      { color: STATUS_MAP[item.shipmentStatus]?.color || colors.text }
+                    ]}
+                  >
+                    {STATUS_MAP[item.shipmentStatus]?.label || item.shipmentStatus}
                   </Text>
                 </View>
               </View>
